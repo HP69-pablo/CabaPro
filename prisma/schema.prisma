@@ -1,0 +1,1239 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum UserRole {
+  USER
+  MODERATOR
+  FINANCE
+  ADMIN
+  BUREAU_STAFF
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+}
+
+enum TrustLevel {
+  UNVERIFIED
+  CONTACT_VERIFIED
+  ID_VERIFIED
+  TRUSTED
+}
+
+enum IdDocumentType {
+  PASSPORT
+  NATIONAL_ID
+  RESIDENCE_PERMIT
+  DRIVERS_LICENSE
+}
+
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PayoutAccountType {
+  BANK_IBAN
+  CREDIT_CARD
+  BARIDIMOB
+  CCP
+  INTERNATIONAL_WIRE
+  OTHER
+}
+
+enum CategoryRule {
+  ALLOWED
+  RESTRICTED
+  BLOCKED
+}
+
+enum KeywordAction {
+  FLAG_FOR_REVIEW
+  REJECT_IMMEDIATELY
+}
+
+enum ItemCondition {
+  NEW_SEALED
+  NEW_OPEN_BOX
+  USED_LIKE_NEW
+  ANY
+}
+
+enum PurchaseMethod {
+  BRINGER_BUYS
+  BUYER_PREPARED_DELIVERY
+}
+
+enum DeliveryPreference {
+  DOOR_DELIVERY
+  MEETUP
+  ANY
+}
+
+enum ListingStatus {
+  DRAFT
+  UNDER_REVIEW
+  ACTIVE
+  MATCHED
+  IN_TRANSACTION
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+enum TransportMethod {
+  FLIGHT
+  CAR
+  FERRY
+  TRAIN
+  OTHER
+}
+
+enum TripStatus {
+  DRAFT
+  ACTIVE
+  FULL
+  IN_TRANSIT
+  COMPLETED
+  CANCELLED
+}
+
+enum MatchStatus {
+  PROPOSED
+  CONTACTED
+  ACCEPTED
+  REJECTED
+}
+
+enum OfferStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COUNTERED
+  EXPIRED
+  CANCELLED
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  OFFER
+  SYSTEM
+  CONTACT_REVEAL
+}
+
+enum TransactionStatus {
+  AGREED
+  AWAITING_PAYMENT
+  PAYMENT_UNDER_REVIEW
+  AWAITING_BUREAU_PAYMENT
+  BUREAU_PAYMENT_RECEIVED
+  PAID
+  FUNDS_TRANSFER_PENDING
+  FUNDS_SENT_TO_BRINGER
+  FUNDS_CONFIRMED_BY_BRINGER
+  PURCHASING
+  PURCHASED
+  PRODUCT_PROOF_REVIEW
+  HANDED_OVER
+  IN_TRANSIT
+  ARRIVED
+  DELIVERED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  EXPIRED
+  DISPUTED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum PaymentProviderType {
+  DEMO
+  BARIDIMOB
+  CCP
+  BUREAU
+  GATEWAY_STUB
+}
+
+enum PaymentStatus {
+  PENDING
+  UNDER_REVIEW
+  VERIFIED
+  REJECTED
+  FAILED
+  REFUNDED
+}
+
+enum ProofItemType {
+  PRODUCT_PHOTO
+  PACKAGING_PHOTO
+  PURCHASE_RECEIPT
+  BUREAU_RECEIPT
+  TRANSFER_PROOF
+  DAMAGE_EVIDENCE
+  DELIVERY_PROOF
+}
+
+enum DisputeReason {
+  NOT_DELIVERED
+  DAMAGED
+  WRONG_PRODUCT
+  NOT_AS_DESCRIBED
+  LATE_ARRIVAL
+  PAYMENT_ISSUE
+  SAFETY_CONCERN
+  OTHER
+}
+
+enum DisputeStatus {
+  OPENED
+  UNDER_REVIEW
+  EVIDENCE_SUBMITTED
+  RESOLVED
+  DISMISSED
+}
+
+enum DisputeDecisionType {
+  FULL_REFUND_BUYER
+  PARTIAL_REFUND_SPLIT
+  RELEASE_TO_BRINGER
+  CANCELLED_NEUTRAL
+}
+
+enum ReviewRole {
+  BUYER
+  BRINGER
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  ACTION_TAKEN
+  DISMISSED
+}
+
+enum NotificationType {
+  SYSTEM
+  MATCH_FOUND
+  OFFER_RECEIVED
+  OFFER_ACCEPTED
+  PAYMENT_CONFIRMED
+  TRANSFER_SENT
+  TRANSFER_CONFIRMED
+  PROOF_UPLOADED
+  PROOF_APPROVED
+  HANDOVER_COMPLETED
+  TRIP_IN_TRANSIT
+  TRIP_ARRIVED
+  DELIVERY_CODE_READY
+  DELIVERY_CONFIRMED
+  DISPUTE_OPENED
+  DISPUTE_RESOLVED
+  PAYOUT_PROCESSED
+  REVIEW_RECEIVED
+}
+
+enum LedgerAccountType {
+  EXTERNAL
+  ESCROW
+  BRINGER_AVAILABLE
+  BRINGER_PENDING
+  PLATFORM_REVENUE
+  GUARANTEE_FUND
+  BUREAU_CASH
+  BUREAU_FLOAT
+  TRANSFER_FEES
+  FX_MARGIN
+  REFUNDS
+  PAYOUTS
+}
+
+enum LedgerReferenceType {
+  PAYMENT
+  ADVANCE_TRANSFER
+  ESCROW_RELEASE
+  REFUND
+  PARTIAL_REFUND
+  PAYOUT
+  BUREAU_SETTLEMENT
+  ADJUSTMENT
+}
+
+enum PayoutStatus {
+  PENDING
+  APPROVED
+  PROCESSING
+  COMPLETED
+  REJECTED
+  FAILED
+}
+
+enum BureauStatus {
+  ACTIVE
+  SUSPENDED
+  INACTIVE
+}
+
+enum BureauStaffRole {
+  STAFF
+  MANAGER
+}
+
+enum FundsTransferMethod {
+  INTERNATIONAL_WIRE
+  CARD_TRANSFER
+  CASH_COLLECTION
+  OTHER
+}
+
+enum FundsTransferStatus {
+  PENDING
+  SENT
+  CONFIRMED
+  FAILED
+  RETURNED
+}
+
+enum BureauCashbookStatus {
+  OPEN
+  SUBMITTED
+  APPROVED_BY_FINANCE
+}
+
+// ==========================================
+// USER & IDENTITY
+// ==========================================
+
+model User {
+  id                    String                 @id @default(uuid())
+  email                 String                 @unique
+  passwordHash          String
+  phone                 String?                @unique
+  phoneVerifiedAt       DateTime?
+  emailVerifiedAt       DateTime?
+  role                  UserRole               @default(USER)
+  status                UserStatus             @default(ACTIVE)
+  trustLevel            TrustLevel             @default(UNVERIFIED)
+  firstName             String
+  lastName              String
+  avatarUrl             String?
+  bio                   String?
+  preferredLanguage     String                 @default("en")
+  preferredCurrencyCode String                 @default("EUR")
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+
+  sessions              Session[]
+  identityVerifications IdentityVerification[]
+  payoutAccounts        PayoutAccount[]
+  buyerRequests         BuyerRequest[]
+  trips                 Trip[]
+  buyerTransactions     Transaction[]          @relation("BuyerTransactions")
+  bringerTransactions   Transaction[]          @relation("BringerTransactions")
+  sentOffers            Offer[]                @relation("SentOffers")
+  receivedOffers        Offer[]                @relation("ReceivedOffers")
+  sentMessages          Message[]              @relation("SentMessages")
+  reviewsGiven          Review[]               @relation("ReviewsGiven")
+  reviewsReceived       Review[]               @relation("ReviewsReceived")
+  reportsFiled          Report[]               @relation("ReportsFiled")
+  notifications         Notification[]
+  auditLogs             AuditLog[]             @relation("ActorAuditLogs")
+  payouts               Payout[]
+  proofItems            ProofItem[]
+  bureauStaff           BureauStaff?
+  disputesInitiated     Dispute[]              @relation("InitiatedDisputes")
+  disputesAssigned      Dispute[]              @relation("ModeratedDisputes")
+  disputeEvidences      DisputeEvidence[]
+  ledgerAccounts        LedgerAccount[]
+  fundsTransfersInitiated FundsTransfer[]      @relation("InitiatedTransfers")
+
+  @@index([email])
+  @@index([role, status])
+  @@index([trustLevel])
+}
+
+model Session {
+  id           String    @id @default(uuid())
+  userId       String
+  tokenHash    String    @unique
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  createdAt    DateTime  @default(now())
+  revokedAt    DateTime?
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tokenHash])
+}
+
+model IdentityVerification {
+  id                String             @id @default(uuid())
+  userId            String
+  documentType      IdDocumentType
+  documentFrontKey  String
+  documentBackKey   String?
+  selfieKey         String
+  status            VerificationStatus @default(PENDING)
+  rejectionReason   String?
+  reviewerId        String?
+  reviewedAt        DateTime?
+  createdAt         DateTime           @default(now())
+
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+}
+
+model PayoutAccount {
+  id                  String            @id @default(uuid())
+  userId              String
+  type                PayoutAccountType
+  accountHolderName   String
+  encryptedDetails    String            // AES-256-GCM encrypted payload
+  isDefault           Boolean           @default(false)
+  isVerified          Boolean           @default(false)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payouts             Payout[]
+
+  @@index([userId])
+}
+
+// ==========================================
+// CATALOG & SETTINGS
+// ==========================================
+
+model Country {
+  id        String   @id @default(uuid())
+  code      String   @unique // ISO 2-letter, e.g. DZ, FR, TR
+  nameEn    String
+  nameFr    String
+  nameAr    String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  cities              City[]
+  sourceRequests      BuyerRequest[] @relation("SourceRequestCountry")
+  destRequests        BuyerRequest[] @relation("DestRequestCountry")
+  originTrips         Trip[]         @relation("OriginTripCountry")
+  destTrips           Trip[]         @relation("DestTripCountry")
+  bureaus             Bureau[]
+
+  @@index([code])
+}
+
+model City {
+  id        String   @id @default(uuid())
+  countryId String
+  nameEn    String
+  nameFr    String
+  nameAr    String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  country             Country        @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  sourceRequests      BuyerRequest[] @relation("SourceRequestCity")
+  destRequests        BuyerRequest[] @relation("DestRequestCity")
+  originTrips         Trip[]         @relation("OriginTripCity")
+  destTrips           Trip[]         @relation("DestTripCity")
+  bureaus             Bureau[]
+
+  @@index([countryId])
+}
+
+model Currency {
+  code      String   @id // ISO 3-letter, e.g. DZD, EUR, USD
+  name      String
+  symbol    String
+  decimals  Int      @default(2) // minor unit factor (10^decimals)
+  isActive  Boolean  @default(true)
+  isDefault Boolean  @default(false)
+
+  baseExchangeRates   ExchangeRate[] @relation("BaseCurrency")
+  targetExchangeRates ExchangeRate[] @relation("TargetCurrency")
+  buyerRequests       BuyerRequest[]
+  offers              Offer[]
+  transactions        Transaction[]
+  payments            Payment[]
+  ledgerAccounts      LedgerAccount[]
+  ledgerEntries       LedgerEntry[]
+  payouts             Payout[]
+  bureaus             Bureau[]
+
+  @@index([isActive])
+}
+
+model ExchangeRate {
+  id                 String   @id @default(uuid())
+  baseCurrencyCode   String
+  targetCurrencyCode String
+  rate               Decimal  @db.Decimal(18, 6)
+  source             String   // e.g. "OFFICIAL_API", "ADMIN_MANUAL"
+  fetchedAt          DateTime @default(now())
+  expiresAt          DateTime
+
+  baseCurrency       Currency @relation("BaseCurrency", fields: [baseCurrencyCode], references: [code])
+  targetCurrency     Currency @relation("TargetCurrency", fields: [targetCurrencyCode], references: [code])
+
+  @@index([baseCurrencyCode, targetCurrencyCode])
+}
+
+model Category {
+  id                 String              @id @default(uuid())
+  slug               String              @unique
+  nameEn             String
+  nameFr             String
+  nameAr             String
+  rule               CategoryRule        @default(ALLOWED)
+  requiresReceipt    Boolean             @default(true)
+  maxDeclaredValue   Int?                // in minor units
+  icon               String?
+  parentId           String?
+  isActive           Boolean             @default(true)
+
+  parent             Category?           @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children           Category[]          @relation("CategoryHierarchy")
+  buyerRequests      BuyerRequest[]
+  prohibitedKeywords ProhibitedKeyword[]
+
+  @@index([slug])
+  @@index([rule])
+}
+
+model ProhibitedKeyword {
+  id         String        @id @default(uuid())
+  keyword    String        @unique
+  categoryId String?
+  action     KeywordAction @default(FLAG_FOR_REVIEW)
+  reasonEn   String
+  reasonFr   String
+  reasonAr   String
+  isActive   Boolean       @default(true)
+
+  category   Category?     @relation(fields: [categoryId], references: [id])
+
+  @@index([keyword])
+}
+
+model Setting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  valueJson   Json
+  description String?
+  updatedAt   DateTime @updatedAt
+  updatedBy   String?
+
+  @@index([key])
+}
+
+model FeatureFlag {
+  id                String   @id @default(uuid())
+  key               String   @unique
+  isEnabled         Boolean  @default(false)
+  rolloutPercentage Int      @default(100)
+  description       String?
+  updatedAt         DateTime @updatedAt
+
+  @@index([key])
+}
+
+// ==========================================
+// MARKETPLACE & LISTINGS
+// ==========================================
+
+model BuyerRequest {
+  id                       String             @id @default(uuid())
+  buyerId                  String
+  title                    String
+  description              String
+  url                      String?
+  storeName                String?
+  categoryId               String
+  sourceCountryId          String
+  sourceCityId             String
+  destCountryId            String
+  destCityId               String
+  quantity                 Int                @default(1)
+  weightGrams              Int                // Integer grams, never float
+  dimensionsCm             String?            // e.g., "20x15x10"
+  estimatedPriceMinorUnits Int                // Integer cents/centimes
+  currencyCode             String
+  maxBudgetMinorUnits      Int
+  preferredFeeMinorUnits   Int
+  isFeeNegotiable          Boolean            @default(true)
+  deadlineDate             DateTime
+  condition                ItemCondition      @default(NEW_SEALED)
+  purchaseMethod           PurchaseMethod     @default(BRINGER_BUYS)
+  deliveryPreference       DeliveryPreference @default(MEETUP)
+  status                   ListingStatus      @default(ACTIVE)
+  rejectionReason          String?
+  imagesJson               Json               @default("[]") // array of image URLs
+  createdAt                DateTime           @default(now())
+  updatedAt                DateTime           @updatedAt
+
+  buyer                    User               @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  category                 Category           @relation(fields: [categoryId], references: [id])
+  sourceCountry            Country            @relation("SourceRequestCountry", fields: [sourceCountryId], references: [id])
+  sourceCity               City               @relation("SourceRequestCity", fields: [sourceCityId], references: [id])
+  destCountry              Country            @relation("DestRequestCountry", fields: [destCountryId], references: [id])
+  destCity                 City               @relation("DestRequestCity", fields: [destCityId], references: [id])
+  currency                 Currency           @relation(fields: [currencyCode], references: [code])
+
+  matches                  Match[]
+  offers                   Offer[]
+  transactions             Transaction[]
+  conversations            Conversation[]
+
+  @@index([buyerId])
+  @@index([status])
+  @@index([sourceCountryId, destCountryId])
+  @@index([deadlineDate])
+  @@index([categoryId])
+}
+
+model Trip {
+  id                      String          @id @default(uuid())
+  bringerId               String
+  originCountryId         String
+  originCityId            String
+  destCountryId           String
+  destCityId              String
+  departureDatetime       DateTime
+  arrivalDatetime         DateTime
+  transportMethod         TransportMethod @default(FLIGHT)
+  totalCapacityGrams      Int             // e.g. 15000 for 15 kg
+  reservedCapacityGrams   Int             @default(0) // Concurrency managed
+  maxItems                Int             @default(5)
+  acceptedCategoryIdsJson Json            @default("[]") // array of category IDs
+  deliveryAreasJson       Json            @default("[]") // neighborhood/cities covered
+  doorDelivery            Boolean         @default(false)
+  canBuyInStore           Boolean         @default(true)
+  notes                   String?
+  status                  TripStatus      @default(ACTIVE)
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
+
+  bringer                 User            @relation(fields: [bringerId], references: [id], onDelete: Cascade)
+  originCountry           Country         @relation("OriginTripCountry", fields: [originCountryId], references: [id])
+  originCity              City            @relation("OriginTripCity", fields: [originCityId], references: [id])
+  destCountry             Country         @relation("DestTripCountry", fields: [destCountryId], references: [id])
+  destCity                City            @relation("DestTripCity", fields: [destCityId], references: [id])
+
+  matches                 Match[]
+  offers                  Offer[]
+  transactions            Transaction[]
+  conversations           Conversation[]
+
+  @@index([bringerId])
+  @@index([status])
+  @@index([originCountryId, destCountryId])
+  @@index([arrivalDatetime])
+}
+
+model Match {
+  id                   String      @id @default(uuid())
+  buyerRequestId       String
+  tripId               String
+  score                Int         // 0 - 100
+  reasonsJson          Json        // checklist array of match reasons
+  isDismissedByBuyer   Boolean     @default(false)
+  isDismissedByBringer Boolean     @default(false)
+  status               MatchStatus @default(PROPOSED)
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  buyerRequest         BuyerRequest @relation(fields: [buyerRequestId], references: [id], onDelete: Cascade)
+  trip                 Trip         @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@unique([buyerRequestId, tripId])
+  @@index([score])
+  @@index([status])
+}
+
+// ==========================================
+// CHAT & OFFERS
+// ==========================================
+
+model Conversation {
+  id             String        @id @default(uuid())
+  buyerRequestId String?
+  tripId         String?
+  participant1Id String
+  participant2Id String
+  transactionId  String?       @unique
+  lastMessageAt  DateTime      @default(now())
+  isBlocked      Boolean       @default(false)
+  blockedById    String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  buyerRequest   BuyerRequest? @relation(fields: [buyerRequestId], references: [id])
+  trip           Trip?         @relation(fields: [tripId], references: [id])
+  transaction    Transaction?  @relation(fields: [transactionId], references: [id])
+
+  messages       Message[]
+  offers         Offer[]
+
+  @@index([participant1Id, participant2Id])
+  @@index([lastMessageAt])
+}
+
+model Message {
+  id                    String       @id @default(uuid())
+  conversationId        String
+  senderId              String?      // null for automated system messages
+  type                  MessageType  @default(TEXT)
+  content               String
+  attachmentsJson       Json         @default("[]")
+  isRead                Boolean      @default(false)
+  readAt                DateTime?
+  isContactMasked       Boolean      @default(false)
+  originalMaskedContent String?
+  createdAt             DateTime     @default(now())
+
+  conversation          Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender                User?        @relation("SentMessages", fields: [senderId], references: [id])
+
+  @@index([conversationId])
+  @@index([createdAt])
+}
+
+model Offer {
+  id                     String      @id @default(uuid())
+  conversationId         String
+  transactionId          String?     @unique
+  senderId               String
+  recipientId            String
+  buyerRequestId         String
+  tripId                 String
+  productPriceMinorUnits Int         // integer minor units
+  bringerFeeMinorUnits   Int
+  platformFeeMinorUnits  Int
+  guaranteeFeeMinorUnits Int
+  bureauFeeMinorUnits    Int         @default(0)
+  totalAmountMinorUnits  Int
+  currencyCode           String
+  deliveryMethod         String      // e.g. "MEETUP", "DOOR_DELIVERY"
+  deliveryAddress        String?
+  pickupDetails          String?
+  expiresAt              DateTime
+  status                 OfferStatus @default(PENDING)
+  parentOfferId          String?     // for counter-offers
+  createdAt              DateTime    @default(now())
+  updatedAt              DateTime    @updatedAt
+
+  conversation           Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender                 User         @relation("SentOffers", fields: [senderId], references: [id])
+  recipient              User         @relation("ReceivedOffers", fields: [recipientId], references: [id])
+  buyerRequest           BuyerRequest @relation(fields: [buyerRequestId], references: [id])
+  trip                   Trip         @relation(fields: [tripId], references: [id])
+  currency               Currency     @relation(fields: [currencyCode], references: [code])
+  parentOffer            Offer?       @relation("OfferNegotiation", fields: [parentOfferId], references: [id])
+  counterOffers          Offer[]      @relation("OfferNegotiation")
+  transaction            Transaction?
+
+  @@index([conversationId])
+  @@index([status])
+}
+
+// ==========================================
+// TRANSACTIONS & ESCROW
+// ==========================================
+
+model Transaction {
+  id                       String              @id @default(uuid())
+  referenceNumber          String              @unique // e.g. "CP-TX-2026-00001"
+  buyerId                  String
+  bringerId                String
+  buyerRequestId           String
+  tripId                   String
+  agreedOfferId            String              @unique
+  status                   TransactionStatus   @default(AGREED)
+  cancellationReason       String?
+  paymentMethod            PaymentProviderType @default(DEMO)
+  currencyCode             String
+  productPriceMinorUnits   Int
+  bringerFeeMinorUnits     Int
+  platformFeeMinorUnits    Int
+  guaranteeFeeMinorUnits   Int
+  bureauFeeMinorUnits      Int                 @default(0)
+  fxMarginMinorUnits       Int                 @default(0)
+  totalBuyerPayMinorUnits  Int
+  exchangeRateSnapshotJson Json                // frozen exchange rate at agreement
+  advancePortionPercent    Int                 @default(100) // % of product price advanced
+  advanceAmountMinorUnits  Int                 @default(0)
+  bureauId                 String?
+  createdAt                DateTime            @default(now())
+  updatedAt                DateTime            @updatedAt
+
+  buyer                    User                @relation("BuyerTransactions", fields: [buyerId], references: [id])
+  bringer                  User                @relation("BringerTransactions", fields: [bringerId], references: [id])
+  buyerRequest             BuyerRequest        @relation(fields: [buyerRequestId], references: [id])
+  trip                     Trip                @relation(fields: [tripId], references: [id])
+  agreedOffer              Offer               @relation(fields: [agreedOfferId], references: [id])
+  currency                 Currency            @relation(fields: [currencyCode], references: [code])
+  bureau                   Bureau?             @relation(fields: [bureauId], references: [id])
+
+  conversation             Conversation?
+  payments                 Payment[]
+  delivery                 Delivery?
+  handoverChecklist        HandoverChecklist?
+  proofItems               ProofItem[]
+  disputes                 Dispute[]
+  reviews                  Review[]
+  ledgerEntries            LedgerEntry[]
+  bureauPaymentReceipts    BureauPaymentReceipt[]
+  fundsTransfers           FundsTransfer[]
+  bureauBringerMessages    BureauBringerMessage[]
+
+  @@index([referenceNumber])
+  @@index([status])
+  @@index([buyerId])
+  @@index([bringerId])
+  @@index([createdAt])
+}
+
+model Payment {
+  id               String              @id @default(uuid())
+  transactionId    String
+  provider         PaymentProviderType
+  status           PaymentStatus       @default(PENDING)
+  amountMinorUnits Int
+  currencyCode     String
+  referenceNumber  String              @unique // idempotency / proof reference
+  paymentProofKey  String?             // private S3 key for BaridiMob/CCP receipt
+  senderName       String?
+  reviewerId       String?             // Finance user who approved
+  reviewNotes      String?
+  idempotencyKey   String              @unique
+  verifiedAt       DateTime?
+  createdAt        DateTime            @default(now())
+
+  transaction      Transaction         @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  currency         Currency            @relation(fields: [currencyCode], references: [code])
+
+  @@index([transactionId])
+  @@index([status])
+  @@index([idempotencyKey])
+}
+
+// ==========================================
+// DELIVERY & SAFE HANDOVER
+// ==========================================
+
+model Delivery {
+  id               String      @id @default(uuid())
+  transactionId    String      @unique
+  codeHash         String      // Argon2id / salted hash of 6-digit code
+  codeSalt         String      // Unique cryptographic salt
+  expiresAt        DateTime
+  maxAttempts      Int         @default(5)
+  attemptsCount    Int         @default(0)
+  isUsed           Boolean     @default(false)
+  usedAt           DateTime?
+  regeneratedCount Int         @default(0)
+  lastAttemptAt    DateTime?
+  createdAt        DateTime    @default(now())
+
+  transaction      Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  @@index([transactionId])
+}
+
+model HandoverChecklist {
+  id                   String      @id @default(uuid())
+  transactionId        String      @unique
+  itemMatchesListing   Boolean     @default(false)
+  modelQuantityCorrect Boolean     @default(false)
+  packagingChecked     Boolean     @default(false)
+  inspectedByBringer   Boolean     @default(false)
+  noProhibitedItems    Boolean     @default(false)
+  photosUploaded       Boolean     @default(false)
+  receiptUploaded      Boolean     @default(false)
+  buyerConfirmed       Boolean     @default(false)
+  bringerConfirmed     Boolean     @default(false)
+  buyerNotes           String?
+  bringerNotes         String?
+  completedAt          DateTime?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+
+  transaction          Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+}
+
+model ProofItem {
+  id            String        @id @default(uuid())
+  transactionId String
+  uploaderId    String
+  type          ProofItemType
+  fileKey       String        // S3 key (stored privately)
+  isPrivate     Boolean       @default(true)
+  mimeType      String
+  sizeBytes     Int
+  metadataJson  Json          @default("{}") // EXIF stripped verification metadata
+  createdAt     DateTime      @default(now())
+
+  transaction   Transaction   @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  uploader      User          @relation(fields: [uploaderId], references: [id])
+
+  @@index([transactionId])
+  @@index([type])
+}
+
+// ==========================================
+// DOUBLE-ENTRY APPEND-ONLY LEDGER
+// ==========================================
+
+model LedgerAccount {
+  id           String            @id @default(uuid())
+  type         LedgerAccountType
+  currencyCode String
+  ownerId      String?           // User ID if Bringer/Buyer personal account
+  bureauId     String?           // Bureau ID if Bureau Cash/Float account
+  description  String?
+  createdAt    DateTime          @default(now())
+
+  owner        User?             @relation(fields: [ownerId], references: [id])
+  currency     Currency          @relation(fields: [currencyCode], references: [code])
+  bureau       Bureau?           @relation(fields: [bureauId], references: [id])
+
+  debitEntries  LedgerEntry[]    @relation("DebitAccount")
+  creditEntries LedgerEntry[]    @relation("CreditAccount")
+
+  @@unique([type, currencyCode, ownerId, bureauId])
+  @@index([type, currencyCode])
+}
+
+model LedgerEntry {
+  id               String              @id @default(uuid())
+  transactionId    String?
+  referenceType    LedgerReferenceType
+  referenceId      String              // e.g. Payment ID, Payout ID, etc.
+  debitAccountId   String
+  creditAccountId  String
+  amountMinorUnits Int                 // positive integer minor units
+  currencyCode     String
+  idempotencyKey   String              @unique
+  description      String
+  createdAt        DateTime            @default(now())
+
+  transaction      Transaction?        @relation(fields: [transactionId], references: [id])
+  debitAccount     LedgerAccount       @relation("DebitAccount", fields: [debitAccountId], references: [id])
+  creditAccount    LedgerAccount       @relation("CreditAccount", fields: [creditAccountId], references: [id])
+  currency         Currency            @relation(fields: [currencyCode], references: [code])
+
+  @@index([transactionId])
+  @@index([referenceType, referenceId])
+  @@index([idempotencyKey])
+}
+
+model Payout {
+  id               String        @id @default(uuid())
+  userId           String
+  payoutAccountId  String
+  amountMinorUnits Int
+  currencyCode     String
+  status           PayoutStatus  @default(PENDING)
+  referenceNumber  String        @unique
+  proofKey         String?
+  processedById    String?
+  processedAt      DateTime?
+  createdAt        DateTime      @default(now())
+
+  user             User          @relation(fields: [userId], references: [id])
+  payoutAccount    PayoutAccount @relation(fields: [payoutAccountId], references: [id])
+  currency         Currency      @relation(fields: [currencyCode], references: [code])
+
+  @@index([userId])
+  @@index([status])
+}
+
+// ==========================================
+// BUREAU MODULE ENTITIES
+// ==========================================
+
+model Bureau {
+  id                           String         @id @default(uuid())
+  name                         String
+  countryId                    String
+  cityId                       String
+  address                      String
+  phone                        String
+  openingHoursJson             Json           // { mon: "09:00-17:00", ... }
+  status                       BureauStatus   @default(ACTIVE)
+  dailyDepositLimitMinorUnits  Int            @default(10000000) // 100,000 DZD
+  dailyTransferLimitMinorUnits Int            @default(50000000)  // 500,000 DZD
+  currencyCode                 String         @default("DZD")
+  createdAt                    DateTime       @default(now())
+  updatedAt                    DateTime       @updatedAt
+
+  country                      Country        @relation(fields: [countryId], references: [id])
+  city                         City           @relation(fields: [cityId], references: [id])
+  currency                     Currency       @relation(fields: [currencyCode], references: [code])
+
+  staffMembers                 BureauStaff[]
+  transactions                 Transaction[]
+  paymentReceipts              BureauPaymentReceipt[]
+  fundsTransfers               FundsTransfer[]
+  cashbooks                    BureauCashbook[]
+  ledgerAccounts               LedgerAccount[]
+
+  @@index([countryId, cityId])
+  @@index([status])
+}
+
+model BureauStaff {
+  id        String          @id @default(uuid())
+  bureauId  String
+  userId    String          @unique
+  role      BureauStaffRole @default(STAFF)
+  isActive  Boolean         @default(true)
+  createdAt DateTime        @default(now())
+
+  bureau    Bureau          @relation(fields: [bureauId], references: [id], onDelete: Cascade)
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  paymentReceipts BureauPaymentReceipt[]
+
+  @@index([bureauId])
+}
+
+model BureauPaymentReceipt {
+  id               String      @id @default(uuid())
+  bureauId         String
+  transactionId    String
+  staffId          String
+  referenceCode    String      @unique // e.g. "BPR-2026-0001"
+  amountMinorUnits Int
+  currencyCode     String
+  payerName        String
+  payerIdChecked   Boolean     @default(true)
+  receiptPhotoKey  String      // photo of stamped receipt
+  notes            String?
+  createdAt        DateTime    @default(now())
+
+  bureau           Bureau      @relation(fields: [bureauId], references: [id])
+  transaction      Transaction @relation(fields: [transactionId], references: [id])
+  staff            BureauStaff @relation(fields: [staffId], references: [id])
+
+  @@index([bureauId])
+  @@index([transactionId])
+  @@index([referenceCode])
+}
+
+model FundsTransfer {
+  id                           String              @id @default(uuid())
+  transactionId                String
+  bureauId                     String?
+  initiatedById                String
+  method                       FundsTransferMethod @default(INTERNATIONAL_WIRE)
+  providerName                 String              // e.g. "Paysera", "Wise", "Société Générale"
+  amountSentMinorUnits         Int                 // minor units
+  sentCurrencyCode             String
+  targetAmountMinorUnits       Int
+  targetCurrencyCode           String
+  feeMinorUnits                Int                 @default(0)
+  exchangeRate                 Decimal             @db.Decimal(18, 6)
+  transferReference            String              @unique
+  recipientDetailsSnapshotJson Json
+  status                       FundsTransferStatus @default(PENDING)
+  proofPhotoKey                String?
+  requiresFinanceApproval      Boolean             @default(false)
+  approvedById                 String?
+  approvedAt                   DateTime?
+  confirmedAt                  DateTime?
+  notes                        String?
+  createdAt                    DateTime            @default(now())
+  updatedAt                    DateTime            @updatedAt
+
+  transaction                  Transaction         @relation(fields: [transactionId], references: [id])
+  bureau                       Bureau?             @relation(fields: [bureauId], references: [id])
+  initiatedBy                  User                @relation("InitiatedTransfers", fields: [initiatedById], references: [id])
+
+  @@index([transactionId])
+  @@index([status])
+  @@index([transferReference])
+}
+
+model BureauBringerMessage {
+  id            String      @id @default(uuid())
+  transactionId String
+  senderType    String      // "BUREAU" or "BRINGER"
+  senderId      String
+  content       String
+  attachmentKey String?
+  createdAt     DateTime    @default(now())
+
+  transaction   Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+
+  @@index([transactionId])
+}
+
+model BureauCashbook {
+  id                       String               @id @default(uuid())
+  bureauId                 String
+  date                     DateTime             @db.Date
+  openingBalanceMinorUnits Int
+  cashReceivedMinorUnits   Int                  @default(0)
+  cashPaidOutMinorUnits    Int                  @default(0)
+  closingBalanceMinorUnits Int
+  currencyCode             String
+  status                   BureauCashbookStatus @default(OPEN)
+  approvedById             String?
+  approvedAt               DateTime?
+  createdAt                DateTime             @default(now())
+
+  bureau                   Bureau               @relation(fields: [bureauId], references: [id])
+
+  @@unique([bureauId, date])
+  @@index([bureauId])
+}
+
+// ==========================================
+// DISPUTES, REVIEWS & SAFETY
+// ==========================================
+
+model Dispute {
+  id                       String               @id @default(uuid())
+  transactionId            String
+  initiatorId              String
+  reason                   DisputeReason
+  description              String
+  status                   DisputeStatus        @default(OPENED)
+  decision                 DisputeDecisionType?
+  refundBuyerMinorUnits    Int                  @default(0)
+  releaseBringerMinorUnits Int                  @default(0)
+  resolutionNotes          String?
+  assignedModeratorId      String?
+  resolvedAt               DateTime?
+  createdAt                DateTime             @default(now())
+  updatedAt                DateTime             @updatedAt
+
+  transaction              Transaction          @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  initiator                User                 @relation("InitiatedDisputes", fields: [initiatorId], references: [id])
+  moderator                User?                @relation("ModeratedDisputes", fields: [assignedModeratorId], references: [id])
+
+  evidences                DisputeEvidence[]
+
+  @@index([transactionId])
+  @@index([status])
+}
+
+model DisputeEvidence {
+  id               String    @id @default(uuid())
+  disputeId        String
+  uploaderId       String
+  description      String
+  proofItemIdsJson Json      @default("[]") // array of ProofItem IDs
+  createdAt        DateTime  @default(now())
+
+  dispute          Dispute   @relation(fields: [disputeId], references: [id], onDelete: Cascade)
+  uploader         User      @relation(fields: [uploaderId], references: [id])
+
+  @@index([disputeId])
+}
+
+model Review {
+  id                  String     @id @default(uuid())
+  transactionId       String
+  reviewerId          String
+  targetId            String
+  role                ReviewRole
+  rating              Int        // 1 to 5
+  ratingCommunication Int?       // 1 to 5
+  ratingPunctuality   Int?       // 1 to 5
+  ratingItemCare      Int?       // 1 to 5
+  ratingAccuracy      Int?       // 1 to 5
+  comment             String
+  isBlind             Boolean    @default(true)
+  revealedAt          DateTime?
+  createdAt           DateTime   @default(now())
+
+  transaction         Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  reviewer            User        @relation("ReviewsGiven", fields: [reviewerId], references: [id])
+  target              User        @relation("ReviewsReceived", fields: [targetId], references: [id])
+
+  @@unique([transactionId, reviewerId])
+  @@index([targetId])
+}
+
+model Report {
+  id              String       @id @default(uuid())
+  reporterId      String
+  targetUserId    String?
+  targetRequestId String?
+  targetTripId    String?
+  targetMessageId String?
+  reason          String
+  details         String
+  status          ReportStatus @default(PENDING)
+  reviewerId      String?
+  resolvedAt      DateTime?
+  createdAt       DateTime     @default(now())
+
+  reporter        User         @relation("ReportsFiled", fields: [reporterId], references: [id])
+
+  @@index([status])
+}
+
+// ==========================================
+// SYSTEM AUDIT & NOTIFICATIONS
+// ==========================================
+
+model Notification {
+  id           String           @id @default(uuid())
+  userId       String
+  type         NotificationType
+  title        String
+  body         String
+  linkUrl      String?
+  metadataJson Json             @default("{}")
+  isRead       Boolean          @default(false)
+  readAt       DateTime?
+  createdAt    DateTime         @default(now())
+
+  user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  actorRole  String?
+  action     String   // e.g. "TRANSACTION_STATE_CHANGE", "PAYMENT_VERIFIED", "DELIVERY_CODE_ATTEMPT"
+  entityType String   // e.g. "Transaction", "Payment", "BureauCashbook"
+  entityId   String
+  beforeJson Json?
+  afterJson  Json?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+
+  actor      User?    @relation("ActorAuditLogs", fields: [actorId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([actorId])
+  @@index([createdAt])
+}

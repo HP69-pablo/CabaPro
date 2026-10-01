@@ -1,0 +1,155 @@
+"use client";
+
+import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
+import { LogIn, AlertCircle, Sparkles } from "lucide-react";
+
+export default function LoginPage() {
+  const t = useTranslations("auth");
+  const tCommon = useTranslations("common");
+  const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Login failed");
+      }
+
+      router.push("/dashboard");
+      router.refresh();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDemoFill = (demoEmail: string) => {
+    setEmail(demoEmail);
+    setPassword("DemoPassword123!");
+  };
+
+  return (
+    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12 bg-slate-50">
+      <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+            {t("loginTitle")}
+          </h1>
+          <p className="mt-1.5 text-xs text-slate-500">{t("loginSubtitle")}</p>
+        </div>
+
+        {error && (
+          <div className="mb-4 flex items-center gap-2 rounded-xl bg-red-50 p-3 text-xs font-medium text-red-700 border border-red-200">
+            <AlertCircle className="h-4 w-4 shrink-0 text-red-500" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              {t("emailLabel")}
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+              placeholder="amine@example.com"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">
+              {t("passwordLabel")}
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-sm text-slate-900 focus:border-blue-600 focus:outline-none focus:ring-1 focus:ring-blue-600"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white shadow-md shadow-blue-500/20 hover:bg-blue-700 disabled:opacity-50 transition"
+          >
+            <LogIn className="h-4 w-4" />
+            {loading ? tCommon("loading") : t("loginButton")}
+          </button>
+        </form>
+
+        {/* Demo Mode Quick Fill Buttons */}
+        <div className="mt-6 border-t border-slate-100 pt-4">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1">
+            <Sparkles className="h-3 w-3 text-amber-500" /> Demo Accounts
+          </p>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <button
+              type="button"
+              onClick={() => handleDemoFill("buyer.amine@cabapro.com")}
+              className="rounded-lg border border-slate-200 p-2 text-start hover:bg-slate-50 transition"
+            >
+              <p className="font-semibold text-slate-800">Amine (Buyer)</p>
+              <p className="text-[10px] text-slate-400">buyer.amine@cabapro.com</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDemoFill("bringer.yacine@cabapro.com")}
+              className="rounded-lg border border-slate-200 p-2 text-start hover:bg-slate-50 transition"
+            >
+              <p className="font-semibold text-slate-800">Yacine (Bringer)</p>
+              <p className="text-[10px] text-slate-400">bringer.yacine@cabapro.com</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDemoFill("bureau.staff@cabapro.com")}
+              className="rounded-lg border border-slate-200 p-2 text-start hover:bg-slate-50 transition"
+            >
+              <p className="font-semibold text-slate-800">Bureau Staff</p>
+              <p className="text-[10px] text-slate-400">bureau.staff@cabapro.com</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleDemoFill("admin@cabapro.com")}
+              className="rounded-lg border border-slate-200 p-2 text-start hover:bg-slate-50 transition"
+            >
+              <p className="font-semibold text-slate-800">Admin & Finance</p>
+              <p className="text-[10px] text-slate-400">admin@cabapro.com</p>
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-6 text-center text-xs text-slate-500">
+          {t("noAccount")}{" "}
+          <Link href="/register" className="font-semibold text-blue-600 hover:underline">
+            {t("registerButton")}
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
