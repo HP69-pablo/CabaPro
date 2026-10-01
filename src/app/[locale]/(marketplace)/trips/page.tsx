@@ -1,222 +1,237 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
-import { Plane, Plus, Filter, Search, ArrowRight, ShieldCheck, Scale, Calendar, MapPin, ShoppingBag } from "lucide-react";
+import { Link, useRouter } from "@/i18n/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { queryDocs, getOrCreateConversation } from "@/lib/firestore";
+import { orderBy, limit } from "firebase/firestore";
+import { Plane, MapPin, Calendar, Weight, Plus, Loader2, Search, MessageSquare } from "lucide-react";
+
+interface TripItem {
+  id: string;
+  userId: string;
+  from: string;
+  to: string;
+  departureDate: string;
+  arrivalDate?: string;
+  capacity: number;
+  notes?: string;
+  userName: string;
+  userPhoto?: string;
+  createdAt: any;
+}
 
 export default function TripsPage() {
-  const t = useTranslations("marketplace");
+  const t = useTranslations("trip");
+  const tCommon = useTranslations("common");
+  const router = useRouter();
+  const { user } = useAuth();
 
-  const trips = [
-    {
-      id: "trip-1",
-      bringerName: "Yacine Benali",
-      trustLevel: "TRUSTED",
-      transportMethod: "Flight (Air France)",
-      origin: "Paris, France",
-      destination: "Algiers, Algeria",
-      departureDate: "Nov 08, 2026",
-      arrivalDate: "Nov 08, 2026",
-      totalCapacityKg: 15,
-      remainingCapacityKg: 12,
-      canBuyInStore: true,
-      doorDelivery: false,
-      deliveryAreas: "Algiers Centre, Hydra, Kouba",
-    },
-    {
-      id: "trip-2",
-      bringerName: "Rachid K.",
-      trustLevel: "ID_VERIFIED",
-      transportMethod: "Ferry (Corsica Linea)",
-      origin: "Marseille, France",
-      destination: "Oran, Algeria",
-      departureDate: "Nov 12, 2026",
-      arrivalDate: "Nov 13, 2026",
-      totalCapacityKg: 30,
-      remainingCapacityKg: 22,
-      canBuyInStore: true,
-      doorDelivery: true,
-      deliveryAreas: "Oran Ville, Ain Turk",
-    },
-    {
-      id: "trip-3",
-      bringerName: "Anis D.",
-      trustLevel: "CONTACT_VERIFIED",
-      transportMethod: "Flight (Turkish Airlines)",
-      origin: "Istanbul, Turkey",
-      destination: "Algiers, Algeria",
-      departureDate: "Nov 18, 2026",
-      arrivalDate: "Nov 18, 2026",
-      totalCapacityKg: 20,
-      remainingCapacityKg: 8,
-      canBuyInStore: false,
-      doorDelivery: false,
-      deliveryAreas: "Algiers Airport, Bab Ezzouar",
-    },
-  ];
+  const [trips, setTrips] = useState<TripItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [connectingId, setConnectingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadTrips = async () => {
+      try {
+        const data = await queryDocs<TripItem>(
+          "trips",
+          orderBy("createdAt", "desc"),
+          limit(50)
+        );
+        setTrips(data);
+      } catch (err) {
+        console.error("Failed to load trips:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadTrips();
+  }, []);
+
+  const handleContact = async (trip: TripItem) => {
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
+    if (user.uid === trip.userId) {
+      router.push("/dashboard");
+      return;
+    }
+
+    setConnectingId(trip.id);
+    try {
+      const convId = await getOrCreateConversation(
+        {
+          uid: user.uid,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          email: user.email,
+        },
+        {
+          uid: trip.userId,
+          displayName: trip.userName,
+          photoURL: trip.userPhoto,
+        },
+        {
+          tripId: trip.id,
+          tripRoute: `${trip.from} → ${trip.to}`,
+        }
+      );
+
+      router.push(`/messages?id=${convId}`);
+    } catch (err) {
+      console.error("Failed to start conversation:", err);
+      setConnectingId(null);
+    }
+  };
+
+  const filteredTrips = trips.filter((trip) => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      trip.from?.toLowerCase().includes(term) ||
+      trip.to?.toLowerCase().includes(term) ||
+      trip.notes?.toLowerCase().includes(term)
+    );
+  });
 
   return (
     <div className="container mx-auto px-4 sm:px-6 py-8">
-      {/* Header & Primary CTA */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-6 mb-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
-            <Plane className="h-7 w-7 text-blue-600" />
-            Traveler Trips Feed
-          </h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Find travelers heading to Algeria with spare luggage capacity. Request them to bring your items.
-          </p>
+          <h1 className="text-2xl font-bold text-slate-900">{t("browseTitle")}</h1>
+          <p className="text-sm text-slate-500 mt-0.5">{t("browseSubtitle")}</p>
         </div>
-
         <Link
           href="/trips/new"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 transition"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 shadow-sm transition"
         >
           <Plus className="h-4 w-4" />
-          {t("postTrip")}
+          <span>{t("publish")}</span>
         </Link>
       </div>
 
-      {/* Main Grid: Filters + Trips */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Filter Sidebar */}
-        <aside className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs h-fit space-y-5">
-          <div className="flex items-center gap-2 font-bold text-slate-900 text-sm border-b border-slate-100 pb-3">
-            <Filter className="h-4 w-4 text-blue-600" />
-            Filter Trips
-          </div>
+      {/* Search Filter */}
+      <div className="relative mb-6 max-w-md">
+        <Search className="absolute start-3 top-3 h-4 w-4 text-slate-400" />
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder={tCommon("search")}
+          className="w-full rounded-xl border border-slate-200 ps-9 pe-3 py-2 text-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+        />
+      </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              Origin City
-            </label>
-            <select className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-blue-600 focus:outline-none bg-white">
-              <option value="">All Origins</option>
-              <option value="PAR">Paris, France</option>
-              <option value="MRS">Marseille, France</option>
-              <option value="IST">Istanbul, Turkey</option>
-            </select>
-          </div>
+      {/* Loading */}
+      {loading && (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-6 w-6 animate-spin text-purple-600" />
+        </div>
+      )}
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              Destination City
-            </label>
-            <select className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-blue-600 focus:outline-none bg-white">
-              <option value="">All Destinations</option>
-              <option value="ALG">Algiers</option>
-              <option value="ORN">Oran</option>
-            </select>
-          </div>
+      {/* Empty state */}
+      {!loading && filteredTrips.length === 0 && (
+        <div className="text-center py-16 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+          <Plane className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+          <p className="text-slate-600 font-medium">{t("noTrips")}</p>
+          <p className="text-xs text-slate-400 mt-1">{tCommon("noResults")}</p>
+          <Link
+            href="/trips/new"
+            className="inline-flex items-center gap-2 mt-4 rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 transition"
+          >
+            <Plus className="h-4 w-4" /> {t("publish")}
+          </Link>
+        </div>
+      )}
 
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
-              Min Remaining Capacity
-            </label>
-            <select className="w-full rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-blue-600 focus:outline-none bg-white">
-              <option value="">Any Capacity</option>
-              <option value="2">At least 2 kg</option>
-              <option value="5">At least 5 kg</option>
-              <option value="10">At least 10 kg</option>
-            </select>
-          </div>
-
-          <div className="pt-2">
-            <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
-              <input type="checkbox" className="rounded text-blue-600 focus:ring-blue-500" />
-              <span>Verified Travelers Only</span>
-            </label>
-          </div>
-        </aside>
-
-        {/* Trips Feed Cards */}
-        <main className="lg:col-span-3 space-y-4">
-          {trips.map((trip) => {
-            const capacityPercent = Math.round((trip.remainingCapacityKg / trip.totalCapacityKg) * 100);
+      {/* Trip cards */}
+      {!loading && filteredTrips.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredTrips.map((trip) => {
+            const isOwn = user?.uid === trip.userId;
+            const isConnecting = connectingId === trip.id;
 
             return (
               <div
                 key={trip.id}
-                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-xs hover:border-blue-300 hover:shadow-md transition space-y-4"
+                className="flex flex-col justify-between rounded-xl border border-slate-100 bg-white p-5 hover:border-purple-200 hover:shadow-md transition"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-purple-100 text-purple-700 font-bold">
-                      {trip.bringerName.slice(0, 2).toUpperCase()}
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
+                      <Plane className="h-4 w-4" />
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-slate-900 text-base">{trip.bringerName}</span>
-                        {trip.trustLevel === "TRUSTED" && (
-                          <span className="rounded bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 border border-amber-200">
-                            ★ TRUSTED BRINGER
-                          </span>
-                        )}
+                    <div className="font-bold text-slate-900 text-sm">
+                      {trip.from} <span className="text-purple-600">→</span> {trip.to}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5 text-xs text-slate-600 mb-4 bg-slate-50 rounded-lg p-3">
+                    <div className="flex items-center gap-1.5">
+                      <Calendar className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      <span>{trip.departureDate}</span>
+                      {trip.arrivalDate && <span className="text-slate-400">→ {trip.arrivalDate}</span>}
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Weight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      <span>{t("availableSpace")}: <strong className="text-slate-900 font-bold">{trip.capacity} kg</strong></span>
+                    </div>
+                  </div>
+
+                  {trip.notes && (
+                    <p className="text-xs text-slate-500 mb-4 line-clamp-2 italic">
+                      "{trip.notes}"
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+                    <div className="flex items-center gap-2">
+                      {trip.userPhoto ? (
+                        <img src={trip.userPhoto} alt="" className="h-7 w-7 rounded-full object-cover" />
+                      ) : (
+                        <div className="h-7 w-7 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-semibold">
+                          {trip.userName?.[0]?.toUpperCase() || "T"}
+                        </div>
+                      )}
+                      <div>
+                        <div className="text-xs font-medium text-slate-800 truncate max-w-[120px]">
+                          {trip.userName}
+                        </div>
+                        <div className="text-[10px] text-slate-400">{t("traveledBy")}</div>
                       </div>
-                      <span className="text-xs text-slate-500">{trip.transportMethod}</span>
                     </div>
                   </div>
 
-                  <div className="text-end">
-                    <span className="text-xs font-semibold text-slate-500 block">Arrival Date</span>
-                    <span className="text-sm font-bold text-slate-900">{trip.arrivalDate}</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                  <div>
-                    <span className="text-slate-400 block mb-0.5">Route</span>
-                    <span className="font-semibold text-slate-800 flex items-center gap-1">
-                      <MapPin className="h-3.5 w-3.5 text-blue-600" />
-                      {trip.origin} → {trip.destination}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-slate-400 block mb-0.5">In-Store Purchase</span>
-                    <span className={`font-semibold flex items-center gap-1 ${trip.canBuyInStore ? "text-emerald-700" : "text-slate-500"}`}>
-                      <ShoppingBag className="h-3.5 w-3.5" />
-                      {trip.canBuyInStore ? "Can buy directly in store" : "Buyer-prepared package"}
-                    </span>
-                  </div>
-
-                  <div>
-                    <span className="text-slate-400 block mb-0.5">Delivery Areas</span>
-                    <span className="font-semibold text-slate-800">{trip.deliveryAreas}</span>
-                  </div>
-                </div>
-
-                {/* Capacity Progress Bar */}
-                <div className="pt-2">
-                  <div className="flex items-center justify-between text-xs mb-1.5">
-                    <span className="font-medium text-slate-600 flex items-center gap-1">
-                      <Scale className="h-3.5 w-3.5 text-slate-400" />
-                      Luggage Capacity
-                    </span>
-                    <span className="font-bold text-slate-900">
-                      <span className="text-blue-600 font-extrabold">{trip.remainingCapacityKg} kg</span> remaining of {trip.totalCapacityKg} kg
-                    </span>
-                  </div>
-                  <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
-                    <div
-                      className="h-full bg-blue-600 rounded-full transition-all"
-                      style={{ width: `${capacityPercent}%` }}
-                    />
-                  </div>
-                </div>
-
-                <div className="pt-2 flex justify-end">
-                  <Link
-                    href={`/messages/new?tripId=${trip.id}`}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-blue-600 px-5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-blue-700 transition"
+                  <button
+                    onClick={() => handleContact(trip)}
+                    disabled={isConnecting}
+                    className={`w-full mt-3 rounded-lg px-3 py-2 text-sm font-semibold transition flex items-center justify-center gap-2 ${
+                      isOwn
+                        ? "border border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100"
+                        : "border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-600 hover:text-white"
+                    }`}
                   >
-                    Request this Bringer <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
+                    {isConnecting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <MessageSquare className="h-4 w-4" />
+                    )}
+                    {isOwn ? tCommon("details") : t("sendRequest")}
+                  </button>
                 </div>
               </div>
             );
           })}
-        </main>
-      </div>
+        </div>
+      )}
     </div>
   );
 }

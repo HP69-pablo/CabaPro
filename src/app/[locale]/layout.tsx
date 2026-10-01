@@ -5,11 +5,11 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 import Navbar from "@/components/layout/Navbar";
-import DemoDock from "@/components/demo/DemoDock";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 export const metadata: Metadata = {
-  title: "Caba Pro - Two-Sided Travel Delivery Marketplace",
-  description: "Connect Buyers in Algeria with Bringers worldwide. Secure escrow, safe handover, verified trust.",
+  title: "Caba Pro — Get anything from abroad",
+  description: "Connect with travelers heading your way. They bring what you need, you save on shipping.",
 };
 
 export function generateStaticParams() {
@@ -34,13 +34,14 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   return (
     <html lang={locale} dir={isRtl ? "rtl" : "ltr"}>
-      <body className={`min-h-screen bg-slate-50 text-slate-900 antialiased ${isRtl ? "font-sans" : "font-sans"}`}>
+      <body className={`min-h-screen bg-white text-slate-900 antialiased font-sans`}>
         <NextIntlClientProvider messages={messages}>
-          <div className="flex min-h-screen flex-col">
-            <Navbar locale={locale} />
-            <main className="flex-1">{children}</main>
-          </div>
-          <DemoDock locale={locale} />
+          <AuthProvider>
+            <div className="flex min-h-screen flex-col">
+              <Navbar locale={locale} />
+              <main className="flex-1">{children}</main>
+            </div>
+          </AuthProvider>
         </NextIntlClientProvider>
       </body>
     </html>
