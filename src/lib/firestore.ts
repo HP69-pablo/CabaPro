@@ -43,25 +43,50 @@ export const getDocById = async <T>(collectionName: string, id: string): Promise
   }
 };
 
+const withTimeout = <T>(promise: Promise<T>, timeoutMs = 8000, errorMsg = "Operation timed out"): Promise<T> => {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(errorMsg)), timeoutMs)
+    ),
+  ]);
+};
+
 export const addDoc = async <T extends WithFieldValue<DocumentData>>(collectionName: string, data: T) => {
   const collRef = collection(db, collectionName);
-  const docRef = await firestoreAddDoc(collRef, data);
+  const docRef = await withTimeout(
+    firestoreAddDoc(collRef, data),
+    8000,
+    "Firestore write timed out: The database is unreachable or has not been created yet in the Firebase Console."
+  );
   return docRef.id;
 };
 
 export const setDoc = async <T extends WithFieldValue<DocumentData>>(collectionName: string, id: string, data: T) => {
   const docRef = doc(db, collectionName, id);
-  await firestoreSetDoc(docRef, data);
+  await withTimeout(
+    firestoreSetDoc(docRef, data),
+    8000,
+    "Firestore write timed out: The database is unreachable or has not been created yet in the Firebase Console."
+  );
 };
 
 export const updateDoc = async <T extends PartialWithFieldValue<DocumentData>>(collectionName: string, id: string, data: T) => {
   const docRef = doc(db, collectionName, id);
-  await firestoreUpdateDoc(docRef, data as any);
+  await withTimeout(
+    firestoreUpdateDoc(docRef, data as any),
+    8000,
+    "Firestore write timed out: The database is unreachable or has not been created yet in the Firebase Console."
+  );
 };
 
 export const deleteDoc = async (collectionName: string, id: string) => {
   const docRef = doc(db, collectionName, id);
-  await firestoreDeleteDoc(docRef);
+  await withTimeout(
+    firestoreDeleteDoc(docRef),
+    8000,
+    "Firestore write timed out: The database is unreachable or has not been created yet in the Firebase Console."
+  );
 };
 
 export const queryDocs = async <T>(collectionName: string, ...queryConstraints: QueryConstraint[]): Promise<T[]> => {
@@ -634,11 +659,16 @@ export const initializeUserRepository = async (firebaseUser: {
  */
 export const formatFirestoreError = (error: any): string => {
   const msg = error?.message || "";
-  if (msg.includes("client is offline") || msg.includes("unavailable") || msg.includes("Failed to get document")) {
-    return "Database not accessible: Cloud Firestore database has not been created yet in your Firebase Console. Please click 'Create database' at console.firebase.google.com.";
+  if (
+    msg.includes("client is offline") ||
+    msg.includes("unavailable") ||
+    msg.includes("Failed to get document") ||
+    msg.includes("timed out")
+  ) {
+    return "Database not created or unreachable: Cloud Firestore has not been created yet in your Firebase Console. Please open https://console.firebase.google.com/project/ai-studio-applet-webapp-17af3/firestore and click 'Create database'.";
   }
   if (msg.includes("permission-denied") || msg.includes("Missing or insufficient permissions")) {
-    return "Permission denied: You do not have permission to perform this action. Check your Firestore Security Rules.";
+    return "Permission denied: Check your Firestore Security Rules.";
   }
   return msg || "An unexpected database error occurred.";
 };
