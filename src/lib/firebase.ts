@@ -13,8 +13,9 @@ const firebaseConfig = {
 };
 
 const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const FIRESTORE_DATABASE_ID = "ai-studio-7e815059-c8c5-4656-a1b6-9258e93510fa";
+const db = getFirestore(app, FIRESTORE_DATABASE_ID);
 const auth = getAuth(app);
 const storage = getStorage(app);
 
-export { app, db, auth, storage };
+export { app, db, auth, storage, FIRESTORE_DATABASE_ID };
