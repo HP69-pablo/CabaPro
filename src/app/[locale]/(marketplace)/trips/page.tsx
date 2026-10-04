@@ -160,7 +160,7 @@ export default function TripsPage() {
             return (
               <div
                 key={trip.id}
-                className="flex flex-col justify-between rounded-2xl border border-brand-border bg-white p-5 hover:border-brand-teal/40 hover:shadow-md transition"
+                className="flex flex-col justify-between rounded-2xl border border-brand-border bg-white p-5 hover:border-brand-accent/40 hover:shadow-md transition"
               >
                 <div>
                   <div className="flex items-center justify-between gap-2 mb-2">
@@ -197,8 +197,8 @@ export default function TripsPage() {
                       <span>Depart: <strong className="text-slate-800">{trip.departureDate}</strong></span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <Weight className="h-3.5 w-3.5 text-brand-teal shrink-0" />
-                      <span>{t("availableSpace")}: <strong className="text-brand-teal font-bold">{trip.capacity} kg</strong></span>
+                      <Weight className="h-3.5 w-3.5 text-brand-accent shrink-0" />
+                      <span>{t("availableSpace")}: <strong className="text-brand-accent font-bold">{trip.capacity} kg</strong></span>
                     </div>
                   </div>
 
@@ -212,7 +212,7 @@ export default function TripsPage() {
                 <div>
                   <div className="flex items-baseline justify-between border-t border-slate-100 pt-3 mb-3">
                     <div className="text-base font-extrabold text-slate-900">
-                      {trip.capacity} kg <span className="text-xs font-semibold text-brand-teal">Available</span>
+                      {trip.capacity} kg <span className="text-xs font-semibold text-brand-accent">Available</span>
                     </div>
                     <div className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
                       Active Bringer
@@ -224,17 +224,17 @@ export default function TripsPage() {
                     <button
                       onClick={() => handleContact(trip)}
                       disabled={isConnecting}
-                      className="rounded-xl border border-brand-teal px-3 py-2 text-xs font-bold text-brand-teal hover:bg-brand-teal-50 transition flex items-center justify-center gap-1"
+                      className="rounded-xl border border-brand-accent px-3 py-2 text-xs font-bold text-brand-accent hover:bg-brand-teal-50 transition flex items-center justify-center gap-1"
                     >
                       {tCommon("details") || "Details"}
                     </button>
                     <button
                       onClick={() => handleContact(trip)}
                       disabled={isConnecting}
-                      className={`rounded-xl px-3 py-2 text-xs font-bold text-white transition flex items-center justify-center gap-1 shadow-sm ${
+                      className={`rounded-xl px-3 py-2 text-xs font-bold transition flex items-center justify-center gap-1 shadow-sm ${
                         isOwn
-                          ? "bg-slate-500 hover:bg-slate-600"
-                          : "bg-brand-teal hover:bg-brand-teal-800"
+                          ? "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                          : "bg-brand-teal text-white hover:bg-brand-teal-800"
                       }`}
                     >
                       {isConnecting ? (

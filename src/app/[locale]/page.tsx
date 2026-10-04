@@ -34,8 +34,8 @@ export default function LandingPage() {
 
         {/* Floating background suitcase illustration cues */}
         <div className="absolute right-10 top-20 hidden lg:block opacity-20 pointer-events-none transform rotate-12">
-          <div className="w-36 h-48 rounded-3xl border-4 border-brand-teal/40 bg-brand-teal/10 relative">
-            <div className="w-12 h-6 border-4 border-brand-teal/40 rounded-t-lg mx-auto -mt-6"></div>
+          <div className="w-36 h-48 rounded-3xl border-4 border-brand-accent/40 bg-brand-teal/10 relative">
+            <div className="w-12 h-6 border-4 border-brand-accent/40 rounded-t-lg mx-auto -mt-6"></div>
           </div>
         </div>
 
@@ -44,11 +44,11 @@ export default function LandingPage() {
             {/* Mockup Logo: Stylized Teal "C" inside circular badge */}
             <div className="inline-flex items-center justify-center mb-6">
               <div className="flex flex-col items-center gap-2">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-teal text-white shadow-lg shadow-brand-teal/25 ring-4 ring-brand-teal/10">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-teal text-white shadow-lg shadow-brand-teal/25 ring-4 ring-brand-accent/10">
                   <span className="text-3xl font-extrabold tracking-tight">C</span>
                 </div>
                 <span className="text-xl font-bold tracking-tight text-slate-900">
-                  Caba <span className="text-brand-teal">Pro</span>
+                  Caba <span className="text-brand-accent">Pro</span>
                 </span>
               </div>
             </div>
@@ -56,7 +56,7 @@ export default function LandingPage() {
             {/* Signature Headline from Mockup Screen 1 */}
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
               Your Items,<br />
-              <span className="text-brand-teal">Delivered.</span>
+              <span className="text-brand-accent">Delivered.</span>
             </h1>
 
             <p className="mt-4 text-sm sm:text-base text-slate-600 max-w-md mx-auto leading-relaxed">
@@ -88,14 +88,14 @@ export default function LandingPage() {
                   <Plane className="h-5 w-5" />
                   <span>{t("ctaBringer") || "I'm Traveling"}</span>
                 </div>
-                <span className="text-[11px] font-medium text-coral-100/90 mt-0.5 tracking-wide">
+                <span className="text-[11px] font-medium text-white/80 mt-0.5 tracking-wide">
                   Bringers
                 </span>
               </Link>
             </div>
 
             {/* Footer auth links matching Mockup Screen 1 */}
-            <div className="mt-6 flex items-center justify-center gap-3 text-xs font-semibold text-brand-teal">
+            <div className="mt-6 flex items-center justify-center gap-3 text-xs font-semibold text-brand-accent">
               <Link href="/login" className="hover:underline">
                 Login
               </Link>
@@ -112,7 +112,7 @@ export default function LandingPage() {
       <section className="py-16 bg-white border-y border-brand-border">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center max-w-md mx-auto mb-12">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-teal-50 text-brand-teal text-xs font-semibold uppercase tracking-wider mb-2">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-teal-50 text-brand-accent text-xs font-semibold uppercase tracking-wider mb-2">
               <Sparkles className="h-3.5 w-3.5" /> Simple & Fast
             </span>
             <h2 className="text-2xl font-bold text-slate-900">
@@ -129,12 +129,12 @@ export default function LandingPage() {
             ].map((step, i) => (
               <div
                 key={i}
-                className="text-center p-6 rounded-2xl bg-brand-bg/50 border border-brand-border hover:border-brand-teal/40 transition"
+                className="text-center p-6 rounded-2xl bg-brand-bg/50 border border-brand-border hover:border-brand-accent/40 transition"
               >
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-teal-100 text-brand-teal mb-4 font-bold shadow-sm">
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-teal-100 text-brand-accent mb-4 font-bold shadow-sm">
                   <step.icon className="h-6 w-6 stroke-[2]" />
                 </div>
-                <div className="text-[11px] font-bold text-brand-teal/80 uppercase tracking-widest mb-1">
+                <div className="text-[11px] font-bold text-brand-accent/80 uppercase tracking-widest mb-1">
                   Step {step.num}
                 </div>
                 <h3 className="font-bold text-slate-900 mb-1.5 text-base">{step.title}</h3>
@@ -153,8 +153,8 @@ export default function LandingPage() {
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-3xl mx-auto">
-            <div className="flex gap-4 p-5 rounded-2xl bg-white border border-brand-border hover:border-brand-teal/30 hover:shadow-sm transition">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-teal-50 text-brand-teal">
+            <div className="flex gap-4 p-5 rounded-2xl bg-white border border-brand-border hover:border-brand-accent/30 hover:shadow-sm transition">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-teal-50 text-brand-accent">
                 <Shield className="h-5 w-5" />
               </div>
               <div>
@@ -183,8 +183,8 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="flex gap-4 p-5 rounded-2xl bg-white border border-brand-border hover:border-brand-teal/30 hover:shadow-sm transition">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-teal-50 text-brand-teal">
+            <div className="flex gap-4 p-5 rounded-2xl bg-white border border-brand-border hover:border-brand-accent/30 hover:shadow-sm transition">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-teal-50 text-brand-accent">
                 <Users className="h-5 w-5" />
               </div>
               <div>
@@ -208,14 +208,14 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href="/requests"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-2.5 text-xs font-bold text-brand-teal hover:bg-teal-50 transition"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-2.5 text-xs font-bold text-brand-accent hover:bg-brand-teal-50 transition"
             >
               <Package className="h-4 w-4" />
               Browse Requests
             </Link>
             <Link
               href="/trips"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-white/40 px-6 py-2.5 text-xs font-bold text-white hover:bg-white/10 transition"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-white/40 px-6 py-2.5 text-xs font-bold text-white hover:bg-[#ffffff]/10 transition"
             >
               <Plane className="h-4 w-4" />
               Browse Trips

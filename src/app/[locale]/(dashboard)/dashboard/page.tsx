@@ -171,7 +171,7 @@ export default function DashboardPage() {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center p-8 bg-white rounded-2xl border border-slate-200 max-w-sm">
-          <Package className="h-12 w-12 text-brand-teal mx-auto mb-3" />
+          <Package className="h-12 w-12 text-brand-accent mx-auto mb-3" />
           <h2 className="text-lg font-bold text-slate-900 mb-1">Access Your Dashboard</h2>
           <p className="text-xs text-slate-500 mb-4">Sign in to manage your requests, trips, and view smart matches.</p>
           <Link
@@ -196,13 +196,13 @@ export default function DashboardPage() {
       <div className="bg-gradient-to-r from-brand-teal to-[#11494b] rounded-3xl p-6 text-white mb-6 shadow-md shadow-brand-teal/15">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="h-14 w-14 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center text-xl font-bold text-white border border-white/20 shadow-inner">
+            <div className="h-14 w-14 rounded-2xl bg-[#ffffff]/15 backdrop-blur-md flex items-center justify-center text-xl font-bold text-white border border-white/20 shadow-inner">
               {user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-black tracking-tight">{user.displayName || user.email?.split("@")[0]}</h1>
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-white/20 text-white border border-white/30 px-2.5 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-[#ffffff]/20 text-white border border-white/30 px-2.5 py-0.5 rounded-full">
                   <ShieldCheck className="h-3 w-3" /> {verificationLevel}
                 </span>
               </div>
@@ -211,17 +211,17 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-3 gap-3 border-t md:border-t-0 border-white/10 pt-3 md:pt-0">
-            <div className="bg-white/10 rounded-2xl p-2.5 text-center border border-white/10">
+            <div className="bg-[#ffffff]/10 rounded-2xl p-2.5 text-center border border-white/10">
               <div className="flex items-center justify-center gap-1 text-amber-300 font-bold text-sm">
                 <Star className="h-3.5 w-3.5 fill-amber-300" /> {rating}
               </div>
               <div className="text-[10px] text-teal-200">Rating</div>
             </div>
-            <div className="bg-white/10 rounded-2xl p-2.5 text-center border border-white/10">
+            <div className="bg-[#ffffff]/10 rounded-2xl p-2.5 text-center border border-white/10">
               <div className="font-bold text-sm text-white">{completedDeals}</div>
               <div className="text-[10px] text-teal-200">Deals Done</div>
             </div>
-            <div className="bg-white/10 rounded-2xl p-2.5 text-center border border-white/10">
+            <div className="bg-[#ffffff]/10 rounded-2xl p-2.5 text-center border border-white/10">
               <div className="font-bold text-sm text-emerald-300">€{wallet.availableBalance}</div>
               <div className="text-[10px] text-teal-200">Wallet</div>
             </div>
@@ -236,7 +236,7 @@ export default function DashboardPage() {
             onClick={() => setTab("matches")}
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition ${
               tab === "matches"
-                ? "bg-white text-brand-teal shadow-xs"
+                ? "bg-white text-brand-accent shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -248,11 +248,11 @@ export default function DashboardPage() {
             onClick={() => setTab("orders")}
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition ${
               tab === "orders"
-                ? "bg-white text-brand-teal shadow-xs"
+                ? "bg-white text-brand-accent shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            <ShieldCheck className="h-3.5 w-3.5 text-brand-teal" />
+            <ShieldCheck className="h-3.5 w-3.5 text-brand-accent" />
             <span>Orders & Code</span>
           </button>
 
@@ -260,11 +260,11 @@ export default function DashboardPage() {
             onClick={() => setTab("requests")}
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition ${
               tab === "requests"
-                ? "bg-white text-brand-teal shadow-xs"
+                ? "bg-white text-brand-accent shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            <Package className="h-3.5 w-3.5 text-brand-teal" />
+            <Package className="h-3.5 w-3.5 text-brand-accent" />
             <span>My Requests ({myRequests.length})</span>
           </button>
 
@@ -272,7 +272,7 @@ export default function DashboardPage() {
             onClick={() => setTab("trips")}
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition ${
               tab === "trips"
-                ? "bg-white text-brand-teal shadow-xs"
+                ? "bg-white text-brand-accent shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -284,7 +284,7 @@ export default function DashboardPage() {
             onClick={() => setTab("wallet")}
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition ${
               tab === "wallet"
-                ? "bg-white text-brand-teal shadow-xs"
+                ? "bg-white text-brand-accent shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -296,11 +296,11 @@ export default function DashboardPage() {
             onClick={() => setTab("settings")}
             className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition ${
               tab === "settings"
-                ? "bg-white text-brand-teal shadow-xs"
+                ? "bg-white text-brand-accent shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            <SettingsIcon className="h-3.5 w-3.5 text-brand-teal" />
+            <SettingsIcon className="h-3.5 w-3.5 text-brand-accent" />
             <span>Settings</span>
           </button>
         </div>
@@ -342,7 +342,7 @@ export default function DashboardPage() {
                 Our rule-based engine automatically pairs your requests with active travelers heading your route.
               </p>
               <div className="flex justify-center gap-2">
-                <Link href="/requests/new" className="text-xs font-semibold text-brand-teal bg-brand-teal-50 px-3 py-2 rounded-lg hover:bg-brand-teal-100">
+                <Link href="/requests/new" className="text-xs font-semibold text-brand-accent bg-brand-teal-50 px-3 py-2 rounded-lg hover:bg-brand-teal-100">
                   + Post a Request
                 </Link>
                 <Link href="/trips/new" className="text-xs font-semibold text-brand-coral bg-brand-coral-50 px-3 py-2 rounded-lg hover:bg-brand-coral-100">
@@ -354,7 +354,7 @@ export default function DashboardPage() {
             allMatches.map((match) => (
               <div
                 key={match.id}
-                className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:border-brand-teal/40 transition"
+                className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:border-brand-accent/40 transition"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-3 mb-3">
                   <div className="flex items-center gap-2">
@@ -414,8 +414,8 @@ export default function DashboardPage() {
           <div className="bg-white rounded-3xl border border-brand-border p-6 shadow-sm">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-2xl bg-brand-teal-50 text-brand-teal flex items-center justify-center font-bold">
-                  <ShieldCheck className="h-5 w-5 text-brand-teal" />
+                <div className="h-10 w-10 rounded-2xl bg-brand-teal-50 text-brand-accent flex items-center justify-center font-bold">
+                  <ShieldCheck className="h-5 w-5 text-brand-accent" />
                 </div>
                 <div>
                   <h2 className="text-base font-extrabold text-slate-900">Order #4521</h2>
@@ -425,7 +425,7 @@ export default function DashboardPage() {
               <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full ${
                 handoverConfirmed 
                   ? "bg-emerald-50 text-emerald-700 border border-emerald-200" 
-                  : "bg-brand-teal-50 text-brand-teal border border-brand-teal/20"
+                  : "bg-brand-teal-50 text-brand-accent border border-brand-accent/20"
               }`}>
                 {handoverConfirmed ? "Delivered & Released" : "In Transit (Escrow Secured)"}
               </span>
@@ -445,7 +445,7 @@ export default function DashboardPage() {
                   <div className="h-7 w-7 rounded-full bg-brand-teal text-white flex items-center justify-center text-xs font-bold shadow-sm">
                     ✓
                   </div>
-                  <span className="text-[10px] font-bold text-brand-teal mt-1.5 text-center">Accepted</span>
+                  <span className="text-[10px] font-bold text-brand-accent mt-1.5 text-center">Accepted</span>
                 </div>
 
                 {/* Step 2: Payment Secured */}
@@ -453,17 +453,17 @@ export default function DashboardPage() {
                   <div className="h-7 w-7 rounded-full bg-brand-teal text-white flex items-center justify-center text-xs font-bold shadow-sm">
                     ✓
                   </div>
-                  <span className="text-[10px] font-bold text-brand-teal mt-1.5 text-center">Secured</span>
+                  <span className="text-[10px] font-bold text-brand-accent mt-1.5 text-center">Secured</span>
                 </div>
 
                 {/* Step 3: In Transit */}
                 <div className="flex flex-col items-center relative z-10">
                   <div className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold shadow-sm transition-colors ${
-                    handoverConfirmed ? "bg-brand-teal text-white" : "bg-brand-teal text-white ring-4 ring-brand-teal/20"
+                    handoverConfirmed ? "bg-brand-teal text-white" : "bg-brand-teal text-white ring-4 ring-brand-accent/20"
                   }`}>
                     {handoverConfirmed ? "✓" : "3"}
                   </div>
-                  <span className="text-[10px] font-bold text-brand-teal mt-1.5 text-center">In Transit</span>
+                  <span className="text-[10px] font-bold text-brand-accent mt-1.5 text-center">In Transit</span>
                 </div>
 
                 {/* Step 4: Delivered */}
@@ -483,7 +483,7 @@ export default function DashboardPage() {
             {/* Item Card */}
             <div className="bg-brand-bg rounded-2xl p-4 border border-brand-border/60 mb-5 flex items-center gap-4">
               <div className="h-16 w-16 rounded-xl bg-white border border-brand-border flex items-center justify-center shrink-0 shadow-xs">
-                <Package className="h-8 w-8 text-brand-teal" />
+                <Package className="h-8 w-8 text-brand-accent" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-baseline justify-between gap-2">
@@ -494,19 +494,19 @@ export default function DashboardPage() {
                 <div className="flex items-center gap-3 text-[11px] text-slate-600">
                   <span>Buyer: <strong className="text-slate-800">Sarah J.</strong></span>
                   <span>•</span>
-                  <span>Bringer: <strong className="text-brand-teal">Karim B.</strong></span>
+                  <span>Bringer: <strong className="text-brand-accent">Karim B.</strong></span>
                 </div>
               </div>
             </div>
 
             {/* Escrow & Delivery Code Box - Screen 4 highlight */}
-            <div className="bg-gradient-to-br from-teal-50/70 to-emerald-50/50 rounded-2xl p-5 border border-brand-teal/20 mb-5 text-center">
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-teal mb-2">
-                <ShieldCheck className="h-4 w-4 text-brand-teal" />
+            <div className="bg-brand-teal-50 rounded-2xl p-5 border border-brand-accent/20 mb-5 text-center">
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-accent mb-2">
+                <ShieldCheck className="h-4 w-4 text-brand-accent" />
                 <span>One-Time Delivery Code</span>
               </div>
               <div>
-                <span className="font-mono text-3xl sm:text-4xl font-black tracking-widest text-brand-teal mb-2 bg-white/80 py-2.5 px-6 rounded-xl border border-brand-teal/15 shadow-inner inline-block">
+                <span className="font-mono text-3xl sm:text-4xl font-black tracking-widest text-brand-accent mb-2 bg-white/80 py-2.5 px-6 rounded-xl border border-brand-accent/15 shadow-inner inline-block">
                   457 991
                 </span>
               </div>
@@ -718,13 +718,13 @@ export default function DashboardPage() {
           <div className="bg-white rounded-2xl border border-slate-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">Escrow Protected</span>
-              <ShieldCheck className="h-4 w-4 text-brand-teal" />
+              <ShieldCheck className="h-4 w-4 text-brand-accent" />
             </div>
             <div className="text-3xl font-black text-slate-900 mb-1">
               €{wallet.escrowBalance.toFixed(2)}
             </div>
             <p className="text-xs text-slate-500 mb-4">Locked safely until delivery code is verified</p>
-            <div className="text-xs font-medium text-brand-teal bg-brand-teal-50 p-2.5 rounded-xl border border-brand-teal/20">
+            <div className="text-xs font-medium text-brand-accent bg-brand-teal-50 p-2.5 rounded-xl border border-brand-accent/20">
               ✓ All payments held in escrow under Caba Pro Guarantee
             </div>
           </div>

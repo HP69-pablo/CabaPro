@@ -30,20 +30,6 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
-function hexToRgb(hex: string): string {
-  let cleanHex = hex.replace("#", "").trim();
-  if (cleanHex.length === 3) {
-    cleanHex = cleanHex
-      .split("")
-      .map((c) => c + c)
-      .join("");
-  }
-  const r = parseInt(cleanHex.substring(0, 2), 16);
-  const g = parseInt(cleanHex.substring(2, 4), 16);
-  const b = parseInt(cleanHex.substring(4, 6), 16);
-  return `${r} ${g} ${b}`;
-}
-
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mode, setModeState] = useState<ThemeMode>("light");
   const [mounted, setMounted] = useState(false);
@@ -60,37 +46,27 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setMounted(true);
   }, []);
 
-  // Apply to DOM (both CSS variables and .dark class)
+  // Apply the .dark class (brand colors are defined in globals.css via CSS variables)
   useEffect(() => {
-    const root = document.documentElement;
-
-    // Apply the exact theme CSS variables from the mockup
-    root.style.setProperty("--brand-primary", hexToRgb(CABA_PRO_THEME.primary));
-    root.style.setProperty("--brand-primary-hover", hexToRgb(CABA_PRO_THEME.primaryHover));
-    root.style.setProperty("--brand-primary-light", hexToRgb(CABA_PRO_THEME.primaryLight));
-
-    root.style.setProperty("--brand-secondary", hexToRgb(CABA_PRO_THEME.secondary));
-    root.style.setProperty("--brand-secondary-hover", hexToRgb(CABA_PRO_THEME.secondaryHover));
-    root.style.setProperty("--brand-secondary-light", hexToRgb(CABA_PRO_THEME.secondaryLight));
-
     if (!mounted) return;
+    const root = document.documentElement;
+    const media = window.matchMedia("(prefers-color-scheme: dark)");
 
-    // Dark Mode handling
-    const isDark =
-      mode === "dark" ||
-      (mode === "system" &&
-        window.matchMedia("(prefers-color-scheme: dark)").matches);
-
-    if (isDark) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
+    const apply = () => {
+      const isDark = mode === "dark" || (mode === "system" && media.matches);
+      root.classList.toggle("dark", isDark);
+    };
+    apply();
 
     try {
       localStorage.setItem("caba_pro_theme_mode", mode);
     } catch (e) {
       console.warn("Failed to save theme mode to localStorage", e);
+    }
+
+    if (mode === "system") {
+      media.addEventListener("change", apply);
+      return () => media.removeEventListener("change", apply);
     }
   }, [mode, mounted]);
 

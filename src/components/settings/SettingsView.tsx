@@ -19,7 +19,6 @@ import {
   Loader2, 
   Package, 
   Plane, 
-  Sparkles, 
   Lock, 
   Mail, 
   Phone, 
@@ -111,19 +110,19 @@ export default function SettingsView() {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-3xl border border-brand-border dark:border-slate-800 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-3xl border border-brand-border shadow-sm overflow-hidden">
       {/* Settings Navigation Tabs */}
-      <div className="border-b border-brand-border dark:border-slate-800 bg-brand-bg/60 dark:bg-slate-950/60 p-2 overflow-x-auto">
+      <div className="border-b border-brand-border bg-brand-bg/60 p-2 overflow-x-auto">
         <div className="flex gap-1.5 min-w-max">
           <button
             onClick={() => setActiveSubTab("appearance")}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition ${
               activeSubTab === "appearance"
-                ? "bg-white dark:bg-slate-800 text-brand-teal dark:text-white shadow-xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                ? "bg-white text-brand-accent dark:text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            <Palette className="h-4 w-4 text-brand-teal" />
+            <Palette className="h-4 w-4 text-brand-accent" />
             <span>{t("tabAppearance")}</span>
           </button>
 
@@ -131,11 +130,11 @@ export default function SettingsView() {
             onClick={() => setActiveSubTab("language")}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition ${
               activeSubTab === "language"
-                ? "bg-white dark:bg-slate-800 text-brand-teal dark:text-white shadow-xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                ? "bg-white text-brand-accent dark:text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            <Globe className="h-4 w-4 text-brand-teal" />
+            <Globe className="h-4 w-4 text-brand-accent" />
             <span>{t("tabLanguage")}</span>
           </button>
 
@@ -143,11 +142,11 @@ export default function SettingsView() {
             onClick={() => setActiveSubTab("profile")}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition ${
               activeSubTab === "profile"
-                ? "bg-white dark:bg-slate-800 text-brand-teal dark:text-white shadow-xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                ? "bg-white text-brand-accent dark:text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            <User className="h-4 w-4 text-brand-teal" />
+            <User className="h-4 w-4 text-brand-accent" />
             <span>{t("tabAccount")}</span>
           </button>
 
@@ -155,11 +154,11 @@ export default function SettingsView() {
             onClick={() => setActiveSubTab("notifications")}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition ${
               activeSubTab === "notifications"
-                ? "bg-white dark:bg-slate-800 text-brand-teal dark:text-white shadow-xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                ? "bg-white text-brand-accent dark:text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            <Bell className="h-4 w-4 text-brand-teal" />
+            <Bell className="h-4 w-4 text-brand-accent" />
             <span>{t("tabNotifications")}</span>
           </button>
 
@@ -167,11 +166,11 @@ export default function SettingsView() {
             onClick={() => setActiveSubTab("security")}
             className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition ${
               activeSubTab === "security"
-                ? "bg-white dark:bg-slate-800 text-brand-teal dark:text-white shadow-xs"
-                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                ? "bg-white text-brand-accent dark:text-white shadow-xs"
+                : "text-slate-600 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
-            <ShieldCheck className="h-4 w-4 text-brand-teal" />
+            <ShieldCheck className="h-4 w-4 text-brand-accent" />
             <span>{t("tabSecurity")}</span>
           </button>
         </div>
@@ -185,7 +184,7 @@ export default function SettingsView() {
           <div className="space-y-8">
             {/* 1. Light / Dark / System Mode Switcher */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
                 {t("themeMode")}
               </label>
               <div className="grid grid-cols-3 gap-3 max-w-md">
@@ -194,8 +193,8 @@ export default function SettingsView() {
                   onClick={() => setMode("light")}
                   className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border transition ${
                     mode === "light"
-                      ? "border-brand-teal bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-teal font-bold shadow-xs"
-                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300"
+                      ? "border-brand-accent bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-accent font-bold shadow-xs"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
                   }`}
                 >
                   <Sun className="h-5 w-5 mb-1.5 text-amber-500" />
@@ -207,8 +206,8 @@ export default function SettingsView() {
                   onClick={() => setMode("dark")}
                   className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border transition ${
                     mode === "dark"
-                      ? "border-brand-teal bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-teal font-bold shadow-xs"
-                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300"
+                      ? "border-brand-accent bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-accent font-bold shadow-xs"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
                   }`}
                 >
                   <Moon className="h-5 w-5 mb-1.5 text-indigo-400" />
@@ -220,8 +219,8 @@ export default function SettingsView() {
                   onClick={() => setMode("system")}
                   className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border transition ${
                     mode === "system"
-                      ? "border-brand-teal bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-teal font-bold shadow-xs"
-                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300"
+                      ? "border-brand-accent bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-accent font-bold shadow-xs"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
                   }`}
                 >
                   <Monitor className="h-5 w-5 mb-1.5 text-slate-400" />
@@ -230,72 +229,21 @@ export default function SettingsView() {
               </div>
             </div>
 
-            {/* 2. Official Caba Pro Theme Colors from Design Mockup */}
-            <div className="bg-brand-bg dark:bg-slate-800/50 rounded-2xl p-5 border border-brand-border dark:border-slate-800">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="h-4 w-4 text-brand-teal" />
-                <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
-                  Caba Pro Design System (Applied Universally)
-                </h4>
-              </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
-                This authentic brand theme is implemented consistently across every screen of the application:
-              </p>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {/* Base Color Card */}
-                <div className="flex items-center gap-3 p-3.5 bg-white dark:bg-slate-800 rounded-2xl border border-brand-teal/30 shadow-xs">
-                  <div className="h-10 w-10 rounded-xl bg-brand-teal flex items-center justify-center text-white font-bold shrink-0 shadow-sm shadow-brand-teal/20">
-                    C
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-brand-teal uppercase tracking-wide">
-                      Base Color (Primary)
-                    </span>
-                    <p className="text-xs font-black text-slate-900 dark:text-white">
-                      Deep Teal (#166567)
-                    </p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                      Buyers, Main Navigation, Core Action CTAs, Badges
-                    </p>
-                  </div>
-                </div>
-
-                {/* Secondary Color Card */}
-                <div className="flex items-center gap-3 p-3.5 bg-white dark:bg-slate-800 rounded-2xl border border-brand-coral/30 shadow-xs">
-                  <div className="h-10 w-10 rounded-xl bg-brand-coral flex items-center justify-center text-white font-bold shrink-0 shadow-sm shadow-brand-coral/20">
-                    ✈
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-brand-coral uppercase tracking-wide">
-                      Secondary Color (Accent)
-                    </span>
-                    <p className="text-xs font-black text-slate-900 dark:text-white">
-                      Warm Coral (#EA6A47)
-                    </p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                      Travelers / Bringers, Capacity Badges, Travel CTAs
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* 3. Live Theme Preview Card from Mockup */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
                 {t("livePreview")}
               </label>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Simulated Buyer Request Card (Base Color) */}
-                <div className="p-4 rounded-2xl border border-brand-border dark:border-slate-800 bg-white dark:bg-slate-800/80 shadow-xs">
+                <div className="p-4 rounded-2xl border border-brand-border bg-white shadow-xs">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-[11px] font-bold text-brand-teal flex items-center gap-1">
+                    <span className="text-[11px] font-bold text-brand-accent flex items-center gap-1">
                       <Package className="h-3.5 w-3.5" />
                       {t("previewBuyer")}
                     </span>
-                    <span className="text-[10px] bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-teal font-extrabold px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-accent font-extrabold px-2 py-0.5 rounded-full">
                       $30 Reward
                     </span>
                   </div>
@@ -306,7 +254,7 @@ export default function SettingsView() {
                     ★★★★★
                   </div>
                   <div className="grid grid-cols-2 gap-2 mt-3">
-                    <button className="rounded-xl border border-brand-teal px-3 py-1.5 text-xs font-bold text-brand-teal hover:bg-brand-teal-50 transition">
+                    <button className="rounded-xl border border-brand-accent px-3 py-1.5 text-xs font-bold text-brand-accent hover:bg-brand-teal-50 transition">
                       Details
                     </button>
                     <button className="rounded-xl bg-brand-teal hover:bg-brand-teal-800 text-white px-3 py-1.5 text-xs font-bold shadow-xs transition">
@@ -316,7 +264,7 @@ export default function SettingsView() {
                 </div>
 
                 {/* Simulated Traveler Trip Card (Secondary Color) */}
-                <div className="p-4 rounded-2xl border border-brand-border dark:border-slate-800 bg-white dark:bg-slate-800/80 shadow-xs">
+                <div className="p-4 rounded-2xl border border-brand-border bg-white shadow-xs">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[11px] font-bold text-brand-coral flex items-center gap-1">
                       <Plane className="h-3.5 w-3.5" />
@@ -333,7 +281,7 @@ export default function SettingsView() {
                     ★★★★★
                   </div>
                   <div className="grid grid-cols-2 gap-2 mt-3">
-                    <button className="rounded-xl border border-brand-teal px-3 py-1.5 text-xs font-bold text-brand-teal hover:bg-brand-teal-50 transition">
+                    <button className="rounded-xl border border-brand-accent px-3 py-1.5 text-xs font-bold text-brand-accent hover:bg-brand-teal-50 transition">
                       Details
                     </button>
                     <button className="rounded-xl bg-brand-teal hover:bg-brand-teal-800 text-white px-3 py-1.5 text-xs font-bold shadow-xs transition">
@@ -352,7 +300,7 @@ export default function SettingsView() {
         {activeSubTab === "language" && (
           <div className="space-y-6 max-w-lg">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
                 {t("language")}
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -361,8 +309,8 @@ export default function SettingsView() {
                   onClick={() => handleLanguageChange("en")}
                   className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition ${
                     locale === "en"
-                      ? "border-brand-teal bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-teal font-bold shadow-xs"
-                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300"
+                      ? "border-brand-accent bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-accent font-bold shadow-xs"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
                   }`}
                 >
                   <span className="text-xl mb-1">🇬🇧</span>
@@ -374,8 +322,8 @@ export default function SettingsView() {
                   onClick={() => handleLanguageChange("fr")}
                   className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition ${
                     locale === "fr"
-                      ? "border-brand-teal bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-teal font-bold shadow-xs"
-                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300"
+                      ? "border-brand-accent bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-accent font-bold shadow-xs"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
                   }`}
                 >
                   <span className="text-xl mb-1">🇫🇷</span>
@@ -387,8 +335,8 @@ export default function SettingsView() {
                   onClick={() => handleLanguageChange("ar")}
                   className={`flex flex-col items-center justify-center p-3 rounded-2xl border transition ${
                     locale === "ar"
-                      ? "border-brand-teal bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-teal font-bold shadow-xs"
-                      : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300"
+                      ? "border-brand-accent bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-accent font-bold shadow-xs"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
                   }`}
                 >
                   <span className="text-xl mb-1">🇩🇿</span>
@@ -398,7 +346,7 @@ export default function SettingsView() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
                 {t("currency")}
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -413,8 +361,8 @@ export default function SettingsView() {
                     onClick={() => setCurrency(c.code)}
                     className={`flex items-center justify-center gap-2 p-3 rounded-2xl border text-xs font-bold transition ${
                       currency === c.code
-                        ? "border-brand-teal bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-teal shadow-xs"
-                        : "border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                        ? "border-brand-accent bg-brand-teal-50 dark:bg-brand-teal/20 text-brand-accent shadow-xs"
+                        : "border-slate-200 bg-white text-slate-700"
                     }`}
                   >
                     <span>{c.label}</span>
@@ -424,13 +372,13 @@ export default function SettingsView() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
                 {t("wilaya")}
               </label>
               <select
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:border-brand-teal outline-none"
+                className="w-full rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:border-brand-accent outline-none"
               >
                 {ALGERIA_WILAYAS.map((w) => (
                   <option key={w} value={w}>
@@ -455,7 +403,7 @@ export default function SettingsView() {
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 {t("fullName")}
               </label>
               <div className="relative">
@@ -465,13 +413,13 @@ export default function SettingsView() {
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="e.g. Karim B."
-                  className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 ps-10 pe-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:border-brand-teal outline-none"
+                  className="w-full rounded-2xl border border-slate-200 bg-white ps-10 pe-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:border-brand-accent outline-none"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 {t("phone")}
               </label>
               <div className="relative">
@@ -481,13 +429,13 @@ export default function SettingsView() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+213 555 12 34 56"
-                  className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 ps-10 pe-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:border-brand-teal outline-none"
+                  className="w-full rounded-2xl border border-slate-200 bg-white ps-10 pe-3.5 py-2.5 text-xs text-slate-900 dark:text-white focus:border-brand-accent outline-none"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 {t("bio")}
               </label>
               <textarea
@@ -495,7 +443,7 @@ export default function SettingsView() {
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="Frequent traveler between Paris and Algiers, trustworthy and fast."
-                className="w-full rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 text-xs text-slate-900 dark:text-white focus:border-brand-teal outline-none"
+                className="w-full rounded-2xl border border-slate-200 bg-white p-3 text-xs text-slate-900 dark:text-white focus:border-brand-accent outline-none"
               />
             </div>
 
@@ -521,12 +469,12 @@ export default function SettingsView() {
         {/* ========================================================================= */}
         {activeSubTab === "notifications" && (
           <div className="space-y-4 max-w-lg">
-            <div className="flex items-center justify-between p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800">
+            <div className="flex items-center justify-between p-4 rounded-2xl border border-slate-200 bg-white">
               <div className="space-y-0.5">
                 <p className="text-xs font-bold text-slate-900 dark:text-white">
                   {t("smartMatchAlerts")}
                 </p>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                <p className="text-[11px] text-slate-500">
                   {t("smartMatchDesc")}
                 </p>
               </div>
@@ -534,16 +482,16 @@ export default function SettingsView() {
                 type="checkbox"
                 checked={matchAlerts}
                 onChange={(e) => setMatchAlerts(e.target.checked)}
-                className="h-4 w-4 rounded text-brand-teal focus:ring-brand-teal cursor-pointer"
+                className="h-4 w-4 rounded text-brand-accent focus:ring-brand-accent cursor-pointer"
               />
             </div>
 
-            <div className="flex items-center justify-between p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800">
+            <div className="flex items-center justify-between p-4 rounded-2xl border border-slate-200 bg-white">
               <div className="space-y-0.5">
                 <p className="text-xs font-bold text-slate-900 dark:text-white">
                   {t("chatAlerts")}
                 </p>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                <p className="text-[11px] text-slate-500">
                   {t("chatAlertsDesc")}
                 </p>
               </div>
@@ -551,16 +499,16 @@ export default function SettingsView() {
                 type="checkbox"
                 checked={chatAlerts}
                 onChange={(e) => setChatAlerts(e.target.checked)}
-                className="h-4 w-4 rounded text-brand-teal focus:ring-brand-teal cursor-pointer"
+                className="h-4 w-4 rounded text-brand-accent focus:ring-brand-accent cursor-pointer"
               />
             </div>
 
-            <div className="flex items-center justify-between p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800">
+            <div className="flex items-center justify-between p-4 rounded-2xl border border-slate-200 bg-white">
               <div className="space-y-0.5">
                 <p className="text-xs font-bold text-slate-900 dark:text-white">
                   {t("escrowAlerts")}
                 </p>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                <p className="text-[11px] text-slate-500">
                   {t("escrowAlertsDesc")}
                 </p>
               </div>
@@ -568,7 +516,7 @@ export default function SettingsView() {
                 type="checkbox"
                 checked={escrowAlerts}
                 onChange={(e) => setEscrowAlerts(e.target.checked)}
-                className="h-4 w-4 rounded text-brand-teal focus:ring-brand-teal cursor-pointer"
+                className="h-4 w-4 rounded text-brand-accent focus:ring-brand-accent cursor-pointer"
               />
             </div>
           </div>
@@ -579,7 +527,7 @@ export default function SettingsView() {
         {/* ========================================================================= */}
         {activeSubTab === "security" && (
           <div className="space-y-5 max-w-lg">
-            <div className="p-4 rounded-2xl border border-brand-teal/20 bg-brand-teal-50/50 dark:bg-brand-teal/10 flex items-center justify-between">
+            <div className="p-4 rounded-2xl border border-brand-accent/20 bg-brand-teal-50/50 dark:bg-brand-teal/10 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-xl bg-brand-teal text-white flex items-center justify-center font-bold">
                   <ShieldCheck className="h-5 w-5" />
@@ -588,7 +536,7 @@ export default function SettingsView() {
                   <h4 className="text-xs font-bold text-slate-900 dark:text-white">
                     {t("verificationStatus")}
                   </h4>
-                  <p className="text-[11px] text-brand-teal font-semibold">
+                  <p className="text-[11px] text-brand-accent font-semibold">
                     {userProfile?.verificationLevel || "ID_VERIFIED"}
                   </p>
                 </div>
@@ -598,7 +546,7 @@ export default function SettingsView() {
               </span>
             </div>
 
-            <div className="p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800">
+            <div className="p-4 rounded-2xl border border-slate-200 bg-white">
               <h4 className="text-xs font-bold text-slate-900 dark:text-white mb-1">
                 Account Email
               </h4>
@@ -606,7 +554,7 @@ export default function SettingsView() {
               <button
                 type="button"
                 onClick={() => alert("Password reset link sent to " + user?.email)}
-                className="text-xs font-semibold text-brand-teal hover:underline flex items-center gap-1"
+                className="text-xs font-semibold text-brand-accent hover:underline flex items-center gap-1"
               >
                 <Lock className="h-3.5 w-3.5" />
                 <span>{t("changePassword")}</span>

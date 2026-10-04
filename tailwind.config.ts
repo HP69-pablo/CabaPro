@@ -51,10 +51,24 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        slate: {
+          50: "rgb(var(--slate-50) / <alpha-value>)",
+          100: "rgb(var(--slate-100) / <alpha-value>)",
+          200: "rgb(var(--slate-200) / <alpha-value>)",
+          300: "rgb(var(--slate-300) / <alpha-value>)",
+          400: "rgb(var(--slate-400) / <alpha-value>)",
+          500: "rgb(var(--slate-500) / <alpha-value>)",
+          600: "rgb(var(--slate-600) / <alpha-value>)",
+          700: "rgb(var(--slate-700) / <alpha-value>)",
+          800: "rgb(var(--slate-800) / <alpha-value>)",
+          900: "rgb(var(--slate-900) / <alpha-value>)",
+          950: "rgb(var(--slate-950) / <alpha-value>)",
+        },
         brand: {
+          accent: "rgb(var(--brand-accent) / <alpha-value>)",
           teal: {
-            50: "rgb(var(--brand-primary-light, 240 248 248))",
-            100: "rgb(var(--brand-primary-light, 240 248 248))",
+            50: "rgb(var(--brand-primary-light) / <alpha-value>)",
+            100: "rgb(var(--brand-primary-light) / <alpha-value>)",
             200: "rgb(var(--brand-primary) / 0.2)",
             300: "rgb(var(--brand-primary) / 0.4)",
             400: "rgb(var(--brand-primary) / 0.6)",
@@ -67,8 +81,8 @@ const config: Config = {
             950: "rgb(var(--brand-primary-hover) / <alpha-value>)",
           },
           coral: {
-            50: "rgb(var(--brand-secondary-light, 254 244 241))",
-            100: "rgb(var(--brand-secondary-light, 254 244 241))",
+            50: "rgb(var(--brand-secondary-light) / <alpha-value>)",
+            100: "rgb(var(--brand-secondary-light) / <alpha-value>)",
             200: "rgb(var(--brand-secondary) / 0.2)",
             300: "rgb(var(--brand-secondary) / 0.4)",
             400: "rgb(var(--brand-secondary) / 0.6)",
@@ -91,6 +105,9 @@ const config: Config = {
           text: "rgb(var(--brand-text) / <alpha-value>)",
           muted: "rgb(var(--brand-muted) / <alpha-value>)",
         },
+      },
+      backgroundColor: {
+        white: "rgb(var(--surface) / <alpha-value>)",
       },
       borderRadius: {
         "3xl": "1.5rem",

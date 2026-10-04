@@ -81,7 +81,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-brand-teal" />
+        <Loader2 className="h-6 w-6 animate-spin text-brand-accent" />
       </div>
     );
   }
@@ -128,7 +128,7 @@ export default function ProfilePage() {
           {user.photoURL ? (
             <img src={user.photoURL} alt="" className="h-16 w-16 rounded-full object-cover border border-slate-200" />
           ) : (
-            <div className="h-16 w-16 rounded-full bg-brand-teal-100 flex items-center justify-center text-brand-teal">
+            <div className="h-16 w-16 rounded-full bg-brand-teal-100 flex items-center justify-center text-brand-accent">
               <User className="h-8 w-8" />
             </div>
           )}

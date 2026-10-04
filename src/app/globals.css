@@ -4,17 +4,38 @@
 
 @layer base {
   :root {
-    --brand-primary: 22 101 103; /* #166567 */
+    /* ---- Brand palette (fixed) ---- */
+    --brand-primary: 22 101 103; /* #166567 base */
     --brand-primary-hover: 17 73 75; /* #11494b */
-    --brand-primary-light: 240 248 248; /* #f0f8f8 */
-    --brand-secondary: 234 106 71; /* #ea6a47 */
+    --brand-primary-light: 240 248 248; /* teal tint */
+    --brand-secondary: 234 106 71; /* #EA6A47 secondary */
     --brand-secondary-hover: 214 78 41; /* #d64e29 */
-    --brand-secondary-light: 254 244 241; /* #fef4f1 */
+    --brand-secondary-light: 254 244 241; /* coral tint */
+
+    /* Highlight color: base teal in light mode, orange in dark mode */
+    --brand-accent: 22 101 103;
+
+    /* ---- Surfaces ---- */
     --brand-bg: 244 247 248;
+    --surface: 255 255 255;
     --brand-card: 255 255 255;
+    --input-bg: 255 255 255;
     --brand-border: 226 236 236;
     --brand-text: 15 23 42;
     --brand-muted: 100 116 139;
+
+    /* ---- Slate scale (flipped in dark mode) ---- */
+    --slate-50: 248 250 252;
+    --slate-100: 241 245 249;
+    --slate-200: 226 232 240;
+    --slate-300: 203 213 225;
+    --slate-400: 148 163 184;
+    --slate-500: 100 116 139;
+    --slate-600: 71 85 105;
+    --slate-700: 51 65 85;
+    --slate-800: 30 41 59;
+    --slate-900: 15 23 42;
+    --slate-950: 2 6 23;
 
     --background: 185 15% 97%;
     --foreground: 192 35% 15%;
@@ -39,33 +60,54 @@
   }
 
   .dark {
-    --brand-bg: 15 23 42;
-    --brand-card: 30 41 59;
-    --brand-border: 51 65 85;
-    --brand-text: 248 250 252;
-    --brand-muted: 148 163 184;
-    --brand-primary-light: 25 50 52;
-    --brand-secondary-light: 60 30 22;
+    color-scheme: dark;
 
-    --background: 222 47% 11%;
+    /* Highlight turns orange (#EA6A47) on dark surfaces */
+    --brand-accent: 234 106 71;
+
+    /* Teal / coral tints become deep, low-luminance tints */
+    --brand-primary-light: 21 52 58;
+    --brand-secondary-light: 66 34 30;
+
+    --brand-bg: 10 16 30;
+    --surface: 20 29 46;
+    --brand-card: 20 29 46;
+    --input-bg: 10 16 30;
+    --brand-border: 42 55 77;
+    --brand-text: 241 245 249;
+    --brand-muted: 148 163 184;
+
+    --slate-50: 27 38 58;
+    --slate-100: 34 47 69;
+    --slate-200: 47 61 83;
+    --slate-300: 71 85 105;
+    --slate-400: 125 140 163;
+    --slate-500: 148 163 184;
+    --slate-600: 176 188 205;
+    --slate-700: 203 213 225;
+    --slate-800: 226 232 240;
+    --slate-900: 241 245 249;
+    --slate-950: 248 250 252;
+
+    --background: 222 47% 7%;
     --foreground: 210 40% 98%;
-    --card: 222 47% 11%;
+    --card: 222 40% 13%;
     --card-foreground: 210 40% 98%;
-    --popover: 222 47% 11%;
+    --popover: 222 40% 13%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 222 47% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
+    --primary: 182 65% 25%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217 32% 17%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --muted: 217 32% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 14 80% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62% 45%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 217 32% 20%;
+    --input: 217 32% 20%;
+    --ring: 14 80% 60%;
   }
 
   * {
@@ -76,7 +118,56 @@
     @apply bg-background text-foreground transition-colors duration-200;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
+
+  /* Form controls follow the theme (otherwise they stay white in dark mode) */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+  textarea,
+  select {
+    background-color: rgb(var(--input-bg));
+    color: rgb(var(--slate-900));
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: rgb(var(--slate-400));
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: rgb(var(--brand-accent));
+  }
+
+  ::selection {
+    background-color: rgb(var(--brand-secondary) / 0.3);
+  }
 }
+
+/* ------------------------------------------------------------------ */
+/* Dark mode: status tints (emerald / red / amber) need to be muted   */
+/* instead of glaring pastel boxes on a dark surface.                 */
+/* ------------------------------------------------------------------ */
+.dark .bg-emerald-50,
+.dark .bg-emerald-50\/70 { background-color: rgb(16 185 129 / 0.12); }
+.dark .bg-emerald-100 { background-color: rgb(16 185 129 / 0.2); }
+.dark .border-emerald-200,
+.dark .border-emerald-300 { border-color: rgb(16 185 129 / 0.35); }
+.dark .text-emerald-600 { color: rgb(52 211 153); }
+.dark .text-emerald-700,
+.dark .text-emerald-800,
+.dark .text-emerald-900 { color: rgb(110 231 183); }
+
+.dark .bg-red-50 { background-color: rgb(239 68 68 / 0.12); }
+.dark .bg-red-100 { background-color: rgb(239 68 68 / 0.2); }
+.dark .border-red-200 { border-color: rgb(239 68 68 / 0.35); }
+.dark .text-red-500,
+.dark .text-red-600 { color: rgb(248 113 113); }
+.dark .text-red-700 { color: rgb(252 165 165); }
+.dark .hover\:bg-red-50:hover { background-color: rgb(239 68 68 / 0.15); }
+.dark .hover\:text-red-600:hover { color: rgb(252 165 165); }
+
+.dark .bg-amber-50 { background-color: rgb(245 158 11 / 0.12); }
+.dark .border-amber-200 { border-color: rgb(245 158 11 / 0.35); }
+.dark .text-amber-600 { color: rgb(251 191 36); }
 
 /* Logical CSS rules for bidirectional RTL and LTR support */
 [dir="rtl"] {

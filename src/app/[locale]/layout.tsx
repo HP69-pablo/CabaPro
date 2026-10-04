@@ -63,12 +63,9 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
                   window.addEventListener('DOMContentLoaded', clean);
 
                   // Restore theme configuration immediately
-                  var themeStr = localStorage.getItem('caba_pro_theme_config');
-                  if (themeStr) {
-                    var theme = JSON.parse(themeStr);
-                    if (theme.mode === 'dark' || (theme.mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                      document.documentElement.classList.add('dark');
-                    }
+                  var themeMode = localStorage.getItem('caba_pro_theme_mode');
+                  if (themeMode === 'dark' || (themeMode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
                   }
                 } catch(e) {}
               })();
@@ -76,12 +73,12 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           }}
         />
       </head>
-      <body className="min-h-screen bg-brand-bg text-slate-900 dark:text-slate-100 antialiased font-sans transition-colors duration-200" suppressHydrationWarning>
+      <body className="min-h-screen bg-brand-bg text-slate-900 antialiased font-sans transition-colors duration-200" suppressHydrationWarning>
         <HydrationGuard />
         <NextIntlClientProvider messages={messages}>
           <AuthProvider>
             <ThemeProvider>
-              <div className="flex min-h-screen flex-col bg-brand-bg/60 dark:bg-slate-950">
+              <div className="flex min-h-screen flex-col bg-brand-bg/60">
                 <Navbar locale={locale} />
                 <main className="flex-1 pb-16 md:pb-0">{children}</main>
                 <BottomNav />

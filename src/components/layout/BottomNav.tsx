@@ -45,7 +45,7 @@ export default function BottomNav() {
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-brand-border dark:border-slate-800 shadow-lg px-2 py-1.5 safe-area-bottom">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-brand-border shadow-lg px-2 py-1.5 safe-area-bottom">
       <div className="flex items-center justify-around">
         {navItems.map((item, idx) => {
           const Icon = item.icon;
@@ -59,7 +59,7 @@ export default function BottomNav() {
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-teal text-white shadow-md shadow-brand-teal/30 hover:scale-105 transition-transform active:scale-95">
                   <Icon className="h-6 w-6 stroke-[2.2]" />
                 </div>
-                <span className="text-[10px] font-semibold text-brand-teal mt-0.5">
+                <span className="text-[10px] font-semibold text-brand-accent mt-0.5">
                   {item.label}
                 </span>
               </Link>
@@ -72,7 +72,7 @@ export default function BottomNav() {
               href={item.href}
               className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition ${
                 item.active
-                  ? "text-brand-teal font-semibold"
+                  ? "text-brand-accent font-semibold"
                   : "text-slate-400 hover:text-slate-600"
               }`}
             >

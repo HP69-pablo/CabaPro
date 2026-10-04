@@ -173,7 +173,7 @@ function MessagesContent() {
   if (authLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-brand-teal" />
+        <Loader2 className="h-6 w-6 animate-spin text-brand-accent" />
       </div>
     );
   }
@@ -225,13 +225,13 @@ function MessagesContent() {
                     key={conv.id}
                     onClick={() => setSelectedConvId(conv.id)}
                     className={`w-full text-start p-3.5 flex items-start gap-3 hover:bg-slate-50 transition ${
-                      isSelected ? "bg-brand-teal-50/60 border-s-4 border-brand-teal" : ""
+                      isSelected ? "bg-brand-teal-50/60 border-s-4 border-brand-accent" : ""
                     }`}
                   >
                     {other.photoURL ? (
                       <img src={other.photoURL} alt="" className="h-10 w-10 rounded-full object-cover shrink-0" />
                     ) : (
-                      <div className="h-10 w-10 rounded-full bg-brand-teal-100 text-brand-teal font-semibold flex items-center justify-center shrink-0 text-sm">
+                      <div className="h-10 w-10 rounded-full bg-brand-teal-100 text-brand-accent font-semibold flex items-center justify-center shrink-0 text-sm">
                         {other.name?.[0]?.toUpperCase() || "U"}
                       </div>
                     )}
@@ -241,7 +241,7 @@ function MessagesContent() {
                       </div>
                       
                       {conv.requestTitle && (
-                        <div className="flex items-center gap-1 text-[11px] text-brand-teal truncate mt-0.5">
+                        <div className="flex items-center gap-1 text-[11px] text-brand-accent truncate mt-0.5">
                           <Package className="h-3 w-3 shrink-0" />
                           <span className="truncate">{conv.requestTitle}</span>
                         </div>
@@ -274,7 +274,7 @@ function MessagesContent() {
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setSelectedConvId(null)}
-                    className="md:hidden p-1.5 text-white/80 hover:bg-white/10 rounded-lg"
+                    className="md:hidden p-1.5 text-white/80 hover:bg-[#ffffff]/10 rounded-lg"
                   >
                     <ArrowLeft className="h-5 w-5" />
                   </button>
@@ -283,11 +283,11 @@ function MessagesContent() {
                     {otherUser.photoURL ? (
                       <img src={otherUser.photoURL} alt="" className="h-9 w-9 rounded-full object-cover ring-2 ring-white/30" />
                     ) : (
-                      <div className="h-9 w-9 rounded-full bg-white/20 text-white font-bold flex items-center justify-center text-sm ring-2 ring-white/30">
+                      <div className="h-9 w-9 rounded-full bg-[#ffffff]/20 text-white font-bold flex items-center justify-center text-sm ring-2 ring-white/30">
                         {otherUser.name?.[0]?.toUpperCase() || "U"}
                       </div>
                     )}
-                    <span className="absolute bottom-0 end-0 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-brand-teal" />
+                    <span className="absolute bottom-0 end-0 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-brand-accent" />
                   </div>
 
                   <div>
@@ -307,7 +307,7 @@ function MessagesContent() {
                 {/* Make offer button toggle */}
                 <button
                   onClick={() => setShowOfferForm(!showOfferForm)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-brand-teal hover:bg-teal-50 shadow-sm transition"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-brand-accent hover:bg-brand-teal-50 shadow-sm transition"
                 >
                   <Tag className="h-3.5 w-3.5" />
                   <span>{t("makeOffer")}</span>
@@ -386,7 +386,7 @@ function MessagesContent() {
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {loadingMessages ? (
                   <div className="flex items-center justify-center h-full">
-                    <Loader2 className="h-6 w-6 animate-spin text-brand-teal" />
+                    <Loader2 className="h-6 w-6 animate-spin text-brand-accent" />
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-slate-400">
@@ -424,11 +424,11 @@ function MessagesContent() {
                               ? "bg-emerald-50 border-emerald-300"
                               : isDeclined
                               ? "bg-slate-50 border-slate-200 opacity-70"
-                              : "bg-[#eaf5f5] border-[#cbe6e5]"
+                              : "bg-brand-teal-50 border-brand-accent/25"
                           }`}>
-                            <div className="flex items-center justify-between gap-2 border-b border-brand-teal/15 pb-2 mb-2">
-                              <span className="text-xs font-extrabold text-brand-teal flex items-center gap-1.5">
-                                <Shield className="h-4 w-4 text-brand-teal" />
+                            <div className="flex items-center justify-between gap-2 border-b border-brand-accent/15 pb-2 mb-2">
+                              <span className="text-xs font-extrabold text-brand-accent flex items-center gap-1.5">
+                                <Shield className="h-4 w-4 text-brand-accent" />
                                 Offer
                               </span>
                               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
@@ -436,7 +436,7 @@ function MessagesContent() {
                                   ? "bg-emerald-100 text-emerald-800"
                                   : isDeclined
                                   ? "bg-red-100 text-red-700"
-                                  : "bg-brand-teal-100 text-brand-teal"
+                                  : "bg-brand-teal-100 text-brand-accent"
                               }`}>
                                 {isAccepted ? t("offerAccepted") : isDeclined ? t("offerDeclined") : "Pending"}
                               </span>
@@ -453,13 +453,13 @@ function MessagesContent() {
                               </div>
                               <div className="flex justify-between">
                                 <span className="text-slate-500">Reward:</span>
-                                <span className="font-bold text-brand-teal">€{offer.reward}</span>
+                                <span className="font-bold text-brand-accent">€{offer.reward}</span>
                               </div>
                             </div>
 
                             {/* Action buttons matching Screen 3 */}
                             {!isMine && isPending && (
-                              <div className="space-y-2 pt-1 border-t border-brand-teal/10">
+                              <div className="space-y-2 pt-1 border-t border-brand-accent/10">
                                 <button
                                   onClick={() => handleOfferAction(msg.id, "accepted")}
                                   disabled={updatingOfferId === msg.id}
@@ -471,7 +471,7 @@ function MessagesContent() {
                                 <button
                                   onClick={() => handleOfferAction(msg.id, "declined")}
                                   disabled={updatingOfferId === msg.id}
-                                  className="w-full inline-flex items-center justify-center gap-1.5 border border-brand-teal text-brand-teal rounded-xl py-2 text-xs font-bold hover:bg-brand-teal-50 transition"
+                                  className="w-full inline-flex items-center justify-center gap-1.5 border border-brand-accent text-brand-accent rounded-xl py-2 text-xs font-bold hover:bg-brand-teal-50 transition"
                                 >
                                   <X className="h-3.5 w-3.5" />
                                   {t("declineOffer") || "Modify Offer"}
@@ -480,7 +480,7 @@ function MessagesContent() {
                             )}
 
                             {isMine && isPending && (
-                              <div className="text-[11px] text-slate-500 italic text-center bg-white/60 py-1.5 rounded-lg border border-brand-teal/10">
+                              <div className="text-[11px] text-slate-500 italic text-center bg-white/60 py-1.5 rounded-lg border border-brand-accent/10">
                                 Awaiting response from {otherUser.name}...
                               </div>
                             )}
@@ -514,7 +514,7 @@ function MessagesContent() {
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
                   placeholder={t("typeMessage")}
-                  className="flex-1 rounded-2xl border border-brand-border bg-brand-bg/50 px-4 py-2.5 text-xs sm:text-sm focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
+                  className="flex-1 rounded-2xl border border-brand-border bg-brand-bg/50 px-4 py-2.5 text-xs sm:text-sm focus:border-brand-accent focus:ring-1 focus:ring-brand-accent outline-none"
                 />
                 <button
                   type="submit"
@@ -543,7 +543,7 @@ export default function MessagesPage() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center min-h-[500px]">
-          <Loader2 className="h-6 w-6 animate-spin text-brand-teal" />
+          <Loader2 className="h-6 w-6 animate-spin text-brand-accent" />
         </div>
       }
     >

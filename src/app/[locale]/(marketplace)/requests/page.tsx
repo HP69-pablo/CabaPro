@@ -132,7 +132,7 @@ export default function RequestsPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={tCommon("search")}
-            className="w-full rounded-xl border border-slate-200 ps-9 pe-3 py-2 text-sm focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
+            className="w-full rounded-xl border border-slate-200 ps-9 pe-3 py-2 text-sm focus:border-brand-accent focus:ring-1 focus:ring-brand-accent outline-none"
           />
         </div>
         <div className="relative">
@@ -142,7 +142,7 @@ export default function RequestsPage() {
             value={filterCity}
             onChange={(e) => setFilterCity(e.target.value)}
             placeholder={t("toWhere")}
-            className="w-full rounded-xl border border-slate-200 ps-9 pe-3 py-2 text-sm focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
+            className="w-full rounded-xl border border-slate-200 ps-9 pe-3 py-2 text-sm focus:border-brand-accent focus:ring-1 focus:ring-brand-accent outline-none"
           />
         </div>
       </div>
@@ -150,7 +150,7 @@ export default function RequestsPage() {
       {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-6 w-6 animate-spin text-brand-teal" />
+          <Loader2 className="h-6 w-6 animate-spin text-brand-accent" />
         </div>
       )}
 
@@ -179,7 +179,7 @@ export default function RequestsPage() {
             return (
               <div
                 key={req.id}
-                className="flex flex-col justify-between rounded-2xl border border-brand-border bg-white p-5 hover:border-brand-teal/40 hover:shadow-md transition"
+                className="flex flex-col justify-between rounded-2xl border border-brand-border bg-white p-5 hover:border-brand-accent/40 hover:shadow-md transition"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
@@ -187,7 +187,7 @@ export default function RequestsPage() {
                       {req.productName}
                     </h3>
                     <div className="text-slate-400">
-                      <Package className="h-4 w-4 text-brand-teal" />
+                      <Package className="h-4 w-4 text-brand-accent" />
                     </div>
                   </div>
 
@@ -196,7 +196,7 @@ export default function RequestsPage() {
                     {req.userPhoto ? (
                       <img src={req.userPhoto} alt="" className="h-6 w-6 rounded-full object-cover" />
                     ) : (
-                      <div className="h-6 w-6 rounded-full bg-brand-teal-100 text-brand-teal flex items-center justify-center text-[10px] font-bold">
+                      <div className="h-6 w-6 rounded-full bg-brand-teal-100 text-brand-accent flex items-center justify-center text-[10px] font-bold">
                         {req.userName?.[0]?.toUpperCase() || "U"}
                       </div>
                     )}
@@ -216,10 +216,10 @@ export default function RequestsPage() {
 
                   <div className="space-y-1.5 text-xs text-slate-600 mb-4 bg-brand-bg rounded-xl p-3 border border-brand-border/60">
                     <div className="flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 text-brand-teal shrink-0" />
+                      <MapPin className="h-3.5 w-3.5 text-brand-accent shrink-0" />
                       <span className="font-semibold text-slate-800">{req.fromCountry}</span>
                       <span className="text-slate-400">→</span>
-                      <span className="font-semibold text-brand-teal">{req.toCity}</span>
+                      <span className="font-semibold text-brand-accent">{req.toCity}</span>
                     </div>
                     {req.deadline && (
                       <div className="flex items-center gap-1.5">
@@ -233,7 +233,7 @@ export default function RequestsPage() {
                 <div>
                   <div className="flex items-baseline justify-between border-t border-slate-100 pt-3 mb-3">
                     <div className="text-base font-extrabold text-slate-900">
-                      €{req.reward} <span className="text-xs font-semibold text-brand-teal">Reward</span>
+                      €{req.reward} <span className="text-xs font-semibold text-brand-accent">Reward</span>
                     </div>
                     <div className="text-xs font-semibold text-slate-500">
                       Budget: €{req.budget}
@@ -245,17 +245,17 @@ export default function RequestsPage() {
                     <button
                       onClick={() => handleContact(req)}
                       disabled={isConnecting}
-                      className="rounded-xl border border-brand-teal px-3 py-2 text-xs font-bold text-brand-teal hover:bg-brand-teal-50 transition flex items-center justify-center gap-1"
+                      className="rounded-xl border border-brand-accent px-3 py-2 text-xs font-bold text-brand-accent hover:bg-brand-teal-50 transition flex items-center justify-center gap-1"
                     >
                       {tCommon("details") || "Details"}
                     </button>
                     <button
                       onClick={() => handleContact(req)}
                       disabled={isConnecting}
-                      className={`rounded-xl px-3 py-2 text-xs font-bold text-white transition flex items-center justify-center gap-1 shadow-sm ${
+                      className={`rounded-xl px-3 py-2 text-xs font-bold transition flex items-center justify-center gap-1 shadow-sm ${
                         isOwn
-                          ? "bg-slate-500 hover:bg-slate-600"
-                          : "bg-brand-teal hover:bg-brand-teal-800"
+                          ? "bg-slate-200 text-slate-700 hover:bg-slate-300"
+                          : "bg-brand-teal text-white hover:bg-brand-teal-800"
                       }`}
                     >
                       {isConnecting ? (
