@@ -1,0 +1,605 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {userId} (matches Firebase Auth UID)
+    // Fields:
+    //   - uid: string (optional, matches auth.uid if present, max 128 chars, immutable)
+    //   - email: string | null (optional, valid email format, max 100 chars)
+    //   - displayName: string | null (optional, max 100 chars)
+    //   - photoURL: string | null (optional, valid URL, max 500 chars)
+    //   - phone: string | null (optional, max 30 chars)
+    //   - city: string | null (optional, max 100 chars)
+    //   - bio: string | null (optional, max 500 chars)
+    //   - role: string (optional, allowed: 'user', 'admin'; users cannot escalate to admin, immutable)
+    //   - createdAt: timestamp (optional on update, immutable)
+    //   - updatedAt: timestamp | null (optional)
+    //   - verificationLevel: string | null (optional, max 50 chars)
+    //   - rating: number | null (optional, >= 0 and <= 5)
+    //   - completedTransactions: number | null (optional, >= 0 and <= 1000000)
+    //   - cancellationRate: number | null (optional, >= 0 and <= 100)
+    //   - wallet: number | map | null (optional, number >= 0 and <= 1,000,000,000, or map <= 20 keys)
+    //
+    // Collection: requests
+    // Document ID: {requestId} (auto-generated)
+    // Fields:
+    //   - userId: string (required, creator UID, max 128 chars, immutable)
+    //   - userName: string (required, max 100 chars)
+    //   - userPhoto: string | null (optional, valid URL, max 500 chars)
+    //   - productName: string (required, max 200 chars)
+    //   - description: string | null (optional, max 2000 chars)
+    //   - productUrl: string | null (optional, valid URL, max 1000 chars)
+    //   - storeName: string | null (optional, max 100 chars)
+    //   - productImages: list | null (optional, list size <= 10)
+    //   - fromCountry: string | null (optional, max 100 chars)
+    //   - toCity: string | null (optional, max 100 chars)
+    //   - sourceCountry: string | null (optional, max 100 chars)
+    //   - sourceCity: string | null (optional, max 100 chars)
+    //   - destCountry: string | null (optional, max 100 chars)
+    //   - destCity: string | null (optional, max 100 chars)
+    //   - quantity: number | null (optional, > 0 and <= 1000)
+    //   - budget: number | null (optional, >= 0 and <= 1,000,000)
+    //   - reward: number | null (optional, >= 0 and <= 1,000,000)
+    //   - preferredFee: number | null (optional, >= 0 and <= 1,000,000)
+    //   - isFeeNegotiable: bool | null (optional)
+    //   - weight: number | null (optional, > 0 and <= 1000)
+    //   - dimensions: string | map | null (optional, string <= 100 chars or map <= 10 keys)
+    //   - price: number | null (optional, >= 0 and <= 1,000,000)
+    //   - deadline: string | null (optional, valid date string, max 50 chars)
+    //   - currency: string | null (optional, in ['EUR', 'USD', 'DZD', 'GBP'])
+    //   - condition: string | null (optional, max 50 chars)
+    //   - purchaseMethod: string | null (optional, max 50 chars)
+    //   - deliveryPreference: string | null (optional, max 50 chars)
+    //   - status: string (required, in ['active', 'in-progress', 'completed', 'cancelled', 'draft', 'moderation', 'expired'])
+    //   - createdAt: timestamp (required on create, immutable)
+    //   - updatedAt: timestamp | null (optional)
+    //
+    // Collection: trips
+    // Document ID: {tripId} (auto-generated)
+    // Fields:
+    //   - userId: string (required, creator UID, max 128 chars, immutable)
+    //   - userName: string (required, max 100 chars)
+    //   - userPhoto: string | null (optional, valid URL, max 500 chars)
+    //   - from: string | null (optional, max 100 chars)
+    //   - to: string | null (optional, max 100 chars)
+    //   - originCountry: string | null (optional, max 100 chars)
+    //   - originCity: string | null (optional, max 100 chars)
+    //   - destCountry: string | null (optional, max 100 chars)
+    //   - destCity: string | null (optional, max 100 chars)
+    //   - departureDate: string | null (optional, valid date string, max 50 chars)
+    //   - arrivalDate: string | null (optional, valid date string, max 50 chars)
+    //   - transportMethod: string | null (optional, max 50 chars)
+    //   - capacity: number | null (optional, > 0 and <= 1000)
+    //   - totalCapacity: number | null (optional, > 0 and <= 1000)
+    //   - reservedCapacity: number | null (optional, >= 0 and <= 1000)
+    //   - remainingCapacity: number | null (optional, >= 0 and <= 1000)
+    //   - maxItems: number | null (optional, > 0 and <= 1000)
+    //   - acceptedCategories: list | null (optional, list size <= 50)
+    //   - deliveryAreas: list | string | null (optional, list size <= 50 or string <= 200 chars)
+    //   - doorDelivery: bool | null (optional)
+    //   - canBuyInStore: bool | null (optional)
+    //   - notes: string | null (optional, max 2000 chars)
+    //   - status: string (required, in ['active', 'in-progress', 'completed', 'cancelled', 'draft', 'expired'])
+    //   - createdAt: timestamp (required on create, immutable)
+    //   - updatedAt: timestamp | null (optional)
+    //
+    // Collection: transactions
+    // Document ID: {transactionId} (auto-generated)
+    // Fields:
+    //   - buyerId: string (required, buyer UID, max 128 chars, immutable)
+    //   - bringerId: string (required, bringer UID, max 128 chars, immutable)
+    //   - buyerName: string | null (optional, max 100 chars)
+    //   - buyerPhoto: string | null (optional, valid URL, max 500 chars)
+    //   - bringerName: string | null (optional, max 100 chars)
+    //   - bringerPhoto: string | null (optional, valid URL, max 500 chars)
+    //   - requestId: string | null (optional, max 100 chars)
+    //   - requestTitle: string | null (optional, max 200 chars)
+    //   - tripId: string | null (optional, max 100 chars)
+    //   - tripRoute: string | null (optional, max 200 chars)
+    //   - offerId: string | null (optional, max 100 chars)
+    //   - conversationId: string | null (optional, max 100 chars)
+    //   - status: string (required, max 50 chars)
+    //   - currency: string | null (optional, in ['EUR', 'USD', 'DZD', 'GBP'])
+    //   - amount: number | null (optional, >= 0 and <= 10,000,000)
+    //   - totalAmount: number | null (optional, >= 0 and <= 10,000,000)
+    //   - productPrice: number | null (optional, >= 0 and <= 10,000,000)
+    //   - price: number | null (optional, >= 0 and <= 10,000,000)
+    //   - reward: number | null (optional, >= 0 and <= 10,000,000)
+    //   - bringerFee: number | null (optional, >= 0 and <= 10,000,000)
+    //   - platformFee: number | null (optional, >= 0 and <= 10,000,000)
+    //   - guaranteeFee: number | null (optional, >= 0 and <= 10,000,000)
+    //   - bureauFee: number | null (optional, >= 0 and <= 10,000,000)
+    //   - quantity: number | null (optional, > 0 and <= 1000)
+    //   - weight: number | null (optional, > 0 and <= 1000)
+    //   - paymentMethod: string | null (optional, max 50 chars)
+    //   - paymentStatus: string | null (optional, max 50 chars)
+    //   - paymentReference: string | null (optional, max 100 chars)
+    //   - deliveryCode: string | null (optional, max 100 chars)
+    //   - deliveryPreference: string | null (optional, max 50 chars)
+    //   - bureauId: string | null (optional, max 100 chars)
+    //   - bureauCode: string | null (optional, max 50 chars)
+    //   - bureauName: string | null (optional, max 100 chars)
+    //   - itemTitle: string | null (optional, max 200 chars)
+    //   - productName: string | null (optional, max 200 chars)
+    //   - description: string | null (optional, max 2000 chars)
+    //   - notes: string | null (optional, max 2000 chars)
+    //   - images: list | null (optional, size <= 10)
+    //   - proofPhotos: list | null (optional, size <= 10)
+    //   - receiptPhotos: list | null (optional, size <= 10)
+    //   - priceBreakdown: map | null (optional, size <= 20 keys)
+    //   - handoverChecklist: map | null (optional, size <= 20 keys)
+    //   - metadata: map | null (optional, size <= 20 keys)
+    //   - createdAt: timestamp (required on create, immutable)
+    //   - updatedAt: timestamp | null (optional)
+    //
+    // Collection: conversations
+    // Document ID: {conversationId} (auto-generated)
+    // Fields:
+    //   - participants: list of 2 strings (required, participant UIDs, immutable)
+    //   - participantDetails: map (required, details for participants)
+    //   - requestId: string | null (optional, max 100 chars)
+    //   - requestTitle: string | null (optional, max 200 chars)
+    //   - tripId: string | null (optional, max 100 chars)
+    //   - tripRoute: string | null (optional, max 200 chars)
+    //   - lastMessage: string | null (optional, max 1000 chars)
+    //   - lastMessageAt: timestamp | null (optional)
+    //   - createdAt: timestamp (required on create, immutable)
+    //
+    // Subcollection: conversations/{conversationId}/messages
+    // Document ID: {messageId} (auto-generated)
+    // Fields:
+    //   - senderId: string (required, auth.uid or 'system', immutable)
+    //   - senderName: string (required, max 100 chars, immutable)
+    //   - text: string (required, max 2000 chars, immutable)
+    //   - type: string (required, in ['text', 'offer', 'system'], immutable)
+    //   - offer: map | null (optional, required if type == 'offer')
+    //       * productPrice: number (> 0 and <= 1,000,000, immutable)
+    //       * reward: number (>= 0 and <= 1,000,000, immutable)
+    //       * currency: string (in ['EUR', 'USD', 'DZD', 'GBP'], immutable)
+    //       * status: string (in ['pending', 'accepted', 'declined'])
+    //   - createdAt: timestamp (required on create, immutable)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Common Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasRequiredFields(data, fields) {
+      return data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(data, fields) {
+      return data.keys().hasOnly(fields);
+    }
+
+    function isValidEmail(email) {
+      return email is string &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidUrl(url) {
+      return url is string &&
+        (url.matches("^https://.*") || url.matches("^http://.*"));
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string &&
+        (dateStr.matches("^\\d{4}-\\d{2}-\\d{2}$") ||
+         dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T.*"));
+    }
+
+    function isConversationParticipant(convId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/conversations/$(convId)) &&
+        request.auth.uid in get(/databases/$(database)/documents/conversations/$(convId)).data.participants;
+    }
+
+    // ===============================================================
+    // Domain Validators: users
+    // ===============================================================
+
+    function isValidUser(data) {
+      return hasOnlyAllowedFields(data, [
+        'uid', 'email', 'displayName', 'photoURL', 'phone', 'city', 'bio',
+        'role', 'createdAt', 'updatedAt', 'verificationLevel', 'rating',
+        'completedTransactions', 'cancellationRate', 'wallet'
+      ]) &&
+      (!('uid' in data) || (data.uid is string && data.uid.size() > 0 && data.uid.size() <= 128)) &&
+      (!('email' in data) || data.email == null || data.email == '' || (data.email is string && data.email.size() <= 100 && isValidEmail(data.email))) &&
+      (!('displayName' in data) || data.displayName == null || (data.displayName is string && data.displayName.size() <= 100)) &&
+      (!('photoURL' in data) || data.photoURL == null || data.photoURL == '' || (data.photoURL is string && data.photoURL.size() <= 500 && isValidUrl(data.photoURL))) &&
+      (!('phone' in data) || data.phone == null || (data.phone is string && data.phone.size() <= 30)) &&
+      (!('city' in data) || data.city == null || (data.city is string && data.city.size() <= 100)) &&
+      (!('bio' in data) || data.bio == null || (data.bio is string && data.bio.size() <= 500)) &&
+      (!('role' in data) || (data.role is string && data.role in ['user', 'admin'])) &&
+      (!('createdAt' in data) || data.createdAt is timestamp) &&
+      (!('updatedAt' in data) || data.updatedAt == null || data.updatedAt is timestamp) &&
+      (!('verificationLevel' in data) || data.verificationLevel == null || (data.verificationLevel is string && data.verificationLevel.size() <= 50)) &&
+      (!('rating' in data) || data.rating == null || (data.rating is number && data.rating >= 0 && data.rating <= 5)) &&
+      (!('completedTransactions' in data) || data.completedTransactions == null || (data.completedTransactions is number && data.completedTransactions >= 0 && data.completedTransactions <= 1000000)) &&
+      (!('cancellationRate' in data) || data.cancellationRate == null || (data.cancellationRate is number && data.cancellationRate >= 0 && data.cancellationRate <= 100)) &&
+      (!('wallet' in data) || data.wallet == null || (data.wallet is number && data.wallet >= 0 && data.wallet <= 1000000000) || (data.wallet is map && data.wallet.size() <= 20));
+    }
+
+    function isValidUserCreate(userId, data) {
+      return isValidUser(data) &&
+        (!('uid' in data) || data.uid == userId) &&
+        (!('role' in data) || data.role == 'user');
+    }
+
+    function isValidUserUpdate(userId, data) {
+      return isValidUser(data) &&
+        (!('uid' in data) || data.uid == userId) &&
+        (!('uid' in data) || !('uid' in resource.data) || data.uid == resource.data.uid) &&
+        (!('createdAt' in data) || !('createdAt' in resource.data) || data.createdAt == resource.data.createdAt) &&
+        (!('role' in data) || !('role' in resource.data) || data.role == resource.data.role) &&
+        (!('role' in data) || ('role' in resource.data) || data.role == 'user');
+    }
+
+    // ===============================================================
+    // Domain Validators: requests
+    // ===============================================================
+
+    function isValidRequest(data) {
+      return hasOnlyAllowedFields(data, [
+        'userId', 'userName', 'userPhoto', 'productName', 'description', 'productUrl', 'storeName', 'productImages',
+        'fromCountry', 'toCity', 'sourceCountry', 'sourceCity', 'destCountry', 'destCity',
+        'quantity', 'budget', 'reward', 'preferredFee', 'isFeeNegotiable', 'weight', 'dimensions', 'price',
+        'deadline', 'currency', 'condition', 'purchaseMethod', 'deliveryPreference', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      hasRequiredFields(data, [
+        'userId', 'userName', 'productName', 'status', 'createdAt'
+      ]) &&
+      data.userId is string && data.userId.size() > 0 && data.userId.size() <= 128 &&
+      data.userName is string && data.userName.size() > 0 && data.userName.size() <= 100 &&
+      (!('userPhoto' in data) || data.userPhoto == null || data.userPhoto == '' || (data.userPhoto is string && data.userPhoto.size() <= 500 && isValidUrl(data.userPhoto))) &&
+      data.productName is string && data.productName.size() > 0 && data.productName.size() <= 200 &&
+      (!('description' in data) || data.description == null || (data.description is string && data.description.size() <= 2000)) &&
+      (!('productUrl' in data) || data.productUrl == null || data.productUrl == '' || (data.productUrl is string && data.productUrl.size() <= 1000 && isValidUrl(data.productUrl))) &&
+      (!('storeName' in data) || data.storeName == null || (data.storeName is string && data.storeName.size() <= 100)) &&
+      (!('productImages' in data) || data.productImages == null || (data.productImages is list && data.productImages.size() <= 10)) &&
+      (!('fromCountry' in data) || data.fromCountry == null || (data.fromCountry is string && data.fromCountry.size() > 0 && data.fromCountry.size() <= 100)) &&
+      (!('toCity' in data) || data.toCity == null || (data.toCity is string && data.toCity.size() > 0 && data.toCity.size() <= 100)) &&
+      (!('sourceCountry' in data) || data.sourceCountry == null || (data.sourceCountry is string && data.sourceCountry.size() > 0 && data.sourceCountry.size() <= 100)) &&
+      (!('sourceCity' in data) || data.sourceCity == null || (data.sourceCity is string && data.sourceCity.size() > 0 && data.sourceCity.size() <= 100)) &&
+      (!('destCountry' in data) || data.destCountry == null || (data.destCountry is string && data.destCountry.size() > 0 && data.destCountry.size() <= 100)) &&
+      (!('destCity' in data) || data.destCity == null || (data.destCity is string && data.destCity.size() > 0 && data.destCity.size() <= 100)) &&
+      (!('quantity' in data) || data.quantity == null || (data.quantity is number && data.quantity > 0 && data.quantity <= 1000)) &&
+      (!('budget' in data) || data.budget == null || (data.budget is number && data.budget >= 0 && data.budget <= 1000000)) &&
+      (!('reward' in data) || data.reward == null || (data.reward is number && data.reward >= 0 && data.reward <= 1000000)) &&
+      (!('preferredFee' in data) || data.preferredFee == null || (data.preferredFee is number && data.preferredFee >= 0 && data.preferredFee <= 1000000)) &&
+      (!('isFeeNegotiable' in data) || data.isFeeNegotiable == null || data.isFeeNegotiable is bool) &&
+      (!('weight' in data) || data.weight == null || (data.weight is number && data.weight > 0 && data.weight <= 1000)) &&
+      (!('dimensions' in data) || data.dimensions == null || (data.dimensions is string && data.dimensions.size() <= 100) || (data.dimensions is map && data.dimensions.size() <= 10)) &&
+      (!('price' in data) || data.price == null || (data.price is number && data.price >= 0 && data.price <= 1000000)) &&
+      (!('deadline' in data) || data.deadline == null || data.deadline == '' || (data.deadline is string && data.deadline.size() <= 50 && isValidDateString(data.deadline))) &&
+      (!('currency' in data) || data.currency == null || (data.currency is string && data.currency in ['EUR', 'USD', 'DZD', 'GBP'])) &&
+      (!('condition' in data) || data.condition == null || (data.condition is string && data.condition.size() <= 50)) &&
+      (!('purchaseMethod' in data) || data.purchaseMethod == null || (data.purchaseMethod is string && data.purchaseMethod.size() <= 50)) &&
+      (!('deliveryPreference' in data) || data.deliveryPreference == null || (data.deliveryPreference is string && data.deliveryPreference.size() <= 50)) &&
+      data.status is string && data.status in ['active', 'in-progress', 'completed', 'cancelled', 'draft', 'moderation', 'expired'] &&
+      data.createdAt is timestamp &&
+      (!('updatedAt' in data) || data.updatedAt == null || data.updatedAt is timestamp);
+    }
+
+    function isValidRequestCreate(data) {
+      return isValidRequest(data) &&
+        data.userId == request.auth.uid;
+    }
+
+    function isValidRequestUpdate(data) {
+      return isValidRequest(data) &&
+        data.userId == resource.data.userId &&
+        data.createdAt == resource.data.createdAt;
+    }
+
+    // ===============================================================
+    // Domain Validators: trips
+    // ===============================================================
+
+    function isValidTrip(data) {
+      return hasOnlyAllowedFields(data, [
+        'userId', 'userName', 'userPhoto', 'from', 'to', 'originCountry', 'originCity', 'destCountry', 'destCity',
+        'departureDate', 'arrivalDate', 'transportMethod', 'capacity', 'totalCapacity', 'reservedCapacity', 'remainingCapacity',
+        'maxItems', 'acceptedCategories', 'deliveryAreas', 'doorDelivery', 'canBuyInStore', 'notes', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      hasRequiredFields(data, [
+        'userId', 'userName', 'status', 'createdAt'
+      ]) &&
+      data.userId is string && data.userId.size() > 0 && data.userId.size() <= 128 &&
+      data.userName is string && data.userName.size() > 0 && data.userName.size() <= 100 &&
+      (!('userPhoto' in data) || data.userPhoto == null || data.userPhoto == '' || (data.userPhoto is string && data.userPhoto.size() <= 500 && isValidUrl(data.userPhoto))) &&
+      (!('from' in data) || data.from == null || (data.from is string && data.from.size() > 0 && data.from.size() <= 100)) &&
+      (!('to' in data) || data.to == null || (data.to is string && data.to.size() > 0 && data.to.size() <= 100)) &&
+      (!('originCountry' in data) || data.originCountry == null || (data.originCountry is string && data.originCountry.size() > 0 && data.originCountry.size() <= 100)) &&
+      (!('originCity' in data) || data.originCity == null || (data.originCity is string && data.originCity.size() > 0 && data.originCity.size() <= 100)) &&
+      (!('destCountry' in data) || data.destCountry == null || (data.destCountry is string && data.destCountry.size() > 0 && data.destCountry.size() <= 100)) &&
+      (!('destCity' in data) || data.destCity == null || (data.destCity is string && data.destCity.size() > 0 && data.destCity.size() <= 100)) &&
+      (!('departureDate' in data) || data.departureDate == null || (data.departureDate is string && data.departureDate.size() <= 50 && isValidDateString(data.departureDate))) &&
+      (!('arrivalDate' in data) || data.arrivalDate == null || data.arrivalDate == '' || (data.arrivalDate is string && data.arrivalDate.size() <= 50 && isValidDateString(data.arrivalDate))) &&
+      (!('transportMethod' in data) || data.transportMethod == null || (data.transportMethod is string && data.transportMethod.size() <= 50)) &&
+      (!('capacity' in data) || data.capacity == null || (data.capacity is number && data.capacity > 0 && data.capacity <= 1000)) &&
+      (!('totalCapacity' in data) || data.totalCapacity == null || (data.totalCapacity is number && data.totalCapacity > 0 && data.totalCapacity <= 1000)) &&
+      (!('reservedCapacity' in data) || data.reservedCapacity == null || (data.reservedCapacity is number && data.reservedCapacity >= 0 && data.reservedCapacity <= 1000)) &&
+      (!('remainingCapacity' in data) || data.remainingCapacity == null || (data.remainingCapacity is number && data.remainingCapacity >= 0 && data.remainingCapacity <= 1000)) &&
+      (!('maxItems' in data) || data.maxItems == null || (data.maxItems is number && data.maxItems > 0 && data.maxItems <= 1000)) &&
+      (!('acceptedCategories' in data) || data.acceptedCategories == null || (data.acceptedCategories is list && data.acceptedCategories.size() <= 50)) &&
+      (!('deliveryAreas' in data) || data.deliveryAreas == null || (data.deliveryAreas is list && data.deliveryAreas.size() <= 50) || (data.deliveryAreas is string && data.deliveryAreas.size() <= 200)) &&
+      (!('doorDelivery' in data) || data.doorDelivery == null || data.doorDelivery is bool) &&
+      (!('canBuyInStore' in data) || data.canBuyInStore == null || data.canBuyInStore is bool) &&
+      (!('notes' in data) || data.notes == null || (data.notes is string && data.notes.size() <= 2000)) &&
+      data.status is string && data.status in ['active', 'in-progress', 'completed', 'cancelled', 'draft', 'expired'] &&
+      data.createdAt is timestamp &&
+      (!('updatedAt' in data) || data.updatedAt == null || data.updatedAt is timestamp);
+    }
+
+    function isValidTripCreate(data) {
+      return isValidTrip(data) &&
+        data.userId == request.auth.uid;
+    }
+
+    function isValidTripUpdate(data) {
+      return isValidTrip(data) &&
+        data.userId == resource.data.userId &&
+        data.createdAt == resource.data.createdAt;
+    }
+
+    // ===============================================================
+    // Domain Validators: transactions
+    // ===============================================================
+
+    function isValidTransaction(data) {
+      return hasOnlyAllowedFields(data, [
+        'buyerId', 'buyerName', 'buyerPhoto',
+        'bringerId', 'bringerName', 'bringerPhoto',
+        'requestId', 'requestTitle',
+        'tripId', 'tripRoute',
+        'offerId', 'conversationId',
+        'status', 'currency',
+        'amount', 'totalAmount', 'productPrice', 'price', 'reward', 'bringerFee', 'platformFee', 'guaranteeFee', 'bureauFee',
+        'quantity', 'weight',
+        'paymentMethod', 'paymentStatus', 'paymentReference',
+        'deliveryCode', 'deliveryPreference',
+        'bureauId', 'bureauCode', 'bureauName',
+        'itemTitle', 'productName', 'description', 'notes',
+        'images', 'proofPhotos', 'receiptPhotos',
+        'priceBreakdown', 'handoverChecklist', 'metadata',
+        'createdAt', 'updatedAt'
+      ]) &&
+      hasRequiredFields(data, [
+        'buyerId', 'bringerId', 'status', 'createdAt'
+      ]) &&
+      data.buyerId is string && data.buyerId.size() > 0 && data.buyerId.size() <= 128 &&
+      data.bringerId is string && data.bringerId.size() > 0 && data.bringerId.size() <= 128 &&
+      data.buyerId != data.bringerId &&
+      (!('buyerName' in data) || data.buyerName == null || (data.buyerName is string && data.buyerName.size() <= 100)) &&
+      (!('buyerPhoto' in data) || data.buyerPhoto == null || data.buyerPhoto == '' || (data.buyerPhoto is string && data.buyerPhoto.size() <= 500 && isValidUrl(data.buyerPhoto))) &&
+      (!('bringerName' in data) || data.bringerName == null || (data.bringerName is string && data.bringerName.size() <= 100)) &&
+      (!('bringerPhoto' in data) || data.bringerPhoto == null || data.bringerPhoto == '' || (data.bringerPhoto is string && data.bringerPhoto.size() <= 500 && isValidUrl(data.bringerPhoto))) &&
+      (!('requestId' in data) || data.requestId == null || (data.requestId is string && data.requestId.size() <= 100)) &&
+      (!('requestTitle' in data) || data.requestTitle == null || (data.requestTitle is string && data.requestTitle.size() <= 200)) &&
+      (!('tripId' in data) || data.tripId == null || (data.tripId is string && data.tripId.size() <= 100)) &&
+      (!('tripRoute' in data) || data.tripRoute == null || (data.tripRoute is string && data.tripRoute.size() <= 200)) &&
+      (!('offerId' in data) || data.offerId == null || (data.offerId is string && data.offerId.size() <= 100)) &&
+      (!('conversationId' in data) || data.conversationId == null || (data.conversationId is string && data.conversationId.size() <= 100)) &&
+      data.status is string && data.status.size() > 0 && data.status.size() <= 50 &&
+      (!('currency' in data) || data.currency == null || (data.currency is string && data.currency in ['EUR', 'USD', 'DZD', 'GBP'])) &&
+      (!('amount' in data) || data.amount == null || (data.amount is number && data.amount >= 0 && data.amount <= 10000000)) &&
+      (!('totalAmount' in data) || data.totalAmount == null || (data.totalAmount is number && data.totalAmount >= 0 && data.totalAmount <= 10000000)) &&
+      (!('productPrice' in data) || data.productPrice == null || (data.productPrice is number && data.productPrice >= 0 && data.productPrice <= 10000000)) &&
+      (!('price' in data) || data.price == null || (data.price is number && data.price >= 0 && data.price <= 10000000)) &&
+      (!('reward' in data) || data.reward == null || (data.reward is number && data.reward >= 0 && data.reward <= 10000000)) &&
+      (!('bringerFee' in data) || data.bringerFee == null || (data.bringerFee is number && data.bringerFee >= 0 && data.bringerFee <= 10000000)) &&
+      (!('platformFee' in data) || data.platformFee == null || (data.platformFee is number && data.platformFee >= 0 && data.platformFee <= 10000000)) &&
+      (!('guaranteeFee' in data) || data.guaranteeFee == null || (data.guaranteeFee is number && data.guaranteeFee >= 0 && data.guaranteeFee <= 10000000)) &&
+      (!('bureauFee' in data) || data.bureauFee == null || (data.bureauFee is number && data.bureauFee >= 0 && data.bureauFee <= 10000000)) &&
+      (!('quantity' in data) || data.quantity == null || (data.quantity is number && data.quantity > 0 && data.quantity <= 1000)) &&
+      (!('weight' in data) || data.weight == null || (data.weight is number && data.weight > 0 && data.weight <= 1000)) &&
+      (!('paymentMethod' in data) || data.paymentMethod == null || (data.paymentMethod is string && data.paymentMethod.size() <= 50)) &&
+      (!('paymentStatus' in data) || data.paymentStatus == null || (data.paymentStatus is string && data.paymentStatus.size() <= 50)) &&
+      (!('paymentReference' in data) || data.paymentReference == null || (data.paymentReference is string && data.paymentReference.size() <= 100)) &&
+      (!('deliveryCode' in data) || data.deliveryCode == null || (data.deliveryCode is string && data.deliveryCode.size() <= 100)) &&
+      (!('deliveryPreference' in data) || data.deliveryPreference == null || (data.deliveryPreference is string && data.deliveryPreference.size() <= 50)) &&
+      (!('bureauId' in data) || data.bureauId == null || (data.bureauId is string && data.bureauId.size() <= 100)) &&
+      (!('bureauCode' in data) || data.bureauCode == null || (data.bureauCode is string && data.bureauCode.size() <= 50)) &&
+      (!('bureauName' in data) || data.bureauName == null || (data.bureauName is string && data.bureauName.size() <= 100)) &&
+      (!('itemTitle' in data) || data.itemTitle == null || (data.itemTitle is string && data.itemTitle.size() <= 200)) &&
+      (!('productName' in data) || data.productName == null || (data.productName is string && data.productName.size() <= 200)) &&
+      (!('description' in data) || data.description == null || (data.description is string && data.description.size() <= 2000)) &&
+      (!('notes' in data) || data.notes == null || (data.notes is string && data.notes.size() <= 2000)) &&
+      (!('images' in data) || data.images == null || (data.images is list && data.images.size() <= 10)) &&
+      (!('proofPhotos' in data) || data.proofPhotos == null || (data.proofPhotos is list && data.proofPhotos.size() <= 10)) &&
+      (!('receiptPhotos' in data) || data.receiptPhotos == null || (data.receiptPhotos is list && data.receiptPhotos.size() <= 10)) &&
+      (!('priceBreakdown' in data) || data.priceBreakdown == null || (data.priceBreakdown is map && data.priceBreakdown.size() <= 20)) &&
+      (!('handoverChecklist' in data) || data.handoverChecklist == null || (data.handoverChecklist is map && data.handoverChecklist.size() <= 20)) &&
+      (!('metadata' in data) || data.metadata == null || (data.metadata is map && data.metadata.size() <= 20)) &&
+      data.createdAt is timestamp &&
+      (!('updatedAt' in data) || data.updatedAt == null || data.updatedAt is timestamp);
+    }
+
+    function isValidTransactionCreate(data) {
+      return isValidTransaction(data) &&
+        (request.auth.uid == data.buyerId || request.auth.uid == data.bringerId);
+    }
+
+    function isValidTransactionUpdate(data) {
+      return isValidTransaction(data) &&
+        data.buyerId == resource.data.buyerId &&
+        data.bringerId == resource.data.bringerId &&
+        data.createdAt == resource.data.createdAt;
+    }
+
+    // ===============================================================
+    // Domain Validators: conversations
+    // ===============================================================
+
+    function isValidConversation(data) {
+      return hasOnlyAllowedFields(data, [
+        'participants', 'participantDetails', 'requestId', 'requestTitle',
+        'tripId', 'tripRoute', 'lastMessage', 'lastMessageAt', 'createdAt'
+      ]) &&
+      hasRequiredFields(data, [
+        'participants', 'participantDetails', 'createdAt'
+      ]) &&
+      data.participants is list &&
+      data.participants.size() == 2 &&
+      data.participants[0] is string && data.participants[0].size() > 0 && data.participants[0].size() <= 128 &&
+      data.participants[1] is string && data.participants[1].size() > 0 && data.participants[1].size() <= 128 &&
+      data.participants[0] != data.participants[1] &&
+      data.participantDetails is map &&
+      data.participantDetails.keys().hasAll(data.participants) &&
+      (!('requestId' in data) || data.requestId == null || (data.requestId is string && data.requestId.size() <= 100)) &&
+      (!('requestTitle' in data) || data.requestTitle == null || (data.requestTitle is string && data.requestTitle.size() <= 200)) &&
+      (!('tripId' in data) || data.tripId == null || (data.tripId is string && data.tripId.size() <= 100)) &&
+      (!('tripRoute' in data) || data.tripRoute == null || (data.tripRoute is string && data.tripRoute.size() <= 200)) &&
+      (!('lastMessage' in data) || data.lastMessage == null || (data.lastMessage is string && data.lastMessage.size() <= 1000)) &&
+      (!('lastMessageAt' in data) || data.lastMessageAt == null || data.lastMessageAt is timestamp) &&
+      data.createdAt is timestamp;
+    }
+
+    function isValidConversationCreate(data) {
+      return isValidConversation(data) &&
+        request.auth.uid in data.participants;
+    }
+
+    function isValidConversationUpdate(data) {
+      return isValidConversation(data) &&
+        data.participants == resource.data.participants &&
+        data.createdAt == resource.data.createdAt;
+    }
+
+    // ===============================================================
+    // Domain Validators: messages
+    // ===============================================================
+
+    function isValidOfferMap(offer) {
+      return offer is map &&
+        hasOnlyAllowedFields(offer, ['productPrice', 'reward', 'currency', 'status']) &&
+        hasRequiredFields(offer, ['productPrice', 'reward', 'currency', 'status']) &&
+        offer.productPrice is number && offer.productPrice > 0 && offer.productPrice <= 1000000 &&
+        offer.reward is number && offer.reward >= 0 && offer.reward <= 1000000 &&
+        offer.currency is string && offer.currency in ['EUR', 'USD', 'DZD', 'GBP'] &&
+        offer.status is string && offer.status in ['pending', 'accepted', 'declined'];
+    }
+
+    function isValidMessage(data) {
+      return hasOnlyAllowedFields(data, [
+        'senderId', 'senderName', 'text', 'type', 'offer', 'createdAt'
+      ]) &&
+      hasRequiredFields(data, [
+        'senderId', 'senderName', 'text', 'type', 'createdAt'
+      ]) &&
+      data.senderId is string && data.senderId.size() > 0 && data.senderId.size() <= 128 &&
+      data.senderName is string && data.senderName.size() > 0 && data.senderName.size() <= 100 &&
+      data.text is string && data.text.size() > 0 && data.text.size() <= 2000 &&
+      data.type is string && data.type in ['text', 'offer', 'system'] &&
+      data.createdAt is timestamp &&
+      (data.type == 'offer' ? ('offer' in data && isValidOfferMap(data.offer)) : (!('offer' in data) || data.offer == null));
+    }
+
+    function isValidMessageCreate(data) {
+      return isValidMessage(data) &&
+        (data.senderId == request.auth.uid || (data.senderId == 'system' && data.type == 'system')) &&
+        (data.type == 'offer' ? data.offer.status == 'pending' : true);
+    }
+
+    function isValidMessageUpdate(data) {
+      return isValidMessage(data) &&
+        data.senderId == resource.data.senderId &&
+        data.senderName == resource.data.senderName &&
+        data.text == resource.data.text &&
+        data.type == resource.data.type &&
+        data.createdAt == resource.data.createdAt &&
+        resource.data.type == 'offer' &&
+        'offer' in resource.data &&
+        resource.data.offer is map &&
+        resource.data.offer.status == 'pending' &&
+        data.offer is map &&
+        data.offer.productPrice == resource.data.offer.productPrice &&
+        data.offer.reward == resource.data.offer.reward &&
+        data.offer.currency == resource.data.offer.currency &&
+        data.offer.status in ['accepted', 'declined'];
+    }
+
+    // ===============================================================
+    // Rules: users
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId) && isValidUserCreate(userId, request.resource.data);
+      allow update: if isOwner(userId) && isValidUserUpdate(userId, request.resource.data);
+      allow delete: if false;
+    }
+
+    // ===============================================================
+    // Rules: requests
+    // ===============================================================
+
+    match /requests/{requestId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && isValidRequestCreate(request.resource.data);
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid && isValidRequestUpdate(request.resource.data);
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // ===============================================================
+    // Rules: trips
+    // ===============================================================
+
+    match /trips/{tripId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && isValidTripCreate(request.resource.data);
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid && isValidTripUpdate(request.resource.data);
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+
+    // ===============================================================
+    // Rules: transactions
+    // ===============================================================
+
+    match /transactions/{transactionId} {
+      allow read: if isAuthenticated() &&
+        (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.bringerId);
+      allow create: if isAuthenticated() &&
+        (request.auth.uid == request.resource.data.buyerId || request.auth.uid == request.resource.data.bringerId) &&
+        isValidTransactionCreate(request.resource.data);
+      allow update: if isAuthenticated() &&
+        (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.bringerId) &&
+        isValidTransactionUpdate(request.resource.data);
+      allow delete: if false;
+    }
+
+    // ===============================================================
+    // Rules: conversations & messages
+    // ===============================================================
+
+    match /conversations/{conversationId} {
+      allow read: if isAuthenticated() && request.auth.uid in resource.data.participants;
+      allow create: if isAuthenticated() && isValidConversationCreate(request.resource.data);
+      allow update: if isAuthenticated() && request.auth.uid in resource.data.participants && isValidConversationUpdate(request.resource.data);
+      allow delete: if false;
+
+      match /messages/{messageId} {
+        allow read: if isConversationParticipant(conversationId);
+        allow create: if isConversationParticipant(conversationId) && isValidMessageCreate(request.resource.data);
+        allow update: if isConversationParticipant(conversationId) && isValidMessageUpdate(request.resource.data);
+        allow delete: if false;
+      }
+    }
+  }
+}

@@ -2,63 +2,129 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { queryDocs, deleteDoc } from "@/lib/firestore";
+import { 
+  queryDocs, 
+  deleteDoc, 
+  BuyerRequestItem, 
+  BringerTripItem, 
+  calculateMatches, 
+  MatchResult,
+  getOrCreateConversation 
+} from "@/lib/firestore";
 import { where, orderBy } from "firebase/firestore";
-import { Package, Plane, Loader2, Plus, Trash2 } from "lucide-react";
-
-interface RequestItem {
-  id: string;
-  productName: string;
-  fromCountry: string;
-  toCity: string;
-  budget: number;
-  reward: number;
-  status: string;
-  createdAt: any;
-}
-
-interface TripItem {
-  id: string;
-  from: string;
-  to: string;
-  departureDate: string;
-  capacity: number;
-  status: string;
-  createdAt: any;
-}
+import { 
+  Package, 
+  Plane, 
+  Loader2, 
+  Plus, 
+  Trash2, 
+  Sparkles, 
+  CheckCircle2, 
+  ArrowRight, 
+  ShieldCheck, 
+  Wallet, 
+  Star, 
+  MapPin, 
+  Calendar, 
+  Weight, 
+  ShoppingBag,
+  ExternalLink,
+  MessageSquare
+} from "lucide-react";
 
 export default function DashboardPage() {
   const t = useTranslations("dashboard");
   const tCommon = useTranslations("common");
-  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
+  const { user, userProfile, loading: authLoading } = useAuth();
 
-  const [tab, setTab] = useState<"requests" | "trips">("requests");
-  const [myRequests, setMyRequests] = useState<RequestItem[]>([]);
-  const [myTrips, setMyTrips] = useState<TripItem[]>([]);
+  const [tab, setTab] = useState<"matches" | "requests" | "trips" | "wallet">("matches");
+  const [myRequests, setMyRequests] = useState<BuyerRequestItem[]>([]);
+  const [myTrips, setMyTrips] = useState<BringerTripItem[]>([]);
+  const [allRequests, setAllRequests] = useState<BuyerRequestItem[]>([]);
+  const [allTrips, setAllTrips] = useState<BringerTripItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [connectingMatchId, setConnectingMatchId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) return;
 
-    const loadData = async () => {
+    const loadDashboardData = async () => {
       try {
-        const [requests, trips] = await Promise.all([
-          queryDocs<RequestItem>("requests", where("userId", "==", user.uid), orderBy("createdAt", "desc")),
-          queryDocs<TripItem>("trips", where("userId", "==", user.uid), orderBy("createdAt", "desc")),
+        const [myReqs, myTrps, allReqs, allTrps] = await Promise.all([
+          queryDocs<BuyerRequestItem>("requests", where("userId", "==", user.uid), orderBy("createdAt", "desc")),
+          queryDocs<BringerTripItem>("trips", where("userId", "==", user.uid), orderBy("createdAt", "desc")),
+          queryDocs<BuyerRequestItem>("requests", orderBy("createdAt", "desc")),
+          queryDocs<BringerTripItem>("trips", orderBy("createdAt", "desc")),
         ]);
-        setMyRequests(requests);
-        setMyTrips(trips);
+
+        setMyRequests(myReqs);
+        setMyTrips(myTrps);
+        setAllRequests(allReqs);
+        setAllTrips(allTrps);
       } catch (err) {
-        console.error("Failed to load dashboard:", err);
+        console.error("Dashboard fetch:", err);
       } finally {
         setLoading(false);
       }
     };
-    loadData();
+
+    loadDashboardData();
   }, [user]);
+
+  // Calculate matches:
+  // 1. User's requests matched with other travelers' trips
+  // 2. User's trips matched with other buyers' requests
+  const matchesForMyRequests = calculateMatches(
+    myRequests,
+    allTrips.filter((t) => t.userId !== user?.uid)
+  );
+
+  const matchesForMyTrips = calculateMatches(
+    allRequests.filter((r) => r.userId !== user?.uid),
+    myTrips
+  );
+
+  const allMatches = [...matchesForMyRequests, ...matchesForMyTrips];
+
+  const handleStartChatFromMatch = async (match: MatchResult) => {
+    if (!user) return;
+
+    setConnectingMatchId(match.id);
+    try {
+      const isMyRequest = match.request.userId === user.uid;
+      const targetUserId = isMyRequest ? match.trip.userId : match.request.userId;
+      const targetUserName = isMyRequest ? match.trip.userName : match.request.userName;
+
+      const convId = await getOrCreateConversation(
+        {
+          uid: user.uid,
+          displayName: user.displayName,
+          photoURL: user.photoURL,
+          email: user.email,
+        },
+        {
+          uid: targetUserId,
+          displayName: targetUserName,
+          photoURL: null,
+        },
+        {
+          requestId: match.request.id,
+          requestTitle: match.request.productName,
+          tripId: match.trip.id,
+          tripRoute: `${match.trip.originCity || match.trip.from} → ${match.trip.destCity || match.trip.to}`,
+        }
+      );
+
+      router.push(`/messages?id=${convId}`);
+    } catch (err) {
+      console.error("Failed to connect match:", err);
+      setConnectingMatchId(null);
+    }
+  };
 
   const handleDeleteRequest = async (id: string) => {
     if (!confirm(tCommon("confirm") || "Are you sure?")) return;
@@ -66,6 +132,7 @@ export default function DashboardPage() {
     try {
       await deleteDoc("requests", id);
       setMyRequests((prev) => prev.filter((r) => r.id !== id));
+      setAllRequests((prev) => prev.filter((r) => r.id !== id));
     } catch (err) {
       console.error("Failed to delete request:", err);
     } finally {
@@ -79,6 +146,7 @@ export default function DashboardPage() {
     try {
       await deleteDoc("trips", id);
       setMyTrips((prev) => prev.filter((t) => t.id !== id));
+      setAllTrips((prev) => prev.filter((t) => t.id !== id));
     } catch (err) {
       console.error("Failed to delete trip:", err);
     } finally {
@@ -88,8 +156,10 @@ export default function DashboardPage() {
 
   if (authLoading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+      <div className="container mx-auto px-4 py-12 max-w-4xl animate-pulse space-y-4">
+        <div className="h-8 bg-slate-200 rounded-md w-1/4" />
+        <div className="h-24 bg-slate-100 rounded-xl" />
+        <div className="h-48 bg-slate-100 rounded-xl" />
       </div>
     );
   }
@@ -97,183 +167,402 @@ export default function DashboardPage() {
   if (!user) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="text-center">
-          <p className="text-slate-500 mb-4">{t("noActivity")}</p>
+        <div className="text-center p-8 bg-white rounded-2xl border border-slate-200 max-w-sm">
+          <Package className="h-12 w-12 text-blue-600 mx-auto mb-3" />
+          <h2 className="text-lg font-bold text-slate-900 mb-1">Access Your Dashboard</h2>
+          <p className="text-xs text-slate-500 mb-4">Sign in to manage your requests, trips, and view smart matches.</p>
           <Link
             href="/login"
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition"
           >
-            {tCommon("login" as any) || "Sign In"}
+            Sign In
           </Link>
         </div>
       </div>
     );
   }
 
+  const wallet = userProfile?.wallet || { availableBalance: 140, escrowBalance: 0, currency: "EUR" };
+  const rating = userProfile?.rating || 4.9;
+  const completedDeals = userProfile?.completedTransactions || 3;
+  const verificationLevel = userProfile?.verificationLevel || "ID_VERIFIED";
+
   return (
-    <div className="container mx-auto px-4 sm:px-6 py-8 max-w-4xl">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">{t("title")}</h1>
-        <div className="flex gap-2">
+    <div className="container mx-auto px-4 sm:px-6 py-6 max-w-5xl">
+      {/* Header Profile Bar */}
+      <div className="bg-gradient-to-r from-blue-900 to-indigo-800 rounded-2xl p-6 text-white mb-6 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="h-14 w-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-xl font-bold text-white border border-white/20">
+              {user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-black tracking-tight">{user.displayName || user.email?.split("@")[0]}</h1>
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full">
+                  <ShieldCheck className="h-3 w-3" /> {verificationLevel}
+                </span>
+              </div>
+              <p className="text-xs text-blue-200 mt-0.5">{user.email}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-3 border-t md:border-t-0 border-white/10 pt-3 md:pt-0">
+            <div className="bg-white/10 rounded-xl p-2.5 text-center border border-white/10">
+              <div className="flex items-center justify-center gap-1 text-amber-300 font-bold text-sm">
+                <Star className="h-3.5 w-3.5 fill-amber-300" /> {rating}
+              </div>
+              <div className="text-[10px] text-blue-200">Rating</div>
+            </div>
+            <div className="bg-white/10 rounded-xl p-2.5 text-center border border-white/10">
+              <div className="font-bold text-sm text-white">{completedDeals}</div>
+              <div className="text-[10px] text-blue-200">Deals Done</div>
+            </div>
+            <div className="bg-white/10 rounded-xl p-2.5 text-center border border-white/10">
+              <div className="font-bold text-sm text-emerald-300">€{wallet.availableBalance}</div>
+              <div className="text-[10px] text-blue-200">Wallet</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs Bar */}
+      <div className="flex items-center justify-between gap-3 mb-6 overflow-x-auto pb-1">
+        <div className="flex gap-1.5 bg-slate-100 p-1.5 rounded-xl shrink-0">
+          <button
+            onClick={() => setTab("matches")}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition ${
+              tab === "matches"
+                ? "bg-white text-blue-700 shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+            <span>Smart Matches ({allMatches.length})</span>
+          </button>
+          <button
+            onClick={() => setTab("requests")}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition ${
+              tab === "requests"
+                ? "bg-white text-blue-700 shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <Package className="h-3.5 w-3.5 text-blue-600" />
+            <span>My Requests ({myRequests.length})</span>
+          </button>
+          <button
+            onClick={() => setTab("trips")}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition ${
+              tab === "trips"
+                ? "bg-white text-blue-700 shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <Plane className="h-3.5 w-3.5 text-purple-600" />
+            <span>My Trips ({myTrips.length})</span>
+          </button>
+          <button
+            onClick={() => setTab("wallet")}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition ${
+              tab === "wallet"
+                ? "bg-white text-blue-700 shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <Wallet className="h-3.5 w-3.5 text-emerald-600" />
+            <span>Wallet & Escrow</span>
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0">
           <Link
             href="/requests/new"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-semibold text-blue-700 hover:bg-blue-100 transition"
+            className="inline-flex items-center gap-1 rounded-xl bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition"
           >
             <Plus className="h-3.5 w-3.5" />
-            <span>+ Request</span>
+            <span>New Request</span>
           </Link>
           <Link
             href="/trips/new"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-purple-200 bg-purple-50 px-3 py-1.5 text-xs font-semibold text-purple-700 hover:bg-purple-100 transition"
+            className="inline-flex items-center gap-1 rounded-xl border border-purple-200 bg-purple-50 px-3 py-2 text-xs font-semibold text-purple-700 hover:bg-purple-100 transition"
           >
             <Plus className="h-3.5 w-3.5" />
-            <span>+ Trip</span>
+            <span>New Trip</span>
           </Link>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 bg-slate-100 rounded-xl p-1 mb-6 max-w-xs">
-        <button
-          onClick={() => setTab("requests")}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition ${
-            tab === "requests"
-              ? "bg-white text-slate-900 shadow-sm"
-              : "text-slate-500 hover:text-slate-700"
-          }`}
-        >
-          <Package className="h-4 w-4" />
-          {t("myRequests")} ({myRequests.length})
-        </button>
-        <button
-          onClick={() => setTab("trips")}
-          className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition ${
-            tab === "trips"
-              ? "bg-white text-slate-900 shadow-sm"
-              : "text-slate-500 hover:text-slate-700"
-          }`}
-        >
-          <Plane className="h-4 w-4" />
-          {t("myTrips")} ({myTrips.length})
-        </button>
-      </div>
-
+      {/* Loading Skeleton */}
       {loading && (
-        <div className="flex items-center justify-center py-16">
-          <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+        <div className="space-y-3 py-6">
+          <div className="h-28 bg-slate-100 rounded-xl animate-pulse" />
+          <div className="h-28 bg-slate-100 rounded-xl animate-pulse" />
         </div>
       )}
 
+      {/* TAB 1: SMART MATCHES */}
+      {!loading && tab === "matches" && (
+        <div className="space-y-4">
+          {allMatches.length === 0 ? (
+            <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200 p-8">
+              <Sparkles className="h-10 w-10 text-amber-400 mx-auto mb-2" />
+              <h3 className="font-bold text-slate-800 text-sm">No matches found right now</h3>
+              <p className="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4">
+                Our rule-based engine automatically pairs your requests with active travelers heading your route.
+              </p>
+              <div className="flex justify-center gap-2">
+                <Link href="/requests/new" className="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-2 rounded-lg hover:bg-blue-100">
+                  + Post a Request
+                </Link>
+                <Link href="/trips/new" className="text-xs font-semibold text-purple-600 bg-purple-50 px-3 py-2 rounded-lg hover:bg-purple-100">
+                  + Post a Trip
+                </Link>
+              </div>
+            </div>
+          ) : (
+            allMatches.map((match) => (
+              <div
+                key={match.id}
+                className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:border-blue-300 transition"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-3 mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="inline-flex items-center gap-1 text-xs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full">
+                      <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                      {match.score}% Match
+                    </span>
+                    <span className="text-xs font-semibold text-slate-700">
+                      {match.request.productName}
+                    </span>
+                  </div>
+
+                  <div className="text-xs text-slate-500 font-medium">
+                    Route: <strong className="text-slate-800">{match.trip.originCity || match.trip.from} → {match.trip.destCity || match.trip.to}</strong>
+                  </div>
+                </div>
+
+                {/* Match Reasons Checklist from PDF Page 4 */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-4 bg-slate-50 rounded-xl p-3">
+                  {match.reasons.map((reason, idx) => (
+                    <div key={idx} className="flex items-center gap-1.5 text-xs text-slate-700">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                      <span>{reason}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                  <div className="text-xs text-slate-500">
+                    Traveler: <strong className="text-slate-800">{match.trip.userName}</strong>
+                    <span className="text-slate-400 ms-1">({match.trip.remainingCapacity || match.trip.capacity} kg remaining)</span>
+                  </div>
+
+                  <button
+                    onClick={() => handleStartChatFromMatch(match)}
+                    disabled={connectingMatchId === match.id}
+                    className="inline-flex items-center gap-1.5 bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-700 transition"
+                  >
+                    {connectingMatchId === match.id ? (
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    ) : (
+                      <MessageSquare className="h-3.5 w-3.5" />
+                    )}
+                    <span>Chat & Agree</span>
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* TAB 2: MY REQUESTS (DEMANDS) */}
       {!loading && tab === "requests" && (
-        <>
+        <div className="space-y-3">
           {myRequests.length === 0 ? (
-            <EmptyState
-              icon={<Package className="h-10 w-10 text-slate-300" />}
-              message={t("noActivity")}
-              href="/requests/new"
-            />
+            <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200 p-8">
+              <Package className="h-10 w-10 text-slate-300 mx-auto mb-2" />
+              <p className="text-xs text-slate-500 mb-3">You haven't posted any product requests yet.</p>
+              <Link href="/requests/new" className="inline-flex items-center gap-1.5 bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-blue-700">
+                <Plus className="h-3.5 w-3.5" /> Post Your First Request
+              </Link>
+            </div>
           ) : (
-            <div className="space-y-3">
-              {myRequests.map((req) => (
-                <div key={req.id} className="flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition">
-                  <div className="flex-1 min-w-0 pr-4">
-                    <h3 className="font-semibold text-slate-900 text-sm truncate">{req.productName}</h3>
-                    <p className="text-xs text-slate-500 mt-0.5">{req.fromCountry} → {req.toCity}</p>
+            myRequests.map((req) => (
+              <div
+                key={req.id}
+                className="bg-white rounded-2xl border border-slate-200 p-5 hover:border-slate-300 transition flex flex-col md:flex-row md:items-center justify-between gap-4"
+              >
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-bold text-slate-900 text-sm truncate">{req.productName}</h3>
+                    {req.condition && (
+                      <span className="text-[10px] bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded">
+                        {req.condition}
+                      </span>
+                    )}
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-end">
-                      <span className="text-sm font-bold text-slate-900">€{req.budget}</span>
-                      <StatusBadge status={req.status} />
+
+                  <p className="text-xs text-slate-500 line-clamp-1 mb-2">{req.description}</p>
+
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600">
+                    <div className="flex items-center gap-1">
+                      <MapPin className="h-3.5 w-3.5 text-slate-400" />
+                      <span>{req.sourceCity || req.fromCountry} → {req.destCity || req.toCity}</span>
                     </div>
-                    <button
-                      onClick={() => handleDeleteRequest(req.id)}
-                      disabled={deletingId === req.id}
-                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                      title={tCommon("delete")}
-                    >
-                      {deletingId === req.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin text-red-600" />
-                      ) : (
-                        <Trash2 className="h-4 w-4" />
-                      )}
-                    </button>
+                    {req.storeName && (
+                      <div className="flex items-center gap-1 text-slate-500">
+                        <ShoppingBag className="h-3.5 w-3.5 text-slate-400" />
+                        <span>{req.storeName}</span>
+                      </div>
+                    )}
+                    {req.deadline && (
+                      <div className="flex items-center gap-1 text-slate-500">
+                        <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                        <span>Needed by: {req.deadline}</span>
+                      </div>
+                    )}
+                    {req.weight && (
+                      <div className="flex items-center gap-1 text-slate-500">
+                        <Weight className="h-3.5 w-3.5 text-slate-400" />
+                        <span>{req.weight} kg</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-              ))}
-            </div>
+
+                <div className="flex items-center justify-between md:justify-end gap-4 border-t md:border-t-0 border-slate-100 pt-3 md:pt-0">
+                  <div className="text-end">
+                    <div className="text-sm font-black text-slate-900">€{req.budget || req.price}</div>
+                    <div className="text-[11px] font-semibold text-emerald-600">+€{req.reward || req.preferredFee} bringer fee</div>
+                  </div>
+
+                  <button
+                    onClick={() => handleDeleteRequest(req.id)}
+                    disabled={deletingId === req.id}
+                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition"
+                    title={tCommon("delete")}
+                  >
+                    {deletingId === req.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin text-red-600" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+            ))
           )}
-        </>
+        </div>
       )}
 
+      {/* TAB 3: MY TRIPS */}
       {!loading && tab === "trips" && (
-        <>
+        <div className="space-y-3">
           {myTrips.length === 0 ? (
-            <EmptyState
-              icon={<Plane className="h-10 w-10 text-slate-300" />}
-              message={t("noActivity")}
-              href="/trips/new"
-            />
-          ) : (
-            <div className="space-y-3">
-              {myTrips.map((trip) => (
-                <div key={trip.id} className="flex items-center justify-between p-4 rounded-xl border border-slate-200 bg-white hover:border-slate-300 transition">
-                  <div className="flex-1 min-w-0 pr-4">
-                    <h3 className="font-semibold text-slate-900 text-sm truncate">{trip.from} → {trip.to}</h3>
-                    <p className="text-xs text-slate-500 mt-0.5">{trip.departureDate}</p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-end">
-                      <span className="text-sm font-bold text-slate-900">{trip.capacity} kg</span>
-                      <StatusBadge status={trip.status} />
-                    </div>
-                    <button
-                      onClick={() => handleDeleteTrip(trip.id)}
-                      disabled={deletingId === trip.id}
-                      className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                      title={tCommon("delete")}
-                    >
-                      {deletingId === trip.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin text-red-600" />
-                      ) : (
-                        <Trash2 className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                </div>
-              ))}
+            <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200 p-8">
+              <Plane className="h-10 w-10 text-slate-300 mx-auto mb-2" />
+              <p className="text-xs text-slate-500 mb-3">You haven't posted any travel trips yet.</p>
+              <Link href="/trips/new" className="inline-flex items-center gap-1.5 bg-purple-600 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-purple-700">
+                <Plus className="h-3.5 w-3.5" /> Post Your Upcoming Trip
+              </Link>
             </div>
+          ) : (
+            myTrips.map((trip) => {
+              const totalCap = trip.totalCapacity || trip.capacity || 15;
+              const resCap = trip.reservedCapacity || 0;
+              const remCap = trip.remainingCapacity !== undefined ? trip.remainingCapacity : totalCap - resCap;
+              const usedPercentage = Math.round((resCap / totalCap) * 100);
+
+              return (
+                <div
+                  key={trip.id}
+                  className="bg-white rounded-2xl border border-slate-200 p-5 hover:border-slate-300 transition"
+                >
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center">
+                        <Plane className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-slate-900 text-sm">
+                          {trip.originCity || trip.from} → {trip.destCity || trip.to}
+                        </h3>
+                        <p className="text-xs text-slate-500">Departure: {trip.departureDate}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <div className="text-end">
+                        <div className="text-sm font-black text-slate-900">{remCap} kg left</div>
+                        <div className="text-[10px] text-slate-400">of {totalCap} kg total capacity</div>
+                      </div>
+
+                      <button
+                        onClick={() => handleDeleteTrip(trip.id)}
+                        disabled={deletingId === trip.id}
+                        className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition"
+                        title={tCommon("delete")}
+                      >
+                        {deletingId === trip.id ? (
+                          <Loader2 className="h-4 w-4 animate-spin text-red-600" />
+                        ) : (
+                          <Trash2 className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Concurrency-safe capacity bar according to PDF Page 3 */}
+                  <div className="w-full bg-slate-100 rounded-full h-2 mb-3 overflow-hidden">
+                    <div className="bg-purple-600 h-2 rounded-full transition-all" style={{ width: `${usedPercentage}%` }} />
+                  </div>
+
+                  {trip.notes && (
+                    <p className="text-xs text-slate-500 italic bg-slate-50 p-2.5 rounded-xl">
+                      "{trip.notes}"
+                    </p>
+                  )}
+                </div>
+              );
+            })
           )}
-        </>
+        </div>
       )}
-    </div>
-  );
-}
 
-function StatusBadge({ status }: { status: string }) {
-  const colors: Record<string, string> = {
-    active: "bg-emerald-50 text-emerald-700",
-    completed: "bg-blue-50 text-blue-700",
-    cancelled: "bg-red-50 text-red-700",
-  };
+      {/* TAB 4: WALLET & TRUST */}
+      {!loading && tab === "wallet" && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">Available Balance</span>
+              <Wallet className="h-4 w-4 text-emerald-600" />
+            </div>
+            <div className="text-3xl font-black text-slate-900 mb-1">
+              €{wallet.availableBalance.toFixed(2)}
+            </div>
+            <p className="text-xs text-slate-500 mb-4">Ready for withdrawal to CCP or BaridiMob</p>
+            <button className="w-full bg-emerald-600 text-white rounded-xl py-2.5 text-xs font-bold hover:bg-emerald-700 transition">
+              Request Payout
+            </button>
+          </div>
 
-  return (
-    <div className={`mt-0.5 px-2 py-0.5 rounded text-[11px] font-semibold text-center ${colors[status] || "bg-slate-50 text-slate-600"}`}>
-      {status}
-    </div>
-  );
-}
-
-function EmptyState({ icon, message, href }: { icon: React.ReactNode; message: string; href: string }) {
-  return (
-    <div className="text-center py-16 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-      <div className="mx-auto mb-3">{icon}</div>
-      <p className="text-sm text-slate-500 mb-4">{message}</p>
-      <Link
-        href={href}
-        className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition"
-      >
-        <Plus className="h-4 w-4" /> Post Now
-      </Link>
+          <div className="bg-white rounded-2xl border border-slate-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">Escrow Protected</span>
+              <ShieldCheck className="h-4 w-4 text-blue-600" />
+            </div>
+            <div className="text-3xl font-black text-slate-900 mb-1">
+              €{wallet.escrowBalance.toFixed(2)}
+            </div>
+            <p className="text-xs text-slate-500 mb-4">Locked safely until delivery code is verified</p>
+            <div className="text-xs font-medium text-blue-600 bg-blue-50 p-2.5 rounded-xl border border-blue-100">
+              ✓ All payments held in escrow under Caba Pro Guarantee
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

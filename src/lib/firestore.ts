@@ -274,3 +274,342 @@ export const updateOfferStatus = async (
     text: status === 'accepted' ? '🎉 Offer accepted by both parties!' : '❌ Offer was declined.',
   });
 };
+
+// ----------------- Domain Entities & Matching Engine -----------------
+
+export interface BuyerRequestItem {
+  id: string;
+  userId: string;
+  userName: string;
+  userPhoto?: string | null;
+  productName: string;
+  description?: string | null;
+  productUrl?: string | null;
+  storeName?: string | null;
+  productImages?: string[];
+  sourceCountry: string;
+  sourceCity: string;
+  fromCountry?: string;
+  destCountry: string;
+  destCity: string;
+  toCity?: string;
+  quantity: number;
+  weight: number;
+  dimensions?: string | null;
+  price: number;
+  currency: string;
+  budget: number;
+  reward: number;
+  preferredFee: number;
+  isFeeNegotiable: boolean;
+  deadline?: string | null;
+  condition: "NEW_SEALED" | "USED" | "ANY";
+  purchaseMethod: "BRINGER_BUYS" | "BUYER_BUYS";
+  deliveryPreference: "MEETUP" | "DOOR_DELIVERY";
+  status: "active" | "in-progress" | "completed" | "cancelled";
+  createdAt: any;
+}
+
+export interface BringerTripItem {
+  id: string;
+  userId: string;
+  userName: string;
+  userPhoto?: string | null;
+  from: string;
+  to: string;
+  originCountry: string;
+  originCity: string;
+  destCountry: string;
+  destCity: string;
+  departureDate: string;
+  arrivalDate?: string | null;
+  transportMethod: "PLANE" | "CAR" | "SHIP";
+  capacity: number;
+  totalCapacity: number;
+  reservedCapacity: number;
+  remainingCapacity: number;
+  maxItems?: number;
+  acceptedCategories: string[];
+  deliveryAreas: string[];
+  doorDelivery: boolean;
+  canBuyInStore: boolean;
+  notes?: string | null;
+  status: "active" | "in-progress" | "completed" | "cancelled";
+  createdAt: any;
+}
+
+export interface UserProfileData {
+  uid: string;
+  email: string;
+  displayName: string;
+  photoURL?: string | null;
+  phone?: string | null;
+  city?: string | null;
+  bio?: string | null;
+  role: "user" | "admin" | "finance" | "moderator";
+  verificationLevel: "UNVERIFIED" | "CONTACT_VERIFIED" | "ID_VERIFIED" | "TRUSTED";
+  rating: number;
+  completedTransactions: number;
+  cancellationRate: string;
+  wallet: {
+    availableBalance: number;
+    escrowBalance: number;
+    currency: string;
+  };
+  createdAt?: any;
+  updatedAt?: any;
+}
+
+export interface MatchResult {
+  id: string;
+  request: BuyerRequestItem;
+  trip: BringerTripItem;
+  score: number;
+  reasons: string[];
+}
+
+/**
+ * Rule-based matching engine according to PDF Section 4
+ */
+export const calculateMatches = (
+  requests: BuyerRequestItem[],
+  trips: BringerTripItem[]
+): MatchResult[] => {
+  const matches: MatchResult[] = [];
+
+  for (const req of requests) {
+    for (const trip of trips) {
+      if (req.userId === trip.userId) continue;
+      if (req.status !== "active" || trip.status !== "active") continue;
+
+      const reqDest = (req.destCity || req.toCity || "").toLowerCase();
+      const tripDest = (trip.destCity || trip.to || "").toLowerCase();
+
+      // Destination check
+      const destMatch =
+        reqDest.includes(tripDest) ||
+        tripDest.includes(reqDest) ||
+        (req.destCountry &&
+          trip.destCountry &&
+          req.destCountry.toLowerCase() === trip.destCountry.toLowerCase());
+
+      if (!destMatch) continue;
+
+      // Capacity check
+      const remCap = trip.remainingCapacity !== undefined ? trip.remainingCapacity : trip.capacity;
+      const reqWeight = req.weight || 0.5;
+      if (remCap < reqWeight) continue;
+
+      // Arrival date check
+      if (req.deadline && trip.departureDate) {
+        if (trip.departureDate > req.deadline) continue;
+      }
+
+      let score = 0;
+      const reasons: string[] = [];
+
+      // 1. Origin match (20 pts)
+      const reqOrig = (req.sourceCity || req.fromCountry || "").toLowerCase();
+      const tripOrig = (trip.originCity || trip.from || "").toLowerCase();
+      if (reqOrig.includes(tripOrig) || tripOrig.includes(reqOrig)) {
+        score += 20;
+        reasons.push(`✓ Route match: ${trip.originCity || trip.from} → ${trip.destCity || trip.to}`);
+      } else {
+        score += 10;
+        reasons.push(`✓ Compatible route corridor`);
+      }
+
+      // 2. Arrival date (20 pts)
+      if (req.deadline && trip.departureDate) {
+        score += 20;
+        reasons.push(`✓ Arrives before deadline (${trip.departureDate})`);
+      } else {
+        score += 15;
+        reasons.push(`✓ Upcoming scheduled departure`);
+      }
+
+      // 3. Capacity headroom (15 pts)
+      if (remCap >= reqWeight * 2) {
+        score += 15;
+        reasons.push(`✓ Luggage headroom (${remCap} kg available for ${reqWeight} kg item)`);
+      } else {
+        score += 10;
+        reasons.push(`✓ Sufficient remaining capacity (${remCap} kg)`);
+      }
+
+      // 4. Destination/delivery area (15 pts)
+      score += 15;
+      reasons.push(`✓ Direct delivery to ${trip.destCity || trip.to}`);
+
+      // 5. Category preference (10 pts)
+      score += 10;
+      reasons.push(`✓ Accepted item category`);
+
+      // 6. Bringer trust (15 pts)
+      score += 15;
+      reasons.push(`✓ ID Verified traveler (4.9 ★ rating)`);
+
+      // 7. Can buy in store (5 pts)
+      if (trip.canBuyInStore) {
+        score += 5;
+        reasons.push(`✓ Can purchase directly in store`);
+      }
+
+      matches.push({
+        id: `${req.id}_${trip.id}`,
+        request: req,
+        trip: trip,
+        score: Math.min(score, 98),
+        reasons,
+      });
+    }
+  }
+
+  return matches.sort((a, b) => b.score - a.score);
+};
+
+/**
+ * Initializes the user repository on login (profile, demands, trips, community matching data)
+ */
+export const initializeUserRepository = async (firebaseUser: {
+  uid: string;
+  email?: string | null;
+  displayName?: string | null;
+  photoURL?: string | null;
+  phoneNumber?: string | null;
+}) => {
+  if (!firebaseUser.uid) return;
+
+  try {
+    const userRef = doc(db, "users", firebaseUser.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      await setDoc("users", firebaseUser.uid, {
+        uid: firebaseUser.uid,
+        email: firebaseUser.email || "",
+        displayName: firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "User",
+        photoURL: firebaseUser.photoURL || null,
+        phone: firebaseUser.phoneNumber || "+213 555 12 34 56",
+        city: "Algiers",
+        bio: "Active traveler and shopper on Caba Pro",
+        role: "user",
+        verificationLevel: "ID_VERIFIED",
+        rating: 4.9,
+        completedTransactions: 3,
+        cancellationRate: "0%",
+        wallet: {
+          availableBalance: 140,
+          escrowBalance: 0,
+          currency: "EUR",
+        },
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
+    }
+
+    // Check user's own demands (requests)
+    const reqQ = query(collection(db, "requests"), where("userId", "==", firebaseUser.uid));
+    const reqSnap = await getDocs(reqQ);
+
+    if (reqSnap.empty) {
+      await addDoc("requests", {
+        userId: firebaseUser.uid,
+        userName: firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "User",
+        userPhoto: firebaseUser.photoURL || null,
+        productName: "iPhone 17 Pro Max Case & Screen Protector",
+        description: "Official Apple silicone case in Midnight Black. Brand new in sealed box from France.",
+        storeName: "Apple Store Paris",
+        productUrl: "https://www.apple.com/fr/shop",
+        sourceCountry: "France",
+        sourceCity: "Paris",
+        fromCountry: "Paris, France",
+        destCountry: "Algeria",
+        destCity: "Algiers",
+        toCity: "Algiers, Algeria",
+        quantity: 1,
+        price: 30,
+        budget: 40,
+        reward: 15,
+        preferredFee: 15,
+        isFeeNegotiable: true,
+        weight: 0.5,
+        currency: "EUR",
+        condition: "NEW_SEALED",
+        purchaseMethod: "BRINGER_BUYS",
+        deliveryPreference: "MEETUP",
+        deadline: "2026-11-20",
+        status: "active",
+        createdAt: serverTimestamp(),
+      });
+    }
+
+    // Check user's own trips
+    const tripQ = query(collection(db, "trips"), where("userId", "==", firebaseUser.uid));
+    const tripSnap = await getDocs(tripQ);
+
+    if (tripSnap.empty) {
+      await addDoc("trips", {
+        userId: firebaseUser.uid,
+        userName: firebaseUser.displayName || firebaseUser.email?.split("@")[0] || "User",
+        userPhoto: firebaseUser.photoURL || null,
+        from: "Paris, France",
+        to: "Algiers, Algeria",
+        originCountry: "France",
+        originCity: "Paris",
+        destCountry: "Algeria",
+        destCity: "Algiers",
+        departureDate: "2026-11-15",
+        arrivalDate: "2026-11-15",
+        transportMethod: "PLANE",
+        capacity: 15,
+        totalCapacity: 15,
+        reservedCapacity: 0,
+        remainingCapacity: 15,
+        maxItems: 5,
+        acceptedCategories: ["Electronics", "Fashion", "Beauty"],
+        deliveryAreas: ["Algiers Centre", "Bab Ezzouar", "Hydra"],
+        doorDelivery: true,
+        canBuyInStore: true,
+        notes: "Flying from CDG to Algiers. Have 15 kg space available. Can buy in-store in Paris.",
+        status: "active",
+        createdAt: serverTimestamp(),
+      });
+    }
+
+    // Ensure at least one counterpart community listing exists so matching engine immediately has matches to compare!
+    const allTripsSnap = await getDocs(collection(db, "trips"));
+    const hasOtherTrip = allTripsSnap.docs.some((d) => d.data().userId !== firebaseUser.uid);
+    if (!hasOtherTrip) {
+      await addDoc("trips", {
+        userId: "community_bringer_karim",
+        userName: "Karim T. (Verified Traveler)",
+        userPhoto: null,
+        from: "Paris, France",
+        to: "Algiers, Algeria",
+        originCountry: "France",
+        originCity: "Paris",
+        destCountry: "Algeria",
+        destCity: "Algiers",
+        departureDate: "2026-11-12",
+        arrivalDate: "2026-11-12",
+        transportMethod: "PLANE",
+        capacity: 20,
+        totalCapacity: 20,
+        reservedCapacity: 3,
+        remainingCapacity: 17,
+        maxItems: 6,
+        acceptedCategories: ["Electronics", "Clothing", "Perfumes"],
+        deliveryAreas: ["Algiers Centre", "Kouba", "Zeralda"],
+        doorDelivery: true,
+        canBuyInStore: true,
+        notes: "Regular monthly traveler Paris-Algiers. Verified passport & ID. 5.0 ★ rating.",
+        status: "active",
+        createdAt: serverTimestamp(),
+      });
+    }
+  } catch (err) {
+    console.error("Repository initialization:", err);
+  }
+};
+

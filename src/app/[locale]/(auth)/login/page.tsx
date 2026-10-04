@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { formatAuthError } from "@/lib/auth";
 import { AlertCircle, Loader2 } from "lucide-react";
 
 export default function LoginPage() {
@@ -26,7 +27,7 @@ export default function LoginPage() {
       await signIn(email, password);
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.message || tCommon("error"));
+      setError(formatAuthError(err));
     } finally {
       setLoading(false);
     }
@@ -40,7 +41,7 @@ export default function LoginPage() {
       await signInWithGoogle();
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.message || tCommon("error"));
+      setError(formatAuthError(err));
     } finally {
       setLoading(false);
     }
