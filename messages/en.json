@@ -13,7 +13,10 @@
     "submit": "Submit",
     "viewAll": "View All",
     "noResults": "No results found",
-    "or": "or"
+    "or": "or",
+    "details": "Details",
+    "edit": "Edit",
+    "login": "Sign In"
   },
   "nav": {
     "home": "Home",

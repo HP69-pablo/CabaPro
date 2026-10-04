@@ -13,7 +13,10 @@
     "submit": "Soumettre",
     "viewAll": "Tout voir",
     "noResults": "Aucun résultat trouvé",
-    "or": "ou"
+    "or": "ou",
+    "details": "Détails",
+    "edit": "Modifier",
+    "login": "Se connecter"
   },
   "nav": {
     "home": "Accueil",
