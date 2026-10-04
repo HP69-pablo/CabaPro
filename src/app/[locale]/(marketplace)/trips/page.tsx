@@ -160,27 +160,45 @@ export default function TripsPage() {
             return (
               <div
                 key={trip.id}
-                className="flex flex-col justify-between rounded-xl border border-slate-100 bg-white p-5 hover:border-purple-200 hover:shadow-md transition"
+                className="flex flex-col justify-between rounded-2xl border border-brand-border bg-white p-5 hover:border-brand-teal/40 hover:shadow-md transition"
               >
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-purple-100 text-purple-600">
-                      <Plane className="h-4 w-4" />
-                    </div>
-                    <div className="font-bold text-slate-900 text-sm">
-                      {trip.from} <span className="text-purple-600">→</span> {trip.to}
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-brand-coral-50 text-brand-coral">
+                        <Plane className="h-4 w-4" />
+                      </div>
+                      <div className="font-bold text-slate-900 text-base">
+                        {trip.from} <span className="text-brand-coral">→</span> {trip.to}
+                      </div>
                     </div>
                   </div>
 
-                  <div className="space-y-1.5 text-xs text-slate-600 mb-4 bg-slate-50 rounded-lg p-3">
+                  {/* Traveler Avatar + 5 Stars rating row */}
+                  <div className="flex items-center gap-2 mb-3">
+                    {trip.userPhoto ? (
+                      <img src={trip.userPhoto} alt="" className="h-6 w-6 rounded-full object-cover" />
+                    ) : (
+                      <div className="h-6 w-6 rounded-full bg-brand-coral-100 text-brand-coral flex items-center justify-center text-[10px] font-bold">
+                        {trip.userName?.[0]?.toUpperCase() || "T"}
+                      </div>
+                    )}
+                    <span className="text-xs font-medium text-slate-600 truncate max-w-[90px]">
+                      {trip.userName}
+                    </span>
+                    <div className="flex items-center text-amber-400 text-xs">
+                      {"★★★★★"}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5 text-xs text-slate-600 mb-4 bg-brand-bg rounded-xl p-3 border border-brand-border/60">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                      <span>{trip.departureDate}</span>
-                      {trip.arrivalDate && <span className="text-slate-400">→ {trip.arrivalDate}</span>}
+                      <span>Depart: <strong className="text-slate-800">{trip.departureDate}</strong></span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <Weight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                      <span>{t("availableSpace")}: <strong className="text-slate-900 font-bold">{trip.capacity} kg</strong></span>
+                      <Weight className="h-3.5 w-3.5 text-brand-teal shrink-0" />
+                      <span>{t("availableSpace")}: <strong className="text-brand-teal font-bold">{trip.capacity} kg</strong></span>
                     </div>
                   </div>
 
@@ -192,40 +210,41 @@ export default function TripsPage() {
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between border-t border-slate-100 pt-3">
-                    <div className="flex items-center gap-2">
-                      {trip.userPhoto ? (
-                        <img src={trip.userPhoto} alt="" className="h-7 w-7 rounded-full object-cover" />
-                      ) : (
-                        <div className="h-7 w-7 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xs font-semibold">
-                          {trip.userName?.[0]?.toUpperCase() || "T"}
-                        </div>
-                      )}
-                      <div>
-                        <div className="text-xs font-medium text-slate-800 truncate max-w-[120px]">
-                          {trip.userName}
-                        </div>
-                        <div className="text-[10px] text-slate-400">{t("traveledBy")}</div>
-                      </div>
+                  <div className="flex items-baseline justify-between border-t border-slate-100 pt-3 mb-3">
+                    <div className="text-base font-extrabold text-slate-900">
+                      {trip.capacity} kg <span className="text-xs font-semibold text-brand-teal">Available</span>
+                    </div>
+                    <div className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">
+                      Active Bringer
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => handleContact(trip)}
-                    disabled={isConnecting}
-                    className={`w-full mt-3 rounded-lg px-3 py-2 text-sm font-semibold transition flex items-center justify-center gap-2 ${
-                      isOwn
-                        ? "border border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100"
-                        : "border border-purple-200 bg-purple-50 text-purple-700 hover:bg-purple-600 hover:text-white"
-                    }`}
-                  >
-                    {isConnecting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <MessageSquare className="h-4 w-4" />
-                    )}
-                    {isOwn ? tCommon("details") : t("sendRequest")}
-                  </button>
+                  {/* Dual Action Buttons matching Screen 2 */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => handleContact(trip)}
+                      disabled={isConnecting}
+                      className="rounded-xl border border-brand-teal px-3 py-2 text-xs font-bold text-brand-teal hover:bg-brand-teal-50 transition flex items-center justify-center gap-1"
+                    >
+                      {tCommon("details") || "Details"}
+                    </button>
+                    <button
+                      onClick={() => handleContact(trip)}
+                      disabled={isConnecting}
+                      className={`rounded-xl px-3 py-2 text-xs font-bold text-white transition flex items-center justify-center gap-1 shadow-sm ${
+                        isOwn
+                          ? "bg-slate-500 hover:bg-slate-600"
+                          : "bg-brand-teal hover:bg-brand-teal-800"
+                      }`}
+                    >
+                      {isConnecting ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <MessageSquare className="h-3.5 w-3.5" />
+                      )}
+                      {isOwn ? "My Trip" : (t("sendRequest") || "Message")}
+                    </button>
+                  </div>
                 </div>
               </div>
             );

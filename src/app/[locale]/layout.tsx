@@ -5,6 +5,7 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import "../globals.css";
 import Navbar from "@/components/layout/Navbar";
+import BottomNav from "@/components/layout/BottomNav";
 import { AuthProvider } from "@/contexts/AuthContext";
 import HydrationGuard from "@/components/common/HydrationGuard";
 
@@ -69,9 +70,10 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         <HydrationGuard />
         <NextIntlClientProvider messages={messages}>
           <AuthProvider>
-            <div className="flex min-h-screen flex-col">
+            <div className="flex min-h-screen flex-col bg-brand-bg/50">
               <Navbar locale={locale} />
-              <main className="flex-1">{children}</main>
+              <main className="flex-1 pb-16 md:pb-0">{children}</main>
+              <BottomNav />
             </div>
           </AuthProvider>
         </NextIntlClientProvider>

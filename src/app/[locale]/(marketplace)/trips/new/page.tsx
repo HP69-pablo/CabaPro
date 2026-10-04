@@ -99,7 +99,7 @@ export default function NewTripPage() {
       </Link>
 
       <div className="flex items-center gap-3 mb-6">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-purple-600">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-coral-50 text-brand-coral">
           <Plane className="h-5 w-5" />
         </div>
         <div>
@@ -164,7 +164,7 @@ export default function NewTripPage() {
               value={from}
               onChange={(e) => setFrom(e.target.value)}
               placeholder="e.g. Paris, France"
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-coral focus:ring-1 focus:ring-brand-coral outline-none"
             />
           </div>
           <div>
@@ -175,7 +175,7 @@ export default function NewTripPage() {
               value={to}
               onChange={(e) => setTo(e.target.value)}
               placeholder="e.g. Algiers"
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-coral focus:ring-1 focus:ring-brand-coral outline-none"
             />
           </div>
         </div>
@@ -188,7 +188,7 @@ export default function NewTripPage() {
               required
               value={departureDate}
               onChange={(e) => setDepartureDate(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-coral focus:ring-1 focus:ring-brand-coral outline-none"
             />
           </div>
           <div>
@@ -197,7 +197,7 @@ export default function NewTripPage() {
               type="date"
               value={arrivalDate}
               onChange={(e) => setArrivalDate(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-coral focus:ring-1 focus:ring-brand-coral outline-none"
             />
           </div>
         </div>
@@ -212,7 +212,7 @@ export default function NewTripPage() {
             value={capacity}
             onChange={(e) => setCapacity(e.target.value)}
             placeholder="15"
-            className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+            className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-coral focus:ring-1 focus:ring-brand-coral outline-none"
           />
           <p className="text-[11px] text-slate-400 mt-1">{t("capacityHint")}</p>
         </div>
@@ -224,7 +224,7 @@ export default function NewTripPage() {
             value={deliveryAreas}
             onChange={(e) => setDeliveryAreas(e.target.value)}
             placeholder="e.g. Algiers Centre, Bab Ezzouar, Kouba"
-            className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+            className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-coral focus:ring-1 focus:ring-brand-coral outline-none"
           />
         </div>
 
@@ -235,7 +235,7 @@ export default function NewTripPage() {
               type="checkbox"
               checked={canBuyInStore}
               onChange={(e) => setCanBuyInStore(e.target.checked)}
-              className="rounded text-purple-600 focus:ring-purple-500 h-4 w-4"
+              className="rounded text-brand-coral focus:ring-brand-coral h-4 w-4"
             />
             <span>I can purchase products directly in-store at origin</span>
           </label>
@@ -245,7 +245,7 @@ export default function NewTripPage() {
               type="checkbox"
               checked={doorDelivery}
               onChange={(e) => setDoorDelivery(e.target.checked)}
-              className="rounded text-purple-600 focus:ring-purple-500 h-4 w-4"
+              className="rounded text-brand-coral focus:ring-brand-coral h-4 w-4"
             />
             <span>I can deliver to the buyer's address / door</span>
           </label>
@@ -258,7 +258,7 @@ export default function NewTripPage() {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder={t("notesPlaceholder")}
-            className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+            className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-coral focus:ring-1 focus:ring-brand-coral outline-none"
           />
         </div>
 
@@ -266,7 +266,7 @@ export default function NewTripPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-purple-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-purple-700 disabled:opacity-50 transition flex items-center justify-center gap-2"
+            className="w-full rounded-2xl bg-brand-coral px-4 py-3 text-xs font-bold text-white hover:bg-brand-coral-600 disabled:opacity-50 transition flex items-center justify-center gap-2 shadow-md shadow-brand-coral/20"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             {t("publish")}

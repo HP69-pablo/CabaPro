@@ -179,36 +179,47 @@ export default function RequestsPage() {
             return (
               <div
                 key={req.id}
-                className="flex flex-col justify-between rounded-xl border border-slate-100 bg-white p-5 hover:border-blue-200 hover:shadow-md transition"
+                className="flex flex-col justify-between rounded-2xl border border-brand-border bg-white p-5 hover:border-brand-teal/40 hover:shadow-md transition"
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="font-semibold text-slate-900 line-clamp-1">
+                    <h3 className="font-bold text-slate-900 text-base line-clamp-1">
                       {req.productName}
                     </h3>
-                    {req.productUrl && (
-                      <a
-                        href={req.productUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="text-slate-400 hover:text-blue-600 transition"
-                        title="Product link"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                      </a>
+                    <div className="text-slate-400">
+                      <Package className="h-4 w-4 text-brand-teal" />
+                    </div>
+                  </div>
+
+                  {/* Avatar + 5 Stars rating row matching Screen 2 */}
+                  <div className="flex items-center gap-2 mb-3">
+                    {req.userPhoto ? (
+                      <img src={req.userPhoto} alt="" className="h-6 w-6 rounded-full object-cover" />
+                    ) : (
+                      <div className="h-6 w-6 rounded-full bg-brand-teal-100 text-brand-teal flex items-center justify-center text-[10px] font-bold">
+                        {req.userName?.[0]?.toUpperCase() || "U"}
+                      </div>
                     )}
+                    <span className="text-xs font-medium text-slate-600 truncate max-w-[90px]">
+                      {req.userName}
+                    </span>
+                    <div className="flex items-center text-amber-400 text-xs">
+                      {"★★★★★"}
+                    </div>
                   </div>
 
                   {req.description && (
-                    <p className="text-xs text-slate-500 mb-3 line-clamp-2">{req.description}</p>
+                    <p className="text-xs text-slate-500 mb-3 line-clamp-2 leading-relaxed">
+                      {req.description}
+                    </p>
                   )}
 
-                  <div className="space-y-1.5 text-xs text-slate-600 mb-4 bg-slate-50 rounded-lg p-3">
+                  <div className="space-y-1.5 text-xs text-slate-600 mb-4 bg-brand-bg rounded-xl p-3 border border-brand-border/60">
                     <div className="flex items-center gap-1.5">
-                      <MapPin className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                      <span className="font-medium">{req.fromCountry}</span>
+                      <MapPin className="h-3.5 w-3.5 text-brand-teal shrink-0" />
+                      <span className="font-semibold text-slate-800">{req.fromCountry}</span>
                       <span className="text-slate-400">→</span>
-                      <span className="font-medium text-blue-600">{req.toCity}</span>
+                      <span className="font-semibold text-brand-teal">{req.toCity}</span>
                     </div>
                     {req.deadline && (
                       <div className="flex items-center gap-1.5">
@@ -220,43 +231,41 @@ export default function RequestsPage() {
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between border-t border-slate-100 pt-3">
-                    <div className="flex items-center gap-2">
-                      {req.userPhoto ? (
-                        <img src={req.userPhoto} alt="" className="h-7 w-7 rounded-full object-cover" />
-                      ) : (
-                        <div className="h-7 w-7 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-semibold">
-                          {req.userName?.[0]?.toUpperCase() || "U"}
-                        </div>
-                      )}
-                      <span className="text-xs text-slate-600 font-medium truncate max-w-[100px]">
-                        {req.userName}
-                      </span>
+                  <div className="flex items-baseline justify-between border-t border-slate-100 pt-3 mb-3">
+                    <div className="text-base font-extrabold text-slate-900">
+                      €{req.reward} <span className="text-xs font-semibold text-brand-teal">Reward</span>
                     </div>
-                    <div className="text-end">
-                      <div className="text-sm font-bold text-slate-900">€{req.budget}</div>
-                      <div className="text-xs text-emerald-600 font-medium">
-                        +€{req.reward} {t("rewardLabel").toLowerCase()}
-                      </div>
+                    <div className="text-xs font-semibold text-slate-500">
+                      Budget: €{req.budget}
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => handleContact(req)}
-                    disabled={isConnecting}
-                    className={`w-full mt-3 rounded-lg px-3 py-2 text-sm font-semibold transition flex items-center justify-center gap-2 ${
-                      isOwn
-                        ? "border border-slate-200 bg-slate-50 text-slate-500 hover:bg-slate-100"
-                        : "border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-600 hover:text-white"
-                    }`}
-                  >
-                    {isConnecting ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <MessageSquare className="h-4 w-4" />
-                    )}
-                    {isOwn ? tCommon("details") : t("contactSeller")}
-                  </button>
+                  {/* Dual Action Buttons matching Screen 2 */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => handleContact(req)}
+                      disabled={isConnecting}
+                      className="rounded-xl border border-brand-teal px-3 py-2 text-xs font-bold text-brand-teal hover:bg-brand-teal-50 transition flex items-center justify-center gap-1"
+                    >
+                      {tCommon("details") || "Details"}
+                    </button>
+                    <button
+                      onClick={() => handleContact(req)}
+                      disabled={isConnecting}
+                      className={`rounded-xl px-3 py-2 text-xs font-bold text-white transition flex items-center justify-center gap-1 shadow-sm ${
+                        isOwn
+                          ? "bg-slate-500 hover:bg-slate-600"
+                          : "bg-brand-teal hover:bg-brand-teal-800"
+                      }`}
+                    >
+                      {isConnecting ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <MessageSquare className="h-3.5 w-3.5" />
+                      )}
+                      {isOwn ? "My Request" : (t("contactSeller") || "Bring this")}
+                    </button>
+                  </div>
                 </div>
               </div>
             );

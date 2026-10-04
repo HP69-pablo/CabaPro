@@ -100,7 +100,7 @@ export default function NewRequestPage() {
       </Link>
 
       <div className="flex items-center gap-3 mb-6">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-600">
+        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-teal-50 text-brand-teal">
           <Package className="h-5 w-5" />
         </div>
         <div>
@@ -124,7 +124,7 @@ export default function NewRequestPage() {
             value={productName}
             onChange={(e) => setProductName(e.target.value)}
             placeholder={t("productNamePlaceholder")}
-            className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+            className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
           />
         </div>
 
@@ -136,7 +136,7 @@ export default function NewRequestPage() {
               value={storeName}
               onChange={(e) => setStoreName(e.target.value)}
               placeholder="e.g. Apple Store, Zara, Fnac"
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
             />
           </div>
           <div>
@@ -147,7 +147,7 @@ export default function NewRequestPage() {
               max="50"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
             />
           </div>
         </div>
@@ -159,7 +159,7 @@ export default function NewRequestPage() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder={t("descriptionPlaceholder")}
-            className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+            className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
           />
         </div>
 
@@ -170,7 +170,7 @@ export default function NewRequestPage() {
             value={productUrl}
             onChange={(e) => setProductUrl(e.target.value)}
             placeholder={t("productUrlPlaceholder")}
-            className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+            className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
           />
         </div>
 
@@ -183,7 +183,7 @@ export default function NewRequestPage() {
               value={fromCountry}
               onChange={(e) => setFromCountry(e.target.value)}
               placeholder="e.g. France, Paris"
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
             />
           </div>
           <div>
@@ -194,7 +194,7 @@ export default function NewRequestPage() {
               value={toCity}
               onChange={(e) => setToCity(e.target.value)}
               placeholder="e.g. Algiers"
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
             />
           </div>
         </div>
@@ -209,7 +209,7 @@ export default function NewRequestPage() {
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
               placeholder="30"
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
             />
           </div>
           <div>
@@ -221,7 +221,7 @@ export default function NewRequestPage() {
               value={reward}
               onChange={(e) => setReward(e.target.value)}
               placeholder="15"
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
             />
           </div>
         </div>
@@ -236,7 +236,7 @@ export default function NewRequestPage() {
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
               placeholder="0.5"
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
             />
           </div>
           <div>
@@ -245,7 +245,7 @@ export default function NewRequestPage() {
               type="date"
               value={deadline}
               onChange={(e) => setDeadline(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+              className="w-full rounded-xl border border-slate-200 px-3.5 py-2.5 text-xs focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
             />
           </div>
         </div>
@@ -280,7 +280,7 @@ export default function NewRequestPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-bold text-white hover:bg-blue-700 disabled:opacity-50 transition flex items-center justify-center gap-2"
+            className="w-full rounded-2xl bg-brand-teal px-4 py-3 text-xs font-bold text-white hover:bg-brand-teal-800 disabled:opacity-50 transition flex items-center justify-center gap-2 shadow-md shadow-brand-teal/20"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             {t("publish")}

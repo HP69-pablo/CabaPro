@@ -40,7 +40,8 @@ export default function DashboardPage() {
   const router = useRouter();
   const { user, userProfile, loading: authLoading } = useAuth();
 
-  const [tab, setTab] = useState<"matches" | "requests" | "trips" | "wallet">("matches");
+  const [tab, setTab] = useState<"matches" | "orders" | "requests" | "trips" | "wallet">("matches");
+  const [handoverConfirmed, setHandoverConfirmed] = useState(false);
   const [myRequests, setMyRequests] = useState<BuyerRequestItem[]>([]);
   const [myTrips, setMyTrips] = useState<BringerTripItem[]>([]);
   const [allRequests, setAllRequests] = useState<BuyerRequestItem[]>([]);
@@ -189,38 +190,38 @@ export default function DashboardPage() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 py-6 max-w-5xl">
-      {/* Header Profile Bar */}
-      <div className="bg-gradient-to-r from-blue-900 to-indigo-800 rounded-2xl p-6 text-white mb-6 shadow-sm">
+      {/* Header Profile Bar - Deep Teal Theme matching Mockup */}
+      <div className="bg-gradient-to-r from-brand-teal to-[#11494b] rounded-3xl p-6 text-white mb-6 shadow-md shadow-brand-teal/15">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="h-14 w-14 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-xl font-bold text-white border border-white/20">
+            <div className="h-14 w-14 rounded-2xl bg-white/15 backdrop-blur-md flex items-center justify-center text-xl font-bold text-white border border-white/20 shadow-inner">
               {user.displayName?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl font-black tracking-tight">{user.displayName || user.email?.split("@")[0]}</h1>
-                <span className="inline-flex items-center gap-1 text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 px-2 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 text-[11px] font-bold bg-white/20 text-white border border-white/30 px-2.5 py-0.5 rounded-full">
                   <ShieldCheck className="h-3 w-3" /> {verificationLevel}
                 </span>
               </div>
-              <p className="text-xs text-blue-200 mt-0.5">{user.email}</p>
+              <p className="text-xs text-teal-100 mt-0.5">{user.email}</p>
             </div>
           </div>
 
           <div className="grid grid-cols-3 gap-3 border-t md:border-t-0 border-white/10 pt-3 md:pt-0">
-            <div className="bg-white/10 rounded-xl p-2.5 text-center border border-white/10">
+            <div className="bg-white/10 rounded-2xl p-2.5 text-center border border-white/10">
               <div className="flex items-center justify-center gap-1 text-amber-300 font-bold text-sm">
                 <Star className="h-3.5 w-3.5 fill-amber-300" /> {rating}
               </div>
-              <div className="text-[10px] text-blue-200">Rating</div>
+              <div className="text-[10px] text-teal-200">Rating</div>
             </div>
-            <div className="bg-white/10 rounded-xl p-2.5 text-center border border-white/10">
+            <div className="bg-white/10 rounded-2xl p-2.5 text-center border border-white/10">
               <div className="font-bold text-sm text-white">{completedDeals}</div>
-              <div className="text-[10px] text-blue-200">Deals Done</div>
+              <div className="text-[10px] text-teal-200">Deals Done</div>
             </div>
-            <div className="bg-white/10 rounded-xl p-2.5 text-center border border-white/10">
+            <div className="bg-white/10 rounded-2xl p-2.5 text-center border border-white/10">
               <div className="font-bold text-sm text-emerald-300">€{wallet.availableBalance}</div>
-              <div className="text-[10px] text-blue-200">Wallet</div>
+              <div className="text-[10px] text-teal-200">Wallet</div>
             </div>
           </div>
         </div>
@@ -228,45 +229,60 @@ export default function DashboardPage() {
 
       {/* Tabs Bar */}
       <div className="flex items-center justify-between gap-3 mb-6 overflow-x-auto pb-1">
-        <div className="flex gap-1.5 bg-slate-100 p-1.5 rounded-xl shrink-0">
+        <div className="flex gap-1 bg-brand-bg p-1.5 rounded-2xl border border-brand-border shrink-0">
           <button
             onClick={() => setTab("matches")}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition ${
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition ${
               tab === "matches"
-                ? "bg-white text-blue-700 shadow-xs"
+                ? "bg-white text-brand-teal shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
             <Sparkles className="h-3.5 w-3.5 text-amber-500" />
             <span>Smart Matches ({allMatches.length})</span>
           </button>
+
+          <button
+            onClick={() => setTab("orders")}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition ${
+              tab === "orders"
+                ? "bg-white text-brand-teal shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <ShieldCheck className="h-3.5 w-3.5 text-brand-teal" />
+            <span>Orders & Code</span>
+          </button>
+
           <button
             onClick={() => setTab("requests")}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition ${
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition ${
               tab === "requests"
-                ? "bg-white text-blue-700 shadow-xs"
+                ? "bg-white text-brand-teal shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            <Package className="h-3.5 w-3.5 text-blue-600" />
+            <Package className="h-3.5 w-3.5 text-brand-teal" />
             <span>My Requests ({myRequests.length})</span>
           </button>
+
           <button
             onClick={() => setTab("trips")}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition ${
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition ${
               tab === "trips"
-                ? "bg-white text-blue-700 shadow-xs"
+                ? "bg-white text-brand-teal shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            <Plane className="h-3.5 w-3.5 text-purple-600" />
+            <Plane className="h-3.5 w-3.5 text-brand-coral" />
             <span>My Trips ({myTrips.length})</span>
           </button>
+
           <button
             onClick={() => setTab("wallet")}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition ${
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition ${
               tab === "wallet"
-                ? "bg-white text-blue-700 shadow-xs"
+                ? "bg-white text-brand-teal shadow-xs"
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
@@ -278,14 +294,14 @@ export default function DashboardPage() {
         <div className="flex items-center gap-2 shrink-0">
           <Link
             href="/requests/new"
-            className="inline-flex items-center gap-1 rounded-xl bg-blue-600 px-3 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition"
+            className="inline-flex items-center gap-1 rounded-xl bg-brand-teal px-3.5 py-2 text-xs font-bold text-white hover:bg-brand-teal-800 shadow-sm transition"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>New Request</span>
           </Link>
           <Link
             href="/trips/new"
-            className="inline-flex items-center gap-1 rounded-xl border border-purple-200 bg-purple-50 px-3 py-2 text-xs font-semibold text-purple-700 hover:bg-purple-100 transition"
+            className="inline-flex items-center gap-1 rounded-xl bg-brand-coral px-3.5 py-2 text-xs font-bold text-white hover:bg-brand-coral-600 shadow-sm transition"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>New Trip</span>
@@ -374,6 +390,143 @@ export default function DashboardPage() {
               </div>
             ))
           )}
+        </div>
+      )}
+
+      {/* TAB: ORDERS & HANDOVER ESCROW CODE (SCREEN 4 MOCKUP) */}
+      {!loading && tab === "orders" && (
+        <div className="max-w-xl mx-auto space-y-5">
+          {/* Order Header */}
+          <div className="bg-white rounded-3xl border border-brand-border p-6 shadow-sm">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-2xl bg-brand-teal-50 text-brand-teal flex items-center justify-center font-bold">
+                  <ShieldCheck className="h-5 w-5 text-brand-teal" />
+                </div>
+                <div>
+                  <h2 className="text-base font-extrabold text-slate-900">Order #4521</h2>
+                  <p className="text-xs text-slate-500">Paris (CDG) → Algiers (ALG)</p>
+                </div>
+              </div>
+              <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full ${
+                handoverConfirmed 
+                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200" 
+                  : "bg-brand-teal-50 text-brand-teal border border-brand-teal/20"
+              }`}>
+                {handoverConfirmed ? "Delivered & Released" : "In Transit (Escrow Secured)"}
+              </span>
+            </div>
+
+            {/* 4-Step Stepper */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between relative">
+                <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-200 -translate-y-1/2 -z-0" />
+                <div 
+                  className="absolute top-1/2 left-0 h-0.5 bg-brand-teal -translate-y-1/2 -z-0 transition-all duration-500" 
+                  style={{ width: handoverConfirmed ? "100%" : "66%" }} 
+                />
+
+                {/* Step 1: Request Accepted */}
+                <div className="flex flex-col items-center relative z-10">
+                  <div className="h-7 w-7 rounded-full bg-brand-teal text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                    ✓
+                  </div>
+                  <span className="text-[10px] font-bold text-brand-teal mt-1.5 text-center">Accepted</span>
+                </div>
+
+                {/* Step 2: Payment Secured */}
+                <div className="flex flex-col items-center relative z-10">
+                  <div className="h-7 w-7 rounded-full bg-brand-teal text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                    ✓
+                  </div>
+                  <span className="text-[10px] font-bold text-brand-teal mt-1.5 text-center">Secured</span>
+                </div>
+
+                {/* Step 3: In Transit */}
+                <div className="flex flex-col items-center relative z-10">
+                  <div className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold shadow-sm transition-colors ${
+                    handoverConfirmed ? "bg-brand-teal text-white" : "bg-brand-teal text-white ring-4 ring-brand-teal/20"
+                  }`}>
+                    {handoverConfirmed ? "✓" : "3"}
+                  </div>
+                  <span className="text-[10px] font-bold text-brand-teal mt-1.5 text-center">In Transit</span>
+                </div>
+
+                {/* Step 4: Delivered */}
+                <div className="flex flex-col items-center relative z-10">
+                  <div className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold shadow-sm transition-colors ${
+                    handoverConfirmed ? "bg-emerald-600 text-white ring-4 ring-emerald-100" : "bg-slate-200 text-slate-500"
+                  }`}>
+                    {handoverConfirmed ? "✓" : "4"}
+                  </div>
+                  <span className={`text-[10px] font-bold mt-1.5 text-center ${
+                    handoverConfirmed ? "text-emerald-700" : "text-slate-400"
+                  }`}>Delivered</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Item Card */}
+            <div className="bg-brand-bg rounded-2xl p-4 border border-brand-border/60 mb-5 flex items-center gap-4">
+              <div className="h-16 w-16 rounded-xl bg-white border border-brand-border flex items-center justify-center shrink-0 shadow-xs">
+                <Package className="h-8 w-8 text-brand-teal" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-baseline justify-between gap-2">
+                  <h3 className="font-extrabold text-slate-900 text-sm truncate">Sony WH-1000XM5</h3>
+                  <span className="font-black text-slate-900 text-sm">€320</span>
+                </div>
+                <p className="text-xs text-slate-500 mb-1.5">Weight: 0.8 kg • Fnac Paris</p>
+                <div className="flex items-center gap-3 text-[11px] text-slate-600">
+                  <span>Buyer: <strong className="text-slate-800">Sarah J.</strong></span>
+                  <span>•</span>
+                  <span>Bringer: <strong className="text-brand-teal">Karim B.</strong></span>
+                </div>
+              </div>
+            </div>
+
+            {/* Escrow & Delivery Code Box - Screen 4 highlight */}
+            <div className="bg-gradient-to-br from-teal-50/70 to-emerald-50/50 rounded-2xl p-5 border border-brand-teal/20 mb-5 text-center">
+              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-teal mb-2">
+                <ShieldCheck className="h-4 w-4 text-brand-teal" />
+                <span>One-Time Delivery Code</span>
+              </div>
+              <div>
+                <span className="font-mono text-3xl sm:text-4xl font-black tracking-widest text-brand-teal mb-2 bg-white/80 py-2.5 px-6 rounded-xl border border-brand-teal/15 shadow-inner inline-block">
+                  457 991
+                </span>
+              </div>
+              <p className="text-xs text-slate-600 max-w-xs mx-auto mt-2 leading-relaxed">
+                {handoverConfirmed 
+                  ? "Code verified! €30 Bringer Reward has been released to Karim's wallet."
+                  : "Share this 6-digit code with traveler Karim upon in-person delivery to release escrow payment."}
+              </p>
+            </div>
+
+            {/* Action Button */}
+            {!handoverConfirmed ? (
+              <button
+                onClick={() => setHandoverConfirmed(true)}
+                className="w-full bg-brand-teal hover:bg-brand-teal-800 text-white rounded-2xl py-3.5 text-sm font-bold shadow-md shadow-brand-teal/20 transition flex items-center justify-center gap-2"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                <span>Confirm Handover & Release Payment</span>
+              </button>
+            ) : (
+              <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl p-4 text-center">
+                <p className="text-xs font-bold mb-1">🎉 Handover Successfully Confirmed!</p>
+                <p className="text-[11px] text-emerald-600">
+                  The transaction is complete and €30 reward has been released.
+                </p>
+                <button
+                  onClick={() => setHandoverConfirmed(false)}
+                  className="mt-2 text-[11px] font-bold text-slate-500 hover:text-slate-700 underline"
+                >
+                  Reset Demo State
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       )}
 

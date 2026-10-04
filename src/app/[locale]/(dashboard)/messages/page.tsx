@@ -25,7 +25,8 @@ import {
   Tag, 
   CheckCircle2, 
   XCircle,
-  Clock
+  Clock,
+  Shield
 } from "lucide-react";
 
 function MessagesContent() {
@@ -268,43 +269,45 @@ function MessagesContent() {
         <div className={`flex-1 flex flex-col bg-slate-50/40 ${!selectedConvId ? "hidden md:flex" : "flex"}`}>
           {activeConversation ? (
             <>
-              {/* Header */}
-              <div className="p-3.5 border-b border-slate-200 bg-white flex items-center justify-between gap-3">
+              {/* Header matching Mockup Screen 3 */}
+              <div className="p-3.5 bg-brand-teal text-white flex items-center justify-between gap-3 shadow-xs">
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => setSelectedConvId(null)}
-                    className="md:hidden p-1.5 text-slate-500 hover:bg-slate-100 rounded-lg"
+                    className="md:hidden p-1.5 text-white/80 hover:bg-white/10 rounded-lg"
                   >
                     <ArrowLeft className="h-5 w-5" />
                   </button>
 
-                  {otherUser.photoURL ? (
-                    <img src={otherUser.photoURL} alt="" className="h-9 w-9 rounded-full object-cover" />
-                  ) : (
-                    <div className="h-9 w-9 rounded-full bg-blue-100 text-blue-600 font-semibold flex items-center justify-center text-sm">
-                      {otherUser.name?.[0]?.toUpperCase() || "U"}
-                    </div>
-                  )}
+                  <div className="relative">
+                    {otherUser.photoURL ? (
+                      <img src={otherUser.photoURL} alt="" className="h-9 w-9 rounded-full object-cover ring-2 ring-white/30" />
+                    ) : (
+                      <div className="h-9 w-9 rounded-full bg-white/20 text-white font-bold flex items-center justify-center text-sm ring-2 ring-white/30">
+                        {otherUser.name?.[0]?.toUpperCase() || "U"}
+                      </div>
+                    )}
+                    <span className="absolute bottom-0 end-0 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-brand-teal" />
+                  </div>
 
                   <div>
-                    <h2 className="font-bold text-slate-900 text-sm">{otherUser.name}</h2>
-                    {activeConversation.requestTitle && (
-                      <span className="text-[11px] text-slate-500 flex items-center gap-1">
-                        <Package className="h-3 w-3 text-blue-600" /> {activeConversation.requestTitle}
-                      </span>
-                    )}
-                    {activeConversation.tripRoute && (
-                      <span className="text-[11px] text-slate-500 flex items-center gap-1">
-                        <Plane className="h-3 w-3 text-purple-600" /> {activeConversation.tripRoute}
-                      </span>
-                    )}
+                    <h2 className="font-bold text-white text-sm">{otherUser.name}</h2>
+                    <div className="flex items-center gap-1.5 text-[11px] text-teal-100">
+                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+                      <span>Online</span>
+                      {activeConversation.requestTitle && (
+                        <span className="truncate max-w-[150px] text-teal-200">
+                          • {activeConversation.requestTitle}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
                 {/* Make offer button toggle */}
                 <button
                   onClick={() => setShowOfferForm(!showOfferForm)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white text-brand-teal hover:bg-teal-50 shadow-sm transition"
                 >
                   <Tag className="h-3.5 w-3.5" />
                   <span>{t("makeOffer")}</span>
@@ -416,68 +419,68 @@ function MessagesContent() {
 
                       return (
                         <div key={msg.id} className={`flex ${isMine ? "justify-end" : "justify-start"} my-2`}>
-                          <div className={`max-w-sm rounded-2xl p-4 shadow-xs border ${
+                          <div className={`w-full max-w-xs sm:max-w-sm rounded-2xl p-4 shadow-sm border ${
                             isAccepted 
                               ? "bg-emerald-50 border-emerald-300"
                               : isDeclined
                               ? "bg-slate-50 border-slate-200 opacity-70"
-                              : "bg-white border-blue-200"
+                              : "bg-[#eaf5f5] border-[#cbe6e5]"
                           }`}>
-                            <div className="flex items-center justify-between gap-2 border-b border-slate-100 pb-2 mb-2">
-                              <span className="text-xs font-bold text-slate-900 flex items-center gap-1">
-                                <Tag className="h-3.5 w-3.5 text-blue-600" />
-                                {t("makeOffer")}
+                            <div className="flex items-center justify-between gap-2 border-b border-brand-teal/15 pb-2 mb-2">
+                              <span className="text-xs font-extrabold text-brand-teal flex items-center gap-1.5">
+                                <Shield className="h-4 w-4 text-brand-teal" />
+                                Offer
                               </span>
                               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                                 isAccepted 
-                                  ? "bg-emerald-100 text-emerald-700"
+                                  ? "bg-emerald-100 text-emerald-800"
                                   : isDeclined
                                   ? "bg-red-100 text-red-700"
-                                  : "bg-amber-100 text-amber-700"
+                                  : "bg-brand-teal-100 text-brand-teal"
                               }`}>
                                 {isAccepted ? t("offerAccepted") : isDeclined ? t("offerDeclined") : "Pending"}
                               </span>
                             </div>
 
-                            <div className="space-y-1 text-xs text-slate-600 mb-3">
+                            <div className="space-y-1.5 text-xs text-slate-700 mb-3.5">
                               <div className="flex justify-between">
-                                <span>{t("offerPrice")}:</span>
-                                <span className="font-semibold text-slate-900">€{offer.productPrice}</span>
+                                <span className="text-slate-500">Item:</span>
+                                <span className="font-bold text-slate-900 line-clamp-1">{activeConversation?.requestTitle || "iPhone 13"}</span>
                               </div>
                               <div className="flex justify-between">
-                                <span>{t("offerReward")}:</span>
-                                <span className="font-semibold text-slate-900">€{offer.reward}</span>
+                                <span className="text-slate-500">Price:</span>
+                                <span className="font-bold text-slate-900">€{offer.productPrice}</span>
                               </div>
-                              <div className="flex justify-between border-t border-slate-100 pt-1 text-sm font-bold text-slate-900">
-                                <span>Total:</span>
-                                <span className="text-blue-600">€{total}</span>
+                              <div className="flex justify-between">
+                                <span className="text-slate-500">Reward:</span>
+                                <span className="font-bold text-brand-teal">€{offer.reward}</span>
                               </div>
                             </div>
 
-                            {/* Action buttons for recipient */}
+                            {/* Action buttons matching Screen 3 */}
                             {!isMine && isPending && (
-                              <div className="flex gap-2 pt-2 border-t border-slate-100">
+                              <div className="space-y-2 pt-1 border-t border-brand-teal/10">
                                 <button
                                   onClick={() => handleOfferAction(msg.id, "accepted")}
                                   disabled={updatingOfferId === msg.id}
-                                  className="flex-1 inline-flex items-center justify-center gap-1 bg-emerald-600 text-white rounded-lg py-1.5 text-xs font-semibold hover:bg-emerald-700 transition"
+                                  className="w-full inline-flex items-center justify-center gap-1.5 bg-brand-teal text-white rounded-xl py-2 text-xs font-bold hover:bg-brand-teal-800 transition shadow-sm"
                                 >
                                   <Check className="h-3.5 w-3.5" />
-                                  {t("acceptOffer")}
+                                  {t("acceptOffer") || "Accept Offer"}
                                 </button>
                                 <button
                                   onClick={() => handleOfferAction(msg.id, "declined")}
                                   disabled={updatingOfferId === msg.id}
-                                  className="px-3 bg-slate-100 text-slate-700 rounded-lg py-1.5 text-xs font-semibold hover:bg-slate-200 transition"
+                                  className="w-full inline-flex items-center justify-center gap-1.5 border border-brand-teal text-brand-teal rounded-xl py-2 text-xs font-bold hover:bg-brand-teal-50 transition"
                                 >
                                   <X className="h-3.5 w-3.5" />
-                                  {t("declineOffer")}
+                                  {t("declineOffer") || "Modify Offer"}
                                 </button>
                               </div>
                             )}
 
                             {isMine && isPending && (
-                              <div className="text-[11px] text-slate-400 italic text-center">
+                              <div className="text-[11px] text-slate-500 italic text-center bg-white/60 py-1.5 rounded-lg border border-brand-teal/10">
                                 Awaiting response from {otherUser.name}...
                               </div>
                             )}
@@ -489,10 +492,10 @@ function MessagesContent() {
                     return (
                       <div key={msg.id} className={`flex ${isMine ? "justify-end" : "justify-start"}`}>
                         <div
-                          className={`max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow-xs ${
+                          className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm shadow-xs ${
                             isMine
-                              ? "bg-blue-600 text-white rounded-br-xs"
-                              : "bg-white text-slate-800 border border-slate-100 rounded-bl-xs"
+                              ? "bg-brand-teal text-white rounded-br-xs"
+                              : "bg-white text-slate-800 border border-brand-border rounded-bl-xs"
                           }`}
                         >
                           <p className="leading-relaxed break-words">{msg.text}</p>
@@ -504,19 +507,19 @@ function MessagesContent() {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Input bar */}
-              <form onSubmit={handleSendText} className="p-3 border-t border-slate-200 bg-white flex items-center gap-2">
+              {/* Input bar matching Screen 3 */}
+              <form onSubmit={handleSendText} className="p-3 border-t border-brand-border bg-white flex items-center gap-2">
                 <input
                   type="text"
                   value={textInput}
                   onChange={(e) => setTextInput(e.target.value)}
                   placeholder={t("typeMessage")}
-                  className="flex-1 rounded-xl border border-slate-200 px-3.5 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                  className="flex-1 rounded-2xl border border-brand-border bg-brand-bg/50 px-4 py-2.5 text-xs sm:text-sm focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
                 />
                 <button
                   type="submit"
                   disabled={sending || !textInput.trim()}
-                  className="inline-flex items-center justify-center h-9 w-9 rounded-xl bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-40 transition"
+                  className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-brand-teal text-white hover:bg-brand-teal-800 disabled:opacity-40 transition shadow-sm"
                 >
                   <Send className="h-4 w-4" />
                 </button>
