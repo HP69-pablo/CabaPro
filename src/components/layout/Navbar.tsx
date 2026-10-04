@@ -70,16 +70,16 @@ export default function Navbar({ locale }: NavbarProps) {
               >
                 {t("myActivity")}
               </Link>
-              <Link
-                href="/staff"
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-brand-accent hover:bg-brand-teal-50 rounded-xl transition"
-                title="Staff Control Center"
-              >
-                <ShieldCheck className="h-4 w-4" />
-                Staff
-              </Link>
             </>
           )}
+          <Link
+            href="/staff"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-brand-accent hover:bg-brand-teal-50 rounded-xl transition border border-brand-accent/20"
+            title="Centre de Contrôle Staff & Bureaux"
+          >
+            <ShieldCheck className="h-3.5 w-3.5" />
+            Staff
+          </Link>
         </nav>
 
         {/* Right side */}
@@ -203,6 +203,9 @@ export default function Navbar({ locale }: NavbarProps) {
               </Link>
               <Link href="/register" className="block px-3 py-2.5 text-sm font-medium text-white bg-brand-teal rounded-xl text-center shadow-sm" onClick={() => setMobileOpen(false)}>
                 {t("register")}
+              </Link>
+              <Link href="/staff" className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-brand-accent hover:bg-brand-teal-50 rounded-xl" onClick={() => setMobileOpen(false)}>
+                <ShieldCheck className="h-4 w-4" /> Portail Staff & Admin
               </Link>
             </div>
           )}

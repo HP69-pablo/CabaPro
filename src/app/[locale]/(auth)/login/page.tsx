@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatAuthError } from "@/lib/auth";
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, ShieldCheck } from "lucide-react";
 
 export default function LoginPage() {
   const t = useTranslations("auth");
@@ -132,6 +132,16 @@ export default function LoginPage() {
             {t("registerButton")}
           </Link>
         </p>
+
+        <div className="mt-8 pt-6 border-t border-slate-200/80 text-center">
+          <Link
+            href="/staff"
+            className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-brand-teal hover:bg-slate-100 transition"
+          >
+            <ShieldCheck className="h-4 w-4 text-brand-teal" />
+            Portail Staff & Administration →
+          </Link>
+        </div>
       </div>
     </div>
   );

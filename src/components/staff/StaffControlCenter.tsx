@@ -26,6 +26,7 @@ import { PARTNER_BUREAUS, STAFF_CREDENTIALS } from "@/lib/transactions/constants
 import { Transaction, LedgerEntry, AuditLogEntry } from "@/lib/transactions/types";
 import { TransactionService } from "@/lib/transactions/transactionService";
 import { DemoSimulator, DEMO_PERSONAS, DEMO_TRANSACTION_ID } from "@/lib/transactions/demoSimulator";
+import { Link } from "@/i18n/navigation";
 
 interface StaffAccount {
   id: string;
@@ -37,10 +38,30 @@ interface StaffAccount {
   createdAt: string;
 }
 
-export default function StaffControlCenter() {
+interface StaffControlCenterProps {
+  defaultRole?: "admin" | "finance" | "bureau_staff" | "moderator";
+}
+
+export default function StaffControlCenter({ defaultRole = "admin" }: StaffControlCenterProps = {}) {
+  // Authentication & PIN gate
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [selectedDeskId, setSelectedDeskId] = useState<string>(
+    defaultRole === "bureau_staff" ? "bureau_alger" : defaultRole
+  );
+  const [pinInput, setPinInput] = useState<string>("");
+  const [pinError, setPinError] = useState<string | null>(null);
+
   // Current active staff session
-  const [activeRole, setActiveRole] = useState<"admin" | "finance" | "bureau_staff" | "moderator">("admin");
-  const [currentStaffName, setCurrentStaffName] = useState(STAFF_CREDENTIALS.ADMIN.name);
+  const [activeRole, setActiveRole] = useState<"admin" | "finance" | "bureau_staff" | "moderator">(defaultRole);
+  const [currentStaffName, setCurrentStaffName] = useState(
+    defaultRole === "admin"
+      ? STAFF_CREDENTIALS.ADMIN.name
+      : defaultRole === "finance"
+      ? STAFF_CREDENTIALS.FINANCE.name
+      : defaultRole === "bureau_staff"
+      ? STAFF_CREDENTIALS.BUREAU_ALGER.name
+      : STAFF_CREDENTIALS.MODERATOR.name
+  );
   const [staffTab, setStaffTab] = useState<"bureau_desk" | "wires" | "disputes" | "accounts" | "ledger">("bureau_desk");
 
   // State data
@@ -117,6 +138,56 @@ export default function StaffControlCenter() {
     else if (role === "finance") setCurrentStaffName(STAFF_CREDENTIALS.FINANCE.name);
     else if (role === "bureau_staff") setCurrentStaffName(STAFF_CREDENTIALS.BUREAU_ALGER.name);
     else setCurrentStaffName(STAFF_CREDENTIALS.MODERATOR.name);
+  };
+
+  const handlePinLogin = (deskId: string, pin: string) => {
+    setPinError(null);
+    if (deskId === "admin" && pin === STAFF_CREDENTIALS.ADMIN.pin) {
+      setActiveRole("admin");
+      setCurrentStaffName(STAFF_CREDENTIALS.ADMIN.name);
+      setStaffTab("bureau_desk");
+      setIsAuthenticated(true);
+      return;
+    }
+    if (deskId === "finance" && pin === STAFF_CREDENTIALS.FINANCE.pin) {
+      setActiveRole("finance");
+      setCurrentStaffName(STAFF_CREDENTIALS.FINANCE.name);
+      setStaffTab("wires");
+      setIsAuthenticated(true);
+      return;
+    }
+    if (deskId === "bureau_alger" && pin === STAFF_CREDENTIALS.BUREAU_ALGER.pin) {
+      setActiveRole("bureau_staff");
+      setCurrentStaffName(STAFF_CREDENTIALS.BUREAU_ALGER.name);
+      setStaffTab("bureau_desk");
+      setIsAuthenticated(true);
+      return;
+    }
+    if (deskId === "moderator" && pin === STAFF_CREDENTIALS.MODERATOR.pin) {
+      setActiveRole("moderator");
+      setCurrentStaffName(STAFF_CREDENTIALS.MODERATOR.name);
+      setStaffTab("disputes");
+      setIsAuthenticated(true);
+      return;
+    }
+
+    const custom = createdStaffList.find((s) => s.id === deskId);
+    if (custom && custom.pin === pin) {
+      setActiveRole(custom.role);
+      setCurrentStaffName(custom.name);
+      setStaffTab(custom.role === "finance" ? "wires" : custom.role === "moderator" ? "disputes" : "bureau_desk");
+      setIsAuthenticated(true);
+      return;
+    }
+
+    setPinError("Code PIN invalide pour ce bureau. Veuillez réessayer.");
+  };
+
+  const handleQuickUnlock = (role: "admin" | "finance" | "bureau_staff" | "moderator") => {
+    if (role === "admin") handlePinLogin("admin", STAFF_CREDENTIALS.ADMIN.pin);
+    else if (role === "finance") handlePinLogin("finance", STAFF_CREDENTIALS.FINANCE.pin);
+    else if (role === "bureau_staff") handlePinLogin("bureau_alger", STAFF_CREDENTIALS.BUREAU_ALGER.pin);
+    else handlePinLogin("moderator", STAFF_CREDENTIALS.MODERATOR.pin);
   };
 
   // 1. Bureau Cash confirmation
@@ -220,6 +291,188 @@ export default function StaffControlCenter() {
     setActionSuccess(`Compte personnel créé avec succès pour ${newStaffName} (${newStaffRole})!`);
   };
 
+  if (!isAuthenticated) {
+    const currentDefaultPin =
+      selectedDeskId === "admin"
+        ? STAFF_CREDENTIALS.ADMIN.pin
+        : selectedDeskId === "bureau_alger"
+        ? STAFF_CREDENTIALS.BUREAU_ALGER.pin
+        : selectedDeskId === "finance"
+        ? STAFF_CREDENTIALS.FINANCE.pin
+        : selectedDeskId === "moderator"
+        ? STAFF_CREDENTIALS.MODERATOR.pin
+        : createdStaffList.find((s) => s.id === selectedDeskId)?.pin || "----";
+
+    return (
+      <div className="min-h-[calc(100vh-56px)] bg-brand-bg flex items-center justify-center p-4">
+        <div className="w-full max-w-md bg-white rounded-3xl border border-brand-border p-6 sm:p-8 shadow-xl">
+          {/* Header */}
+          <div className="text-center mb-6">
+            <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-teal text-white shadow-md shadow-brand-teal/20">
+              <ShieldCheck className="h-8 w-8" />
+            </div>
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900">
+              Portail Staff & Administration
+            </h1>
+            <p className="mt-1 text-xs text-slate-500">
+              Authentification sécurisée par code PIN d&apos;agent pour accéder aux opérations de caisse, virements et litiges Caba Pro.
+            </p>
+          </div>
+
+          {/* Form */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handlePinLogin(selectedDeskId, pinInput);
+            }}
+            className="space-y-4"
+          >
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Sélectionner le Poste / Bureau
+              </label>
+              <select
+                value={selectedDeskId}
+                onChange={(e) => {
+                  setSelectedDeskId(e.target.value);
+                  setPinError(null);
+                }}
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-xs font-semibold text-slate-800 focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none transition"
+              >
+                <optgroup label="Postes Officiels Caba Pro">
+                  <option value="admin">Direction Générale (Admin - admin@cabapro.dz)</option>
+                  <option value="bureau_alger">Guichet Caisse Alger (Mustapha K. - Alger Centre)</option>
+                  <option value="finance">Direction Financière (Double Contrôle - finance@cabapro.dz)</option>
+                  <option value="moderator">Service Modération & Litiges (moderation@cabapro.dz)</option>
+                </optgroup>
+                {createdStaffList.length > 0 && (
+                  <optgroup label="Comptes Personnels Enregistrés">
+                    {createdStaffList.map((st) => (
+                      <option key={st.id} value={st.id}>
+                        {st.name} ({st.role.toUpperCase()})
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+              </select>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Code PIN d&apos;accès
+                </label>
+                <span className="text-[11px] text-brand-accent font-semibold font-mono">
+                  PIN par défaut: {currentDefaultPin}
+                </span>
+              </div>
+              <div className="relative">
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                <input
+                  type="password"
+                  maxLength={6}
+                  value={pinInput}
+                  onChange={(e) => {
+                    setPinInput(e.target.value);
+                    if (pinError) setPinError(null);
+                  }}
+                  placeholder={`Entrez ${currentDefaultPin}`}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-200 text-sm font-mono tracking-widest text-slate-900 focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none transition"
+                  autoFocus
+                />
+              </div>
+            </div>
+
+            {pinError && (
+              <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 shrink-0 text-red-600" />
+                <span>{pinError}</span>
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full rounded-2xl bg-brand-teal py-3 text-xs font-bold text-white hover:bg-brand-teal-800 transition flex items-center justify-center gap-2 shadow-md shadow-brand-teal/20"
+            >
+              <Key className="h-4 w-4" />
+              Déverrouiller le Poste
+            </button>
+          </form>
+
+          {/* Quick Demo Unlocks */}
+          <div className="mt-6 pt-5 border-t border-slate-100">
+            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 text-center">
+              Accès Rapide Démo (1-Clic)
+            </p>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <button
+                type="button"
+                onClick={() => handleQuickUnlock("admin")}
+                className="p-2.5 rounded-xl border border-slate-200 hover:border-brand-teal bg-slate-50 hover:bg-brand-teal-50 text-slate-700 text-left transition flex items-center gap-2"
+              >
+                <div className="h-6 w-6 rounded-lg bg-brand-teal/10 text-brand-teal flex items-center justify-center font-bold text-xs shrink-0">
+                  <Key className="h-3 w-3" />
+                </div>
+                <div>
+                  <div className="font-bold text-[11px] leading-tight text-slate-900">Admin</div>
+                  <div className="text-[10px] text-slate-400 font-mono">PIN: 9900</div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleQuickUnlock("bureau_staff")}
+                className="p-2.5 rounded-xl border border-slate-200 hover:border-brand-teal bg-slate-50 hover:bg-brand-teal-50 text-slate-700 text-left transition flex items-center gap-2"
+              >
+                <div className="h-6 w-6 rounded-lg bg-brand-teal/10 text-brand-teal flex items-center justify-center font-bold text-xs shrink-0">
+                  <Building2 className="h-3 w-3" />
+                </div>
+                <div>
+                  <div className="font-bold text-[11px] leading-tight text-slate-900">Bureau Alger</div>
+                  <div className="text-[10px] text-slate-400 font-mono">PIN: 1600</div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleQuickUnlock("finance")}
+                className="p-2.5 rounded-xl border border-slate-200 hover:border-brand-teal bg-slate-50 hover:bg-brand-teal-50 text-slate-700 text-left transition flex items-center gap-2"
+              >
+                <div className="h-6 w-6 rounded-lg bg-brand-teal/10 text-brand-teal flex items-center justify-center font-bold text-xs shrink-0">
+                  <DollarSign className="h-3 w-3" />
+                </div>
+                <div>
+                  <div className="font-bold text-[11px] leading-tight text-slate-900">Finance</div>
+                  <div className="text-[10px] text-slate-400 font-mono">PIN: 8800</div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleQuickUnlock("moderator")}
+                className="p-2.5 rounded-xl border border-slate-200 hover:border-brand-teal bg-slate-50 hover:bg-brand-teal-50 text-slate-700 text-left transition flex items-center gap-2"
+              >
+                <div className="h-6 w-6 rounded-lg bg-brand-teal/10 text-brand-teal flex items-center justify-center font-bold text-xs shrink-0">
+                  <AlertTriangle className="h-3 w-3" />
+                </div>
+                <div>
+                  <div className="font-bold text-[11px] leading-tight text-slate-900">Modération</div>
+                  <div className="text-[10px] text-slate-400 font-mono">PIN: 7700</div>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-6 text-center">
+            <Link href="/" className="text-xs text-slate-400 hover:text-slate-600 transition inline-flex items-center gap-1">
+              ← Retour à l&apos;accueil Caba Pro
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-brand-bg py-8 px-4 sm:px-6 max-w-7xl mx-auto">
       {/* Header with security badge */}
@@ -283,6 +536,19 @@ export default function StaffControlCenter() {
           >
             <AlertTriangle className="h-3.5 w-3.5" />
             Litiges
+          </button>
+
+          <button
+            onClick={() => {
+              setIsAuthenticated(false);
+              setPinInput("");
+              setPinError(null);
+            }}
+            className="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 hover:border-red-200"
+            title="Verrouiller la session et quitter le bureau"
+          >
+            <Lock className="h-3.5 w-3.5" />
+            Verrouiller
           </button>
         </div>
       </div>
