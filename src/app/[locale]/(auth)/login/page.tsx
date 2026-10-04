@@ -119,7 +119,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition flex items-center justify-center gap-2"
+            className="w-full rounded-2xl bg-brand-teal px-4 py-3 text-xs font-bold text-white hover:bg-brand-teal-800 disabled:opacity-50 transition flex items-center justify-center gap-2 shadow-md shadow-brand-teal/20"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             {t("loginButton")}
@@ -128,7 +128,7 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-sm text-slate-500">
           {t("noAccount")}{" "}
-          <Link href="/register" className="font-medium text-blue-600 hover:text-blue-700">
+          <Link href="/register" className="font-bold text-brand-teal hover:underline">
             {t("registerButton")}
           </Link>
         </p>

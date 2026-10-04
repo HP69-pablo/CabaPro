@@ -124,7 +124,7 @@ export default function NewTripPage() {
               onClick={() => setTransportMethod("PLANE")}
               className={`flex items-center justify-center gap-1.5 p-2.5 rounded-xl border text-xs font-bold transition ${
                 transportMethod === "PLANE"
-                  ? "bg-purple-600 text-white border-purple-600 shadow-xs"
+                  ? "bg-brand-coral text-white border-brand-coral shadow-xs"
                   : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
               }`}
             >
@@ -135,7 +135,7 @@ export default function NewTripPage() {
               onClick={() => setTransportMethod("CAR")}
               className={`flex items-center justify-center gap-1.5 p-2.5 rounded-xl border text-xs font-bold transition ${
                 transportMethod === "CAR"
-                  ? "bg-purple-600 text-white border-purple-600 shadow-xs"
+                  ? "bg-brand-coral text-white border-brand-coral shadow-xs"
                   : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
               }`}
             >
@@ -146,7 +146,7 @@ export default function NewTripPage() {
               onClick={() => setTransportMethod("SHIP")}
               className={`flex items-center justify-center gap-1.5 p-2.5 rounded-xl border text-xs font-bold transition ${
                 transportMethod === "SHIP"
-                  ? "bg-purple-600 text-white border-purple-600 shadow-xs"
+                  ? "bg-brand-coral text-white border-brand-coral shadow-xs"
                   : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
               }`}
             >

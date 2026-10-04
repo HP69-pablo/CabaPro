@@ -116,7 +116,7 @@ export default function RequestsPage() {
         </div>
         <Link
           href="/requests/new"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 shadow-sm transition"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-teal px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-teal-800 shadow-sm shadow-brand-teal/20 transition"
         >
           <Plus className="h-4 w-4" />
           <span>{t("publish")}</span>
@@ -132,7 +132,7 @@ export default function RequestsPage() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={tCommon("search")}
-            className="w-full rounded-xl border border-slate-200 ps-9 pe-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+            className="w-full rounded-xl border border-slate-200 ps-9 pe-3 py-2 text-sm focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
           />
         </div>
         <div className="relative">
@@ -142,7 +142,7 @@ export default function RequestsPage() {
             value={filterCity}
             onChange={(e) => setFilterCity(e.target.value)}
             placeholder={t("toWhere")}
-            className="w-full rounded-xl border border-slate-200 ps-9 pe-3 py-2 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+            className="w-full rounded-xl border border-slate-200 ps-9 pe-3 py-2 text-sm focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none"
           />
         </div>
       </div>
@@ -150,7 +150,7 @@ export default function RequestsPage() {
       {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+          <Loader2 className="h-6 w-6 animate-spin text-brand-teal" />
         </div>
       )}
 
@@ -162,7 +162,7 @@ export default function RequestsPage() {
           <p className="text-xs text-slate-400 mt-1">{tCommon("noResults")}</p>
           <Link
             href="/requests/new"
-            className="inline-flex items-center gap-2 mt-4 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition"
+            className="inline-flex items-center gap-2 mt-4 rounded-xl bg-brand-teal px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-teal-800 transition"
           >
             <Plus className="h-4 w-4" /> {t("publish")}
           </Link>

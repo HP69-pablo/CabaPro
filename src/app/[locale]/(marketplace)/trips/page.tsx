@@ -109,7 +109,7 @@ export default function TripsPage() {
         </div>
         <Link
           href="/trips/new"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-purple-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 shadow-sm transition"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-coral px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-coral-600 shadow-sm shadow-brand-coral/20 transition"
         >
           <Plus className="h-4 w-4" />
           <span>{t("publish")}</span>
@@ -124,14 +124,14 @@ export default function TripsPage() {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder={tCommon("search")}
-          className="w-full rounded-xl border border-slate-200 ps-9 pe-3 py-2 text-sm focus:border-purple-500 focus:ring-1 focus:ring-purple-500 outline-none"
+          className="w-full rounded-xl border border-slate-200 ps-9 pe-3 py-2 text-sm focus:border-brand-coral focus:ring-1 focus:ring-brand-coral outline-none"
         />
       </div>
 
       {/* Loading */}
       {loading && (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-6 w-6 animate-spin text-purple-600" />
+          <Loader2 className="h-6 w-6 animate-spin text-brand-coral" />
         </div>
       )}
 
@@ -143,7 +143,7 @@ export default function TripsPage() {
           <p className="text-xs text-slate-400 mt-1">{tCommon("noResults")}</p>
           <Link
             href="/trips/new"
-            className="inline-flex items-center gap-2 mt-4 rounded-xl bg-purple-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-purple-700 transition"
+            className="inline-flex items-center gap-2 mt-4 rounded-xl bg-brand-coral px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-coral-600 transition"
           >
             <Plus className="h-4 w-4" /> {t("publish")}
           </Link>

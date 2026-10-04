@@ -4,6 +4,18 @@
 
 @layer base {
   :root {
+    --brand-primary: 22 101 103; /* #166567 */
+    --brand-primary-hover: 17 73 75; /* #11494b */
+    --brand-primary-light: 240 248 248; /* #f0f8f8 */
+    --brand-secondary: 234 106 71; /* #ea6a47 */
+    --brand-secondary-hover: 214 78 41; /* #d64e29 */
+    --brand-secondary-light: 254 244 241; /* #fef4f1 */
+    --brand-bg: 244 247 248;
+    --brand-card: 255 255 255;
+    --brand-border: 226 236 236;
+    --brand-text: 15 23 42;
+    --brand-muted: 100 116 139;
+
     --background: 185 15% 97%;
     --foreground: 192 35% 15%;
     --card: 0 0% 100%;
@@ -27,6 +39,14 @@
   }
 
   .dark {
+    --brand-bg: 15 23 42;
+    --brand-card: 30 41 59;
+    --brand-border: 51 65 85;
+    --brand-text: 248 250 252;
+    --brand-muted: 148 163 184;
+    --brand-primary-light: 25 50 52;
+    --brand-secondary-light: 60 30 22;
+
     --background: 222 47% 11%;
     --foreground: 210 40% 98%;
     --card: 222 47% 11%;
@@ -53,7 +73,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-200;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }

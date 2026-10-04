@@ -31,8 +31,10 @@ import {
   Weight, 
   ShoppingBag,
   ExternalLink,
-  MessageSquare
+  MessageSquare,
+  Settings as SettingsIcon
 } from "lucide-react";
+import SettingsView from "@/components/settings/SettingsView";
 
 export default function DashboardPage() {
   const t = useTranslations("dashboard");
@@ -40,7 +42,7 @@ export default function DashboardPage() {
   const router = useRouter();
   const { user, userProfile, loading: authLoading } = useAuth();
 
-  const [tab, setTab] = useState<"matches" | "orders" | "requests" | "trips" | "wallet">("matches");
+  const [tab, setTab] = useState<"matches" | "orders" | "requests" | "trips" | "wallet" | "settings">("matches");
   const [handoverConfirmed, setHandoverConfirmed] = useState(false);
   const [myRequests, setMyRequests] = useState<BuyerRequestItem[]>([]);
   const [myTrips, setMyTrips] = useState<BringerTripItem[]>([]);
@@ -169,12 +171,12 @@ export default function DashboardPage() {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center p-8 bg-white rounded-2xl border border-slate-200 max-w-sm">
-          <Package className="h-12 w-12 text-blue-600 mx-auto mb-3" />
+          <Package className="h-12 w-12 text-brand-teal mx-auto mb-3" />
           <h2 className="text-lg font-bold text-slate-900 mb-1">Access Your Dashboard</h2>
           <p className="text-xs text-slate-500 mb-4">Sign in to manage your requests, trips, and view smart matches.</p>
           <Link
             href="/login"
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-teal px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-teal-800 transition"
           >
             Sign In
           </Link>
@@ -289,6 +291,18 @@ export default function DashboardPage() {
             <Wallet className="h-3.5 w-3.5 text-emerald-600" />
             <span>Wallet & Escrow</span>
           </button>
+
+          <button
+            onClick={() => setTab("settings")}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition ${
+              tab === "settings"
+                ? "bg-white text-brand-teal shadow-xs"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <SettingsIcon className="h-3.5 w-3.5 text-brand-teal" />
+            <span>Settings</span>
+          </button>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
@@ -328,10 +342,10 @@ export default function DashboardPage() {
                 Our rule-based engine automatically pairs your requests with active travelers heading your route.
               </p>
               <div className="flex justify-center gap-2">
-                <Link href="/requests/new" className="text-xs font-semibold text-blue-600 bg-blue-50 px-3 py-2 rounded-lg hover:bg-blue-100">
+                <Link href="/requests/new" className="text-xs font-semibold text-brand-teal bg-brand-teal-50 px-3 py-2 rounded-lg hover:bg-brand-teal-100">
                   + Post a Request
                 </Link>
-                <Link href="/trips/new" className="text-xs font-semibold text-purple-600 bg-purple-50 px-3 py-2 rounded-lg hover:bg-purple-100">
+                <Link href="/trips/new" className="text-xs font-semibold text-brand-coral bg-brand-coral-50 px-3 py-2 rounded-lg hover:bg-brand-coral-100">
                   + Post a Trip
                 </Link>
               </div>
@@ -340,7 +354,7 @@ export default function DashboardPage() {
             allMatches.map((match) => (
               <div
                 key={match.id}
-                className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:border-blue-300 transition"
+                className="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs hover:border-brand-teal/40 transition"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-slate-100 pb-3 mb-3">
                   <div className="flex items-center gap-2">
@@ -377,7 +391,7 @@ export default function DashboardPage() {
                   <button
                     onClick={() => handleStartChatFromMatch(match)}
                     disabled={connectingMatchId === match.id}
-                    className="inline-flex items-center gap-1.5 bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-blue-700 transition"
+                    className="inline-flex items-center gap-1.5 bg-brand-teal text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-brand-teal-800 transition"
                   >
                     {connectingMatchId === match.id ? (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -537,7 +551,7 @@ export default function DashboardPage() {
             <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200 p-8">
               <Package className="h-10 w-10 text-slate-300 mx-auto mb-2" />
               <p className="text-xs text-slate-500 mb-3">You haven't posted any product requests yet.</p>
-              <Link href="/requests/new" className="inline-flex items-center gap-1.5 bg-blue-600 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-blue-700">
+              <Link href="/requests/new" className="inline-flex items-center gap-1.5 bg-brand-teal text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-brand-teal-800 transition">
                 <Plus className="h-3.5 w-3.5" /> Post Your First Request
               </Link>
             </div>
@@ -617,7 +631,7 @@ export default function DashboardPage() {
             <div className="text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200 p-8">
               <Plane className="h-10 w-10 text-slate-300 mx-auto mb-2" />
               <p className="text-xs text-slate-500 mb-3">You haven't posted any travel trips yet.</p>
-              <Link href="/trips/new" className="inline-flex items-center gap-1.5 bg-purple-600 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-purple-700">
+              <Link href="/trips/new" className="inline-flex items-center gap-1.5 bg-brand-coral text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-brand-coral-600 transition">
                 <Plus className="h-3.5 w-3.5" /> Post Your Upcoming Trip
               </Link>
             </div>
@@ -635,7 +649,7 @@ export default function DashboardPage() {
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center">
+                      <div className="h-10 w-10 rounded-xl bg-brand-coral-50 text-brand-coral flex items-center justify-center">
                         <Plane className="h-5 w-5" />
                       </div>
                       <div>
@@ -669,7 +683,7 @@ export default function DashboardPage() {
 
                   {/* Concurrency-safe capacity bar according to PDF Page 3 */}
                   <div className="w-full bg-slate-100 rounded-full h-2 mb-3 overflow-hidden">
-                    <div className="bg-purple-600 h-2 rounded-full transition-all" style={{ width: `${usedPercentage}%` }} />
+                    <div className="bg-brand-coral h-2 rounded-full transition-all" style={{ width: `${usedPercentage}%` }} />
                   </div>
 
                   {trip.notes && (
@@ -704,16 +718,23 @@ export default function DashboardPage() {
           <div className="bg-white rounded-2xl border border-slate-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wide">Escrow Protected</span>
-              <ShieldCheck className="h-4 w-4 text-blue-600" />
+              <ShieldCheck className="h-4 w-4 text-brand-teal" />
             </div>
             <div className="text-3xl font-black text-slate-900 mb-1">
               €{wallet.escrowBalance.toFixed(2)}
             </div>
             <p className="text-xs text-slate-500 mb-4">Locked safely until delivery code is verified</p>
-            <div className="text-xs font-medium text-blue-600 bg-blue-50 p-2.5 rounded-xl border border-blue-100">
+            <div className="text-xs font-medium text-brand-teal bg-brand-teal-50 p-2.5 rounded-xl border border-brand-teal/20">
               ✓ All payments held in escrow under Caba Pro Guarantee
             </div>
           </div>
+        </div>
+      )}
+
+      {/* TAB 5: SETTINGS */}
+      {!loading && tab === "settings" && (
+        <div className="pt-1">
+          <SettingsView />
         </div>
       )}
     </div>

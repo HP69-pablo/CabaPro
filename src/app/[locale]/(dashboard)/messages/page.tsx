@@ -173,7 +173,7 @@ function MessagesContent() {
   if (authLoading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+        <Loader2 className="h-6 w-6 animate-spin text-brand-teal" />
       </div>
     );
   }
@@ -185,7 +185,7 @@ function MessagesContent() {
           <p className="text-slate-500 mb-4">{t("noMessages")}</p>
           <Link
             href="/login"
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition"
+            className="inline-flex items-center gap-2 rounded-xl bg-brand-teal px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-teal-800 transition"
           >
             {tCommon("login" as any) || "Sign In"}
           </Link>
@@ -225,13 +225,13 @@ function MessagesContent() {
                     key={conv.id}
                     onClick={() => setSelectedConvId(conv.id)}
                     className={`w-full text-start p-3.5 flex items-start gap-3 hover:bg-slate-50 transition ${
-                      isSelected ? "bg-blue-50/60 border-s-4 border-blue-600" : ""
+                      isSelected ? "bg-brand-teal-50/60 border-s-4 border-brand-teal" : ""
                     }`}
                   >
                     {other.photoURL ? (
                       <img src={other.photoURL} alt="" className="h-10 w-10 rounded-full object-cover shrink-0" />
                     ) : (
-                      <div className="h-10 w-10 rounded-full bg-blue-100 text-blue-600 font-semibold flex items-center justify-center shrink-0 text-sm">
+                      <div className="h-10 w-10 rounded-full bg-brand-teal-100 text-brand-teal font-semibold flex items-center justify-center shrink-0 text-sm">
                         {other.name?.[0]?.toUpperCase() || "U"}
                       </div>
                     )}
@@ -241,14 +241,14 @@ function MessagesContent() {
                       </div>
                       
                       {conv.requestTitle && (
-                        <div className="flex items-center gap-1 text-[11px] text-blue-600 truncate mt-0.5">
+                        <div className="flex items-center gap-1 text-[11px] text-brand-teal truncate mt-0.5">
                           <Package className="h-3 w-3 shrink-0" />
                           <span className="truncate">{conv.requestTitle}</span>
                         </div>
                       )}
 
                       {conv.tripRoute && (
-                        <div className="flex items-center gap-1 text-[11px] text-purple-600 truncate mt-0.5">
+                        <div className="flex items-center gap-1 text-[11px] text-brand-coral truncate mt-0.5">
                           <Plane className="h-3 w-3 shrink-0" />
                           <span className="truncate">{conv.tripRoute}</span>
                         </div>
@@ -386,7 +386,7 @@ function MessagesContent() {
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {loadingMessages ? (
                   <div className="flex items-center justify-center h-full">
-                    <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+                    <Loader2 className="h-6 w-6 animate-spin text-brand-teal" />
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-slate-400">
@@ -543,7 +543,7 @@ export default function MessagesPage() {
     <Suspense
       fallback={
         <div className="flex items-center justify-center min-h-[500px]">
-          <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+          <Loader2 className="h-6 w-6 animate-spin text-brand-teal" />
         </div>
       }
     >

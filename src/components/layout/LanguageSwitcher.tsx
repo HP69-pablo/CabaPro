@@ -16,36 +16,42 @@ export default function LanguageSwitcher({ currentLocale }: LanguageSwitcherProp
   };
 
   return (
-    <div className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs shadow-sm">
-      <Globe className="h-3.5 w-3.5 text-slate-500" />
+    <div className="flex items-center gap-1.5 rounded-xl border border-brand-border dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs shadow-xs">
+      <Globe className="h-3.5 w-3.5 text-slate-500 dark:text-slate-400" />
       <button
         type="button"
         onClick={() => handleLocaleChange("en")}
-        className={`px-1.5 py-0.5 rounded font-medium transition ${
-          currentLocale === "en" ? "bg-blue-600 text-white" : "text-slate-600 hover:text-slate-900"
+        className={`px-2 py-0.5 rounded-lg font-bold text-[11px] transition ${
+          currentLocale === "en"
+            ? "bg-brand-teal text-white shadow-xs"
+            : "text-slate-600 dark:text-slate-300 hover:text-brand-teal"
         }`}
       >
         EN
       </button>
-      <span className="text-slate-300">|</span>
+      <span className="text-slate-300 dark:text-slate-600">|</span>
       <button
         type="button"
         onClick={() => handleLocaleChange("fr")}
-        className={`px-1.5 py-0.5 rounded font-medium transition ${
-          currentLocale === "fr" ? "bg-blue-600 text-white" : "text-slate-600 hover:text-slate-900"
+        className={`px-2 py-0.5 rounded-lg font-bold text-[11px] transition ${
+          currentLocale === "fr"
+            ? "bg-brand-teal text-white shadow-xs"
+            : "text-slate-600 dark:text-slate-300 hover:text-brand-teal"
         }`}
       >
         FR
       </button>
-      <span className="text-slate-300">|</span>
+      <span className="text-slate-300 dark:text-slate-600">|</span>
       <button
         type="button"
         onClick={() => handleLocaleChange("ar")}
-        className={`px-1.5 py-0.5 rounded font-medium transition ${
-          currentLocale === "ar" ? "bg-blue-600 text-white" : "text-slate-600 hover:text-slate-900"
+        className={`px-2 py-0.5 rounded-lg font-bold text-[11px] transition ${
+          currentLocale === "ar"
+            ? "bg-brand-teal text-white shadow-xs"
+            : "text-slate-600 dark:text-slate-300 hover:text-brand-teal"
         }`}
       >
-        العربية
+        عربي
       </button>
     </div>
   );

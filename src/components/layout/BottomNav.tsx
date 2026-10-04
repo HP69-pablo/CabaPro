@@ -40,12 +40,12 @@ export default function BottomNav() {
       label: t("profile") || "Account",
       href: user ? "/dashboard" : "/login",
       icon: User,
-      active: pathname?.includes("/dashboard") || pathname?.includes("/profile"),
+      active: pathname?.includes("/dashboard") || pathname?.includes("/profile") || pathname?.includes("/settings"),
     },
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-brand-border shadow-lg px-2 py-1.5 safe-area-bottom">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-brand-border dark:border-slate-800 shadow-lg px-2 py-1.5 safe-area-bottom">
       <div className="flex items-center justify-around">
         {navItems.map((item, idx) => {
           const Icon = item.icon;

@@ -81,7 +81,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+        <Loader2 className="h-6 w-6 animate-spin text-brand-teal" />
       </div>
     );
   }
@@ -93,7 +93,7 @@ export default function ProfilePage() {
           <p className="text-slate-500 mb-4">{t("notVerified")}</p>
           <Link
             href="/login"
-            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition"
+            className="inline-flex items-center gap-2 rounded-xl bg-brand-teal px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-teal-800 transition"
           >
             {tCommon("login" as any) || "Sign In"}
           </Link>
@@ -128,7 +128,7 @@ export default function ProfilePage() {
           {user.photoURL ? (
             <img src={user.photoURL} alt="" className="h-16 w-16 rounded-full object-cover border border-slate-200" />
           ) : (
-            <div className="h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+            <div className="h-16 w-16 rounded-full bg-brand-teal-100 flex items-center justify-center text-brand-teal">
               <User className="h-8 w-8" />
             </div>
           )}
@@ -214,7 +214,7 @@ export default function ProfilePage() {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex-1 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition flex items-center justify-center gap-1"
+                className="flex-1 rounded-xl bg-brand-teal px-4 py-2 text-xs font-semibold text-white hover:bg-brand-teal-800 disabled:opacity-50 transition flex items-center justify-center gap-1 shadow-sm shadow-brand-teal/20"
               >
                 {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                 {tCommon("save")}
