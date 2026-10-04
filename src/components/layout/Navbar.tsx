@@ -13,6 +13,7 @@ import {
   Menu,
   X,
   Settings as SettingsIcon,
+  ShieldCheck,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -68,6 +69,14 @@ export default function Navbar({ locale }: NavbarProps) {
                 className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-brand-accent hover:bg-brand-teal-50 rounded-xl transition"
               >
                 {t("myActivity")}
+              </Link>
+              <Link
+                href="/staff"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-brand-accent hover:bg-brand-teal-50 rounded-xl transition"
+                title="Staff Control Center"
+              >
+                <ShieldCheck className="h-4 w-4" />
+                Staff
               </Link>
             </>
           )}
@@ -167,6 +176,9 @@ export default function Navbar({ locale }: NavbarProps) {
               </Link>
               <Link href="/dashboard" className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-brand-teal-50 rounded-xl" onClick={() => setMobileOpen(false)}>
                 {t("myActivity")}
+              </Link>
+              <Link href="/staff" className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-brand-accent hover:bg-brand-teal-50 rounded-xl" onClick={() => setMobileOpen(false)}>
+                <ShieldCheck className="h-4 w-4" /> Staff Control Center
               </Link>
               <Link href="/profile" className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-brand-teal-50 rounded-xl" onClick={() => setMobileOpen(false)}>
                 <User className="h-4 w-4 text-brand-accent" /> {t("profile")}

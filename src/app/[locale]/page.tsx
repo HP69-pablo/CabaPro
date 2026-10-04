@@ -1,5 +1,9 @@
+"use client";
+
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import MarketplaceFypHub from "@/components/home/MarketplaceFypHub";
 import {
   Package,
   Plane,
@@ -14,8 +18,14 @@ import {
   Sparkles,
 } from "lucide-react";
 
-export default function LandingPage() {
+export default function HomePage() {
+  const { user, loading } = useAuth();
   const t = useTranslations("landing");
+
+  // When logged in, home turns into the Facebook Marketplace / Ouedkniss FYP Hub
+  if (user) {
+    return <MarketplaceFypHub />;
+  }
 
   return (
     <div className="flex flex-col bg-brand-bg min-h-screen">

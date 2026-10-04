@@ -35,6 +35,7 @@ import {
   Settings as SettingsIcon
 } from "lucide-react";
 import SettingsView from "@/components/settings/SettingsView";
+import TransactionDetailView from "@/components/transactions/TransactionDetailView";
 
 export default function DashboardPage() {
   const t = useTranslations("dashboard");
@@ -407,141 +408,9 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* TAB: ORDERS & HANDOVER ESCROW CODE (SCREEN 4 MOCKUP) */}
+      {/* TAB: ORDERS & HANDOVER ESCROW CODE (FULL WORKFLOW) */}
       {!loading && tab === "orders" && (
-        <div className="max-w-xl mx-auto space-y-5">
-          {/* Order Header */}
-          <div className="bg-white rounded-3xl border border-brand-border p-6 shadow-sm">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-5">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-2xl bg-brand-teal-50 text-brand-accent flex items-center justify-center font-bold">
-                  <ShieldCheck className="h-5 w-5 text-brand-accent" />
-                </div>
-                <div>
-                  <h2 className="text-base font-extrabold text-slate-900">Order #4521</h2>
-                  <p className="text-xs text-slate-500">Paris (CDG) → Algiers (ALG)</p>
-                </div>
-              </div>
-              <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full ${
-                handoverConfirmed 
-                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200" 
-                  : "bg-brand-teal-50 text-brand-accent border border-brand-accent/20"
-              }`}>
-                {handoverConfirmed ? "Delivered & Released" : "In Transit (Escrow Secured)"}
-              </span>
-            </div>
-
-            {/* 4-Step Stepper */}
-            <div className="mb-6">
-              <div className="flex items-center justify-between relative">
-                <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-200 -translate-y-1/2 -z-0" />
-                <div 
-                  className="absolute top-1/2 left-0 h-0.5 bg-brand-teal -translate-y-1/2 -z-0 transition-all duration-500" 
-                  style={{ width: handoverConfirmed ? "100%" : "66%" }} 
-                />
-
-                {/* Step 1: Request Accepted */}
-                <div className="flex flex-col items-center relative z-10">
-                  <div className="h-7 w-7 rounded-full bg-brand-teal text-white flex items-center justify-center text-xs font-bold shadow-sm">
-                    ✓
-                  </div>
-                  <span className="text-[10px] font-bold text-brand-accent mt-1.5 text-center">Accepted</span>
-                </div>
-
-                {/* Step 2: Payment Secured */}
-                <div className="flex flex-col items-center relative z-10">
-                  <div className="h-7 w-7 rounded-full bg-brand-teal text-white flex items-center justify-center text-xs font-bold shadow-sm">
-                    ✓
-                  </div>
-                  <span className="text-[10px] font-bold text-brand-accent mt-1.5 text-center">Secured</span>
-                </div>
-
-                {/* Step 3: In Transit */}
-                <div className="flex flex-col items-center relative z-10">
-                  <div className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold shadow-sm transition-colors ${
-                    handoverConfirmed ? "bg-brand-teal text-white" : "bg-brand-teal text-white ring-4 ring-brand-accent/20"
-                  }`}>
-                    {handoverConfirmed ? "✓" : "3"}
-                  </div>
-                  <span className="text-[10px] font-bold text-brand-accent mt-1.5 text-center">In Transit</span>
-                </div>
-
-                {/* Step 4: Delivered */}
-                <div className="flex flex-col items-center relative z-10">
-                  <div className={`h-7 w-7 rounded-full flex items-center justify-center text-xs font-bold shadow-sm transition-colors ${
-                    handoverConfirmed ? "bg-emerald-600 text-white ring-4 ring-emerald-100" : "bg-slate-200 text-slate-500"
-                  }`}>
-                    {handoverConfirmed ? "✓" : "4"}
-                  </div>
-                  <span className={`text-[10px] font-bold mt-1.5 text-center ${
-                    handoverConfirmed ? "text-emerald-700" : "text-slate-400"
-                  }`}>Delivered</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Item Card */}
-            <div className="bg-brand-bg rounded-2xl p-4 border border-brand-border/60 mb-5 flex items-center gap-4">
-              <div className="h-16 w-16 rounded-xl bg-white border border-brand-border flex items-center justify-center shrink-0 shadow-xs">
-                <Package className="h-8 w-8 text-brand-accent" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-baseline justify-between gap-2">
-                  <h3 className="font-extrabold text-slate-900 text-sm truncate">Sony WH-1000XM5</h3>
-                  <span className="font-black text-slate-900 text-sm">€320</span>
-                </div>
-                <p className="text-xs text-slate-500 mb-1.5">Weight: 0.8 kg • Fnac Paris</p>
-                <div className="flex items-center gap-3 text-[11px] text-slate-600">
-                  <span>Buyer: <strong className="text-slate-800">Sarah J.</strong></span>
-                  <span>•</span>
-                  <span>Bringer: <strong className="text-brand-accent">Karim B.</strong></span>
-                </div>
-              </div>
-            </div>
-
-            {/* Escrow & Delivery Code Box - Screen 4 highlight */}
-            <div className="bg-brand-teal-50 rounded-2xl p-5 border border-brand-accent/20 mb-5 text-center">
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-accent mb-2">
-                <ShieldCheck className="h-4 w-4 text-brand-accent" />
-                <span>One-Time Delivery Code</span>
-              </div>
-              <div>
-                <span className="font-mono text-3xl sm:text-4xl font-black tracking-widest text-brand-accent mb-2 bg-white/80 py-2.5 px-6 rounded-xl border border-brand-accent/15 shadow-inner inline-block">
-                  457 991
-                </span>
-              </div>
-              <p className="text-xs text-slate-600 max-w-xs mx-auto mt-2 leading-relaxed">
-                {handoverConfirmed 
-                  ? "Code verified! €30 Bringer Reward has been released to Karim's wallet."
-                  : "Share this 6-digit code with traveler Karim upon in-person delivery to release escrow payment."}
-              </p>
-            </div>
-
-            {/* Action Button */}
-            {!handoverConfirmed ? (
-              <button
-                onClick={() => setHandoverConfirmed(true)}
-                className="w-full bg-brand-teal hover:bg-brand-teal-800 text-white rounded-2xl py-3.5 text-sm font-bold shadow-md shadow-brand-teal/20 transition flex items-center justify-center gap-2"
-              >
-                <CheckCircle2 className="h-4 w-4" />
-                <span>Confirm Handover & Release Payment</span>
-              </button>
-            ) : (
-              <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl p-4 text-center">
-                <p className="text-xs font-bold mb-1">🎉 Handover Successfully Confirmed!</p>
-                <p className="text-[11px] text-emerald-600">
-                  The transaction is complete and €30 reward has been released.
-                </p>
-                <button
-                  onClick={() => setHandoverConfirmed(false)}
-                  className="mt-2 text-[11px] font-bold text-slate-500 hover:text-slate-700 underline"
-                >
-                  Reset Demo State
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
+        <TransactionDetailView />
       )}
 
       {/* TAB 2: MY REQUESTS (DEMANDS) */}

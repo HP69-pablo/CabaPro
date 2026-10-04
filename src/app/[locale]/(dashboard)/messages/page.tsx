@@ -13,6 +13,7 @@ import {
   ConversationItem, 
   MessageItem 
 } from "@/lib/firestore";
+import { TransactionService } from "@/lib/transactions/transactionService";
 import { 
   MessageSquare, 
   Send, 
@@ -159,10 +160,31 @@ function MessagesContent() {
   };
 
   const handleOfferAction = async (messageId: string, action: "accepted" | "declined") => {
-    if (!selectedConvId) return;
+    if (!selectedConvId || !user) return;
     setUpdatingOfferId(messageId);
     try {
       await updateOfferStatus(selectedConvId, messageId, action);
+      if (action === "accepted" && activeConversation) {
+        const msg = messages.find((m) => m.id === messageId);
+        if (msg && msg.offer) {
+          const otherUid = activeConversation.participants.find((p) => p !== user.uid) || "traveler";
+          const otherDetails = activeConversation.participantDetails?.[otherUid];
+          await TransactionService.createTransactionFromOffer({
+            conversationId: selectedConvId,
+            requestId: activeConversation.requestId || undefined,
+            requestTitle: activeConversation.requestTitle || "Item Request",
+            productName: activeConversation.requestTitle || "Item Request",
+            tripId: activeConversation.tripId || undefined,
+            tripRoute: activeConversation.tripRoute || "International → Algeria",
+            buyerId: user.uid,
+            buyerName: user.displayName || user.email?.split("@")[0] || "Buyer",
+            bringerId: otherUid,
+            bringerName: otherDetails?.name || "Traveler",
+            productPriceEur: msg.offer.productPrice,
+            bringerFeeEur: msg.offer.reward,
+          });
+        }
+      }
     } catch (err) {
       console.error("Failed to update offer:", err);
     } finally {
@@ -476,6 +498,18 @@ function MessagesContent() {
                                   <X className="h-3.5 w-3.5" />
                                   {t("declineOffer") || "Modify Offer"}
                                 </button>
+                              </div>
+                            )}
+
+                            {isAccepted && (
+                              <div className="pt-2 border-t border-emerald-200">
+                                <Link
+                                  href="/dashboard?tab=orders"
+                                  className="w-full inline-flex items-center justify-center gap-1.5 bg-emerald-600 text-white rounded-xl py-2 text-xs font-bold hover:bg-emerald-700 transition shadow-sm"
+                                >
+                                  <Shield className="h-3.5 w-3.5" />
+                                  Suivre le Paiement & Livraison
+                                </Link>
                               </div>
                             )}
 
