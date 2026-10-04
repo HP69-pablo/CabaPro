@@ -33,12 +33,16 @@ export default function ProfilePage() {
     setDisplayName(user.displayName || "");
 
     const loadProfile = async () => {
-      const doc = await getDocById<UserProfileData>("users", user.uid);
-      if (doc) {
-        if (doc.displayName) setDisplayName(doc.displayName);
-        if (doc.phone) setPhone(doc.phone);
-        if (doc.city) setCity(doc.city);
-        if (doc.bio) setBio(doc.bio);
+      try {
+        const doc = await getDocById<UserProfileData>("users", user.uid);
+        if (doc) {
+          if (doc.displayName) setDisplayName(doc.displayName);
+          if (doc.phone) setPhone(doc.phone);
+          if (doc.city) setCity(doc.city);
+          if (doc.bio) setBio(doc.bio);
+        }
+      } catch (err) {
+        console.warn("Could not load user profile:", err);
       }
     };
     loadProfile();

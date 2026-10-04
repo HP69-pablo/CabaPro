@@ -32,10 +32,15 @@ export const collections = {
   transactions: createCollection('transactions'),
 };
 
-export const getDocById = async <T>(collectionName: string, id: string) => {
-  const docRef = doc(db, collectionName, id);
-  const docSnap = await getDoc(docRef);
-  return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } as T : null;
+export const getDocById = async <T>(collectionName: string, id: string): Promise<T | null> => {
+  try {
+    const docRef = doc(db, collectionName, id);
+    const docSnap = await getDoc(docRef);
+    return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } as T : null;
+  } catch (error) {
+    console.warn(`Firestore getDocById (${collectionName}/${id}) warning:`, error);
+    return null;
+  }
 };
 
 export const addDoc = async <T extends WithFieldValue<DocumentData>>(collectionName: string, data: T) => {
@@ -59,11 +64,16 @@ export const deleteDoc = async (collectionName: string, id: string) => {
   await firestoreDeleteDoc(docRef);
 };
 
-export const queryDocs = async <T>(collectionName: string, ...queryConstraints: QueryConstraint[]) => {
-  const collRef = collection(db, collectionName);
-  const q = query(collRef, ...queryConstraints);
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as T);
+export const queryDocs = async <T>(collectionName: string, ...queryConstraints: QueryConstraint[]): Promise<T[]> => {
+  try {
+    const collRef = collection(db, collectionName);
+    const q = query(collRef, ...queryConstraints);
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as T);
+  } catch (error) {
+    console.warn(`Firestore queryDocs (${collectionName}) warning:`, error);
+    return [];
+  }
 };
 
 // ----------------- Chat & Messaging Helpers -----------------
@@ -608,8 +618,14 @@ export const initializeUserRepository = async (firebaseUser: {
         createdAt: serverTimestamp(),
       });
     }
-  } catch (err) {
-    console.error("Repository initialization:", err);
+  } catch (err: any) {
+    if (err?.message?.includes("offline") || err?.code === "unavailable") {
+      console.warn(
+        "⚠️ Firestore database is offline or not yet created in the Firebase console for project 'ai-studio-applet-webapp-17af3'. Please ensure Cloud Firestore is enabled at https://console.firebase.google.com/project/ai-studio-applet-webapp-17af3/firestore"
+      );
+    } else {
+      console.error("Repository initialization:", err);
+    }
   }
 };
 
