@@ -21,6 +21,7 @@ import {
 export default function HomePage() {
   const { user, loading } = useAuth();
   const t = useTranslations("landing");
+  const tNav = useTranslations("nav");
 
   // When logged in, home turns into the Facebook Marketplace / Ouedkniss FYP Hub
   if (user) {
@@ -63,19 +64,18 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Signature Headline from Mockup Screen 1 */}
+            {/* Signature Headline */}
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 leading-tight">
-              Your Items,<br />
-              <span className="text-brand-accent">Delivered.</span>
+              {t("heroTitle")}
             </h1>
 
             <p className="mt-4 text-sm sm:text-base text-slate-600 max-w-md mx-auto leading-relaxed">
               {t("heroSubtitle")}
             </p>
 
-            {/* CTAs matching Mockup Screen 1: Dual persona buttons */}
+            {/* CTAs matching Mockup: Dual persona buttons */}
             <div className="mt-8 flex flex-col gap-3 max-w-sm mx-auto">
-              {/* Buyer CTA: Deep Teal Button with "Buyers" caption */}
+              {/* Buyer CTA */}
               <Link
                 href="/requests/new"
                 className="group relative flex flex-col items-center justify-center rounded-2xl bg-brand-teal py-3.5 px-6 text-white shadow-md shadow-brand-teal/25 hover:bg-brand-teal-800 transition active:scale-[0.99]"
@@ -85,11 +85,11 @@ export default function HomePage() {
                   <span>{t("ctaBuyer") || "I Need Something"}</span>
                 </div>
                 <span className="text-[11px] font-medium text-teal-100/90 mt-0.5 tracking-wide">
-                  Buyers
+                  {t("buyers") || "Buyers"}
                 </span>
               </Link>
 
-              {/* Bringer CTA: Warm Coral Orange Button with "Bringers" caption */}
+              {/* Bringer CTA */}
               <Link
                 href="/trips/new"
                 className="group relative flex flex-col items-center justify-center rounded-2xl bg-brand-coral py-3.5 px-6 text-white shadow-md shadow-brand-coral/25 hover:bg-brand-coral-600 transition active:scale-[0.99]"
@@ -99,19 +99,19 @@ export default function HomePage() {
                   <span>{t("ctaBringer") || "I'm Traveling"}</span>
                 </div>
                 <span className="text-[11px] font-medium text-white/80 mt-0.5 tracking-wide">
-                  Bringers
+                  {t("bringers") || "Travelers"}
                 </span>
               </Link>
             </div>
 
-            {/* Footer auth links matching Mockup Screen 1 */}
+            {/* Footer auth links */}
             <div className="mt-6 flex items-center justify-center gap-3 text-xs font-semibold text-brand-accent">
               <Link href="/login" className="hover:underline">
-                Login
+                {tNav("login")}
               </Link>
               <span className="text-slate-300">|</span>
               <Link href="/register" className="hover:underline">
-                Sign Up
+                {tNav("register")}
               </Link>
             </div>
           </div>
@@ -123,7 +123,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="text-center max-w-md mx-auto mb-12">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-teal-50 text-brand-accent text-xs font-semibold uppercase tracking-wider mb-2">
-              <Sparkles className="h-3.5 w-3.5" /> Simple & Fast
+              <Sparkles className="h-3.5 w-3.5" /> {t("simpleFast") || "Simple & Fast"}
             </span>
             <h2 className="text-2xl font-bold text-slate-900">
               {t("howTitle")}
@@ -145,7 +145,7 @@ export default function HomePage() {
                   <step.icon className="h-6 w-6 stroke-[2]" />
                 </div>
                 <div className="text-[11px] font-bold text-brand-accent/80 uppercase tracking-widest mb-1">
-                  Step {step.num}
+                  {t("step") || "Step"} {step.num}
                 </div>
                 <h3 className="font-bold text-slate-900 mb-1.5 text-base">{step.title}</h3>
                 <p className="text-xs text-slate-600 leading-relaxed">{step.desc}</p>
@@ -210,10 +210,10 @@ export default function HomePage() {
       <section className="py-12 bg-brand-teal text-white">
         <div className="container mx-auto px-4 sm:px-6 text-center max-w-xl">
           <h2 className="text-2xl font-bold mb-3">
-            Start saving or earning on every trip
+            {t("footerTitle")}
           </h2>
           <p className="text-xs text-teal-100 mb-6">
-            Join thousands of travelers and shoppers across Algeria, France, and beyond.
+            {t("footerSubtitle")}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
@@ -221,14 +221,14 @@ export default function HomePage() {
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-2.5 text-xs font-bold text-brand-accent hover:bg-brand-teal-50 transition"
             >
               <Package className="h-4 w-4" />
-              Browse Requests
+              {t("browseRequests")}
             </Link>
             <Link
               href="/trips"
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-white/40 px-6 py-2.5 text-xs font-bold text-white hover:bg-[#ffffff]/10 transition"
             >
               <Plane className="h-4 w-4" />
-              Browse Trips
+              {t("browseTrips")}
             </Link>
           </div>
         </div>

@@ -9,6 +9,7 @@ import BottomNav from "@/components/layout/BottomNav";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import HydrationGuard from "@/components/common/HydrationGuard";
+import LocaleDirSync from "@/components/common/LocaleDirSync";
 
 export const metadata: Metadata = {
   title: "Caba Pro — Get anything from abroad",
@@ -76,6 +77,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       <body className="min-h-screen bg-brand-bg text-slate-900 antialiased font-sans transition-colors duration-200" suppressHydrationWarning>
         <HydrationGuard />
         <NextIntlClientProvider messages={messages}>
+          <LocaleDirSync />
           <AuthProvider>
             <ThemeProvider>
               <div className="flex min-h-screen flex-col bg-brand-bg/60">

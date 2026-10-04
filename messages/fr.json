@@ -28,7 +28,11 @@
     "register": "Inscription",
     "logout": "Déconnexion",
     "profile": "Profil",
-    "settings": "Paramètres"
+    "settings": "Paramètres",
+    "post": "Publier",
+    "staff": "Staff",
+    "staffTitle": "Centre de Contrôle Staff & Bureaux Partenaires",
+    "staffPortal": "Portail Staff & Admin"
   },
   "auth": {
     "loginTitle": "Bon retour",
@@ -67,7 +71,15 @@
     "whyFast": "Livraison rapide",
     "whyFastDesc": "Reçois tes articles en quelques jours, pas en semaines. Les voyageurs prennent des vols directs.",
     "whyCommunity": "Communauté de confiance",
-    "whyCommunityDesc": "Des utilisateurs vérifiés, des notes et des avis pour bâtir une vraie confiance."
+    "whyCommunityDesc": "Des utilisateurs vérifiés, des notes et des avis pour bâtir une vraie confiance.",
+    "buyers": "Acheteurs",
+    "bringers": "Voyageurs",
+    "simpleFast": "Simple & Rapide",
+    "step": "Étape",
+    "footerTitle": "Commencez à économiser ou gagner sur chaque voyage",
+    "footerSubtitle": "Rejoignez des milliers de voyageurs et acheteurs en Algérie, en France et ailleurs.",
+    "browseRequests": "Parcourir les Demandes",
+    "browseTrips": "Parcourir les Trajets"
   },
   "request": {
     "newTitle": "De quoi as-tu besoin ?",
@@ -126,7 +138,18 @@
     "status": "Statut",
     "active": "Actif",
     "completed": "Terminé",
-    "cancelled": "Annulé"
+    "cancelled": "Annulé",
+    "tabMatches": "Matchs Intelligents",
+    "tabOrders": "Commandes & Séquestre",
+    "tabRequests": "Mes Demandes",
+    "tabTrips": "Mes Trajets",
+    "tabWallet": "Portefeuille",
+    "rating": "Note",
+    "dealsDone": "Transactions terminées",
+    "wallet": "Portefeuille",
+    "noMatches": "Aucun match trouvé pour le moment",
+    "signInTitle": "Accédez à votre espace",
+    "signInSubtitle": "Connectez-vous pour gérer vos demandes, trajets et voir vos matchs."
   },
   "chat": {
     "title": "Messages",
@@ -192,5 +215,47 @@
     "changePassword": "Réinitialiser le mot de passe",
     "passwordResetSent": "Email de réinitialisation envoyé !",
     "signOut": "Se déconnecter"
+  },
+  "hub": {
+    "searchPlaceholder": "Chercher iPhone, Nike, Zara, Paris, Dubaï...",
+    "allWilayas": "Toutes les wilayas",
+    "catAll": "Tout le FYP",
+    "catTech": "Smartphones & Tech",
+    "catFashion": "Mode & Sneakers",
+    "catPerfume": "Parfums & Cosmétiques",
+    "catSupplements": "Compléments & Soins",
+    "catLuggage": "Espace Kilos (Voyageurs)",
+    "catUrgent": "Demandes Urgentes",
+    "tabForYou": "Pour Toi",
+    "tabRequests": "Demandes d'achats",
+    "tabTrips": "Kilos Disponibles",
+    "orderInProgress": "Commande en cours",
+    "status": "Statut",
+    "guaranteedBy": "Garanti Caba Pro",
+    "trackDelivery": "Suivre la Livraison & Remise",
+    "canBring": "Je peux apporter ceci",
+    "availableSpace": "Espace disponible",
+    "reward": "Récompense",
+    "neededBy": "Requis pour le",
+    "noResults": "Aucune annonce ne correspond à vos filtres",
+    "postRequest": "Publier une demande",
+    "postTrip": "Proposer des kilos"
+  },
+  "slip": {
+    "title": "Bordereau de Dépôt Bureau Caba Pro",
+    "subtitle": "Présentez ce document au bureau partenaire pour effectuer le dépôt d'espèces.",
+    "paymentCode": "Code de Paiement",
+    "expectedAmount": "Montant à Déposer",
+    "bureau": "Bureau Partenaire Sélectionné",
+    "deadline": "Date Limite de Dépôt",
+    "instructionsTitle": "Instructions Importantes",
+    "inst1": "Présentation d'une pièce d'identité valide obligatoire au guichet.",
+    "inst2": "Un reçu certifié vous sera délivré dès l'encaissement.",
+    "inst3": "Votre code de livraison à 6 chiffres vous sera attribué dès confirmation.",
+    "printButton": "Imprimer le Document",
+    "closeButton": "Fermer",
+    "langEn": "Anglais",
+    "langFr": "Français",
+    "langAr": "Arabe"
   }
 }

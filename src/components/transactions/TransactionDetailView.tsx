@@ -47,6 +47,7 @@ export default function TransactionDetailView({ transactionId = DEMO_TRANSACTION
   const [codeVerificationResult, setCodeVerificationResult] = useState<{ success: boolean; message: string } | null>(null);
   const [isVerifyingCode, setIsVerifyingCode] = useState(false);
   const [showSlipModal, setShowSlipModal] = useState(false);
+  const [slipLocale, setSlipLocale] = useState<"fr" | "en" | "ar">("fr");
   const [showDisputeModal, setShowDisputeModal] = useState(false);
   const [disputeReason, setDisputeReason] = useState("");
   const [actionNotice, setActionNotice] = useState<string | null>(null);
@@ -851,47 +852,101 @@ export default function TransactionDetailView({ transactionId = DEMO_TRANSACTION
         </div>
       </div>
 
-      {/* ---------------- PRINTABLE SLIP MODAL ---------------- */}
+      {/* ---------------- PRINTABLE SLIP MODAL (TRILINGUAL EN / FR / AR) ---------------- */}
       {showSlipModal && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl border border-slate-200">
+            {/* Modal Header & Language Selector */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <div className="h-8 w-8 rounded-xl bg-brand-teal text-white flex items-center justify-center font-bold">C</div>
-                <h3 className="font-extrabold text-base text-slate-900">Bordereau de Dépôt Bureau Caba Pro</h3>
+                <h3 className="font-extrabold text-base text-slate-900">
+                  {slipLocale === "ar"
+                    ? "وصل إيداع مكتب كابا برو"
+                    : slipLocale === "en"
+                    ? "Caba Pro Bureau Deposit Slip"
+                    : "Bordereau de Dépôt Bureau Caba Pro"}
+                </h3>
               </div>
-              <button onClick={() => setShowSlipModal(false)} className="text-slate-400 hover:text-slate-600">
-                <X className="h-5 w-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                {/* Language pills */}
+                <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-xl text-[11px] font-bold">
+                  <button
+                    onClick={() => setSlipLocale("en")}
+                    className={`px-2 py-0.5 rounded-lg transition ${
+                      slipLocale === "en" ? "bg-brand-teal text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    EN
+                  </button>
+                  <button
+                    onClick={() => setSlipLocale("fr")}
+                    className={`px-2 py-0.5 rounded-lg transition ${
+                      slipLocale === "fr" ? "bg-brand-teal text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    FR
+                  </button>
+                  <button
+                    onClick={() => setSlipLocale("ar")}
+                    className={`px-2 py-0.5 rounded-lg transition ${
+                      slipLocale === "ar" ? "bg-brand-teal text-white shadow-xs" : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    العربية
+                  </button>
+                </div>
+                <button onClick={() => setShowSlipModal(false)} className="text-slate-400 hover:text-slate-600">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
             </div>
 
-            <div className="py-4 space-y-4 text-xs">
+            <div className="py-4 space-y-4 text-xs" dir={slipLocale === "ar" ? "rtl" : "ltr"}>
               <div className="text-center py-3 bg-brand-bg rounded-2xl border border-brand-border">
-                <span className="text-[10px] uppercase font-bold text-slate-400 block">Code Réservation</span>
+                <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                  {slipLocale === "ar"
+                    ? "رمز الحجز والدفع"
+                    : slipLocale === "en"
+                    ? "Payment / Reservation Code"
+                    : "Code Réservation / Paiement"}
+                </span>
                 <span className="font-mono text-3xl font-black text-brand-accent tracking-widest">{tx.paymentCode}</span>
               </div>
 
               <div className="space-y-2 border-y border-slate-100 py-3">
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Bureau Désigné:</span>
+                  <span className="text-slate-500">
+                    {slipLocale === "ar" ? "المكتب المختار:" : slipLocale === "en" ? "Selected Bureau:" : "Bureau Désigné:"}
+                  </span>
                   <span className="font-bold text-slate-800">{tx.bureauName}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Adresse:</span>
+                  <span className="text-slate-500">
+                    {slipLocale === "ar" ? "العنوان:" : slipLocale === "en" ? "Address:" : "Adresse:"}
+                  </span>
                   <span className="font-semibold text-slate-700">{tx.bureauAddress}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Nom de l'Acheteur:</span>
+                  <span className="text-slate-500">
+                    {slipLocale === "ar" ? "اسم المشتري:" : slipLocale === "en" ? "Buyer Name:" : "Nom de l'Acheteur:"}
+                  </span>
                   <span className="font-bold text-slate-800">{tx.buyerName}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-500">Montant Requis en Espèces:</span>
+                  <span className="text-slate-500">
+                    {slipLocale === "ar" ? "المبلغ المطلوب نقداً:" : slipLocale === "en" ? "Required Cash Deposit:" : "Montant Requis en Espèces:"}
+                  </span>
                   <span className="font-black text-brand-accent text-sm">{tx.priceBreakdown.totalDzd.toLocaleString()} DZD</span>
                 </div>
               </div>
 
               <p className="text-[11px] text-slate-500 leading-relaxed">
-                Présentez ce bordereau ou code avec votre pièce d'identité dans n'importe quel bureau partenaire Caba Pro. Un reçu tamponné vous sera remis.
+                {slipLocale === "ar"
+                  ? "يرجى تقديم هذا الوصل أو الرمز مع بطاقة الهوية الوطنية لدى أي مكتب شريك لكابا برو. سيتم تسليمك وصلاً معتمداً ورمز التسليم المكون من 6 أرقام فور تأكيد الدفع."
+                  : slipLocale === "en"
+                  ? "Present this slip or code along with your national ID at the designated Caba Pro partner bureau. A certified receipt and your 6-digit delivery code will be issued immediately upon payment."
+                  : "Présentez ce bordereau ou ce code avec votre pièce d'identité dans n'importe quel bureau partenaire Caba Pro. Un reçu tamponné et votre code de livraison vous seront remis dès validation."}
               </p>
             </div>
 
@@ -901,13 +956,13 @@ export default function TransactionDetailView({ transactionId = DEMO_TRANSACTION
                 className="flex-1 py-3 bg-brand-teal hover:bg-brand-teal-800 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2"
               >
                 <Printer className="h-4 w-4" />
-                Imprimer le Document
+                {slipLocale === "ar" ? "طباعة الوثيقة" : slipLocale === "en" ? "Print Document" : "Imprimer le Document"}
               </button>
               <button
                 onClick={() => setShowSlipModal(false)}
                 className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition"
               >
-                Fermer
+                {slipLocale === "ar" ? "إغلاق" : slipLocale === "en" ? "Close" : "Fermer"}
               </button>
             </div>
           </div>

@@ -173,13 +173,13 @@ export default function DashboardPage() {
       <div className="flex items-center justify-center py-20">
         <div className="text-center p-8 bg-white rounded-2xl border border-slate-200 max-w-sm">
           <Package className="h-12 w-12 text-brand-accent mx-auto mb-3" />
-          <h2 className="text-lg font-bold text-slate-900 mb-1">Access Your Dashboard</h2>
-          <p className="text-xs text-slate-500 mb-4">Sign in to manage your requests, trips, and view smart matches.</p>
+          <h2 className="text-lg font-bold text-slate-900 mb-1">{t("signInTitle") || "Access Your Dashboard"}</h2>
+          <p className="text-xs text-slate-500 mb-4">{t("signInSubtitle") || "Sign in to manage your requests, trips, and view smart matches."}</p>
           <Link
             href="/login"
             className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-teal px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-teal-800 transition"
           >
-            Sign In
+            {tCommon("login" as any) || "Sign In"}
           </Link>
         </div>
       </div>
@@ -216,15 +216,15 @@ export default function DashboardPage() {
               <div className="flex items-center justify-center gap-1 text-amber-300 font-bold text-sm">
                 <Star className="h-3.5 w-3.5 fill-amber-300" /> {rating}
               </div>
-              <div className="text-[10px] text-teal-200">Rating</div>
+              <div className="text-[10px] text-teal-200">{t("rating") || "Rating"}</div>
             </div>
             <div className="bg-[#ffffff]/10 rounded-2xl p-2.5 text-center border border-white/10">
               <div className="font-bold text-sm text-white">{completedDeals}</div>
-              <div className="text-[10px] text-teal-200">Deals Done</div>
+              <div className="text-[10px] text-teal-200">{t("dealsDone") || "Deals Done"}</div>
             </div>
             <div className="bg-[#ffffff]/10 rounded-2xl p-2.5 text-center border border-white/10">
               <div className="font-bold text-sm text-emerald-300">€{wallet.availableBalance}</div>
-              <div className="text-[10px] text-teal-200">Wallet</div>
+              <div className="text-[10px] text-teal-200">{t("wallet") || "Wallet"}</div>
             </div>
           </div>
         </div>
@@ -242,7 +242,7 @@ export default function DashboardPage() {
             }`}
           >
             <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-            <span>Smart Matches ({allMatches.length})</span>
+            <span>{t("tabMatches") || "Smart Matches"} ({allMatches.length})</span>
           </button>
 
           <button
@@ -254,7 +254,7 @@ export default function DashboardPage() {
             }`}
           >
             <ShieldCheck className="h-3.5 w-3.5 text-brand-accent" />
-            <span>Orders & Code</span>
+            <span>{t("tabOrders") || "Orders & Code"}</span>
           </button>
 
           <button
@@ -266,7 +266,7 @@ export default function DashboardPage() {
             }`}
           >
             <Package className="h-3.5 w-3.5 text-brand-accent" />
-            <span>My Requests ({myRequests.length})</span>
+            <span>{t("tabRequests") || "My Requests"} ({myRequests.length})</span>
           </button>
 
           <button
@@ -278,7 +278,7 @@ export default function DashboardPage() {
             }`}
           >
             <Plane className="h-3.5 w-3.5 text-brand-coral" />
-            <span>My Trips ({myTrips.length})</span>
+            <span>{t("tabTrips") || "My Trips"} ({myTrips.length})</span>
           </button>
 
           <button
@@ -290,7 +290,7 @@ export default function DashboardPage() {
             }`}
           >
             <Wallet className="h-3.5 w-3.5 text-emerald-600" />
-            <span>Wallet & Escrow</span>
+            <span>{t("tabWallet") || "Wallet & Escrow"}</span>
           </button>
 
           <button

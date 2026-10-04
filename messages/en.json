@@ -28,7 +28,11 @@
     "register": "Sign Up",
     "logout": "Log Out",
     "profile": "Profile",
-    "settings": "Settings"
+    "settings": "Settings",
+    "post": "Post",
+    "staff": "Staff",
+    "staffTitle": "Staff & Partner Bureaus Control Center",
+    "staffPortal": "Staff & Admin Portal"
   },
   "auth": {
     "loginTitle": "Welcome back",
@@ -67,7 +71,15 @@
     "whyFast": "Fast Delivery",
     "whyFastDesc": "Get your items in days, not weeks. Travelers fly direct.",
     "whyCommunity": "Trusted Community",
-    "whyCommunityDesc": "Verified users, ratings, and reviews build real trust."
+    "whyCommunityDesc": "Verified users, ratings, and reviews build real trust.",
+    "buyers": "Buyers",
+    "bringers": "Travelers",
+    "simpleFast": "Simple & Fast",
+    "step": "Step",
+    "footerTitle": "Start saving or earning on every trip",
+    "footerSubtitle": "Join thousands of travelers and shoppers across Algeria, France, and beyond.",
+    "browseRequests": "Browse Requests",
+    "browseTrips": "Browse Trips"
   },
   "request": {
     "newTitle": "What do you need?",
@@ -126,7 +138,18 @@
     "status": "Status",
     "active": "Active",
     "completed": "Completed",
-    "cancelled": "Cancelled"
+    "cancelled": "Cancelled",
+    "tabMatches": "Smart Matches",
+    "tabOrders": "Orders & Escrow",
+    "tabRequests": "My Requests",
+    "tabTrips": "My Trips",
+    "tabWallet": "Wallet",
+    "rating": "Rating",
+    "dealsDone": "Deals Done",
+    "wallet": "Wallet",
+    "noMatches": "No matches found yet",
+    "signInTitle": "Access Your Dashboard",
+    "signInSubtitle": "Sign in to manage your requests, trips, and view smart matches."
   },
   "chat": {
     "title": "Messages",
@@ -192,5 +215,47 @@
     "changePassword": "Reset Password",
     "passwordResetSent": "Password reset email sent!",
     "signOut": "Sign Out"
+  },
+  "hub": {
+    "searchPlaceholder": "Search iPhone, Nike, Zara, Paris, Dubai...",
+    "allWilayas": "All Wilayas",
+    "catAll": "All FYP",
+    "catTech": "Smartphones & Tech",
+    "catFashion": "Fashion & Sneakers",
+    "catPerfume": "Perfumes & Cosmetics",
+    "catSupplements": "Supplements & Care",
+    "catLuggage": "Luggage Space (Travelers)",
+    "catUrgent": "Urgent Requests",
+    "tabForYou": "For You",
+    "tabRequests": "Purchase Requests",
+    "tabTrips": "Available Kilos",
+    "orderInProgress": "Order in progress",
+    "status": "Status",
+    "guaranteedBy": "Guaranteed by Caba Pro",
+    "trackDelivery": "Track Delivery & Handover",
+    "canBring": "I can bring this",
+    "availableSpace": "Available Space",
+    "reward": "Reward",
+    "neededBy": "Needed by",
+    "noResults": "No posts match your filters",
+    "postRequest": "Post a Request",
+    "postTrip": "Share Luggage Space"
+  },
+  "slip": {
+    "title": "Caba Pro Bureau Deposit Slip",
+    "subtitle": "Present this document at the partner bureau to deposit cash.",
+    "paymentCode": "Payment Code",
+    "expectedAmount": "Amount to Pay",
+    "bureau": "Selected Partner Bureau",
+    "deadline": "Payment Deadline",
+    "instructionsTitle": "Important Instructions",
+    "inst1": "Valid national ID required at the desk.",
+    "inst2": "A certified receipt will be issued immediately upon payment.",
+    "inst3": "Your 6-digit delivery code will be issued once payment is confirmed.",
+    "printButton": "Print Document",
+    "closeButton": "Close",
+    "langEn": "English",
+    "langFr": "French",
+    "langAr": "Arabic"
   }
 }

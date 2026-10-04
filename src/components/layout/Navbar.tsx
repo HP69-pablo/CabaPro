@@ -75,10 +75,10 @@ export default function Navbar({ locale }: NavbarProps) {
           <Link
             href="/staff"
             className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold text-brand-accent hover:bg-brand-teal-50 rounded-xl transition border border-brand-accent/20"
-            title="Centre de Contrôle Staff & Bureaux"
+            title={t("staffTitle") || "Staff & Partner Bureaus Control Center"}
           >
             <ShieldCheck className="h-3.5 w-3.5" />
-            Staff
+            {t("staff") || "Staff"}
           </Link>
         </nav>
 
@@ -178,7 +178,7 @@ export default function Navbar({ locale }: NavbarProps) {
                 {t("myActivity")}
               </Link>
               <Link href="/staff" className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-brand-accent hover:bg-brand-teal-50 rounded-xl" onClick={() => setMobileOpen(false)}>
-                <ShieldCheck className="h-4 w-4" /> Staff Control Center
+                <ShieldCheck className="h-4 w-4" /> {t("staffPortal") || "Staff & Admin Portal"}
               </Link>
               <Link href="/profile" className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-slate-700 hover:bg-brand-teal-50 rounded-xl" onClick={() => setMobileOpen(false)}>
                 <User className="h-4 w-4 text-brand-accent" /> {t("profile")}
@@ -205,7 +205,7 @@ export default function Navbar({ locale }: NavbarProps) {
                 {t("register")}
               </Link>
               <Link href="/staff" className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-brand-accent hover:bg-brand-teal-50 rounded-xl" onClick={() => setMobileOpen(false)}>
-                <ShieldCheck className="h-4 w-4" /> Portail Staff & Admin
+                <ShieldCheck className="h-4 w-4" /> {t("staffPortal") || "Staff & Admin Portal"}
               </Link>
             </div>
           )}

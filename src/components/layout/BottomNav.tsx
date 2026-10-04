@@ -24,7 +24,7 @@ export default function BottomNav() {
       active: pathname?.includes("/requests") && !pathname?.includes("/new"),
     },
     {
-      label: "Post",
+      label: t("post") || "Post",
       href: "/requests/new",
       icon: PlusCircle,
       highlight: true,

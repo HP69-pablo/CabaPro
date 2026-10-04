@@ -169,11 +169,14 @@
 .dark .border-amber-200 { border-color: rgb(245 158 11 / 0.35); }
 .dark .text-amber-600 { color: rgb(251 191 36); }
 
-/* Logical CSS rules for bidirectional RTL and LTR support */
-[dir="rtl"] {
-  text-align: right;
+@layer base {
+  [dir="rtl"] {
+    text-align: start;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Arabic", "Cairo", sans-serif;
+  }
+
+  [dir="ltr"] {
+    text-align: start;
+  }
 }
 
-[dir="ltr"] {
-  text-align: left;
-}
