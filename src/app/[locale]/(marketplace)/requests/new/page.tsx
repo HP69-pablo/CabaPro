@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { addDoc } from "@/lib/firestore";
+import { addDoc, formatFirestoreError } from "@/lib/firestore";
 import { serverTimestamp } from "firebase/firestore";
 import { Package, CheckCircle, Loader2, ArrowLeft } from "lucide-react";
 import { Link } from "@/i18n/navigation";
@@ -76,7 +76,7 @@ export default function NewRequestPage() {
       setSuccess(true);
       setTimeout(() => router.push("/dashboard"), 1200);
     } catch (err: any) {
-      setError(err.message || tCommon("error"));
+      setError(formatFirestoreError(err));
       setLoading(false);
     }
   };

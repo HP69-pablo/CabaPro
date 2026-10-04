@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, Link } from "@/i18n/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { addDoc } from "@/lib/firestore";
+import { addDoc, formatFirestoreError } from "@/lib/firestore";
 import { serverTimestamp } from "firebase/firestore";
 import { Plane, CheckCircle, Loader2, ArrowLeft, Car, Ship } from "lucide-react";
 
@@ -75,7 +75,7 @@ export default function NewTripPage() {
       setSuccess(true);
       setTimeout(() => router.push("/dashboard"), 1200);
     } catch (err: any) {
-      setError(err.message || tCommon("error"));
+      setError(formatFirestoreError(err));
       setLoading(false);
     }
   };

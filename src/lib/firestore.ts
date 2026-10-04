@@ -629,3 +629,17 @@ export const initializeUserRepository = async (firebaseUser: {
   }
 };
 
+/**
+ * Formats Firestore errors into clear user-friendly messages
+ */
+export const formatFirestoreError = (error: any): string => {
+  const msg = error?.message || "";
+  if (msg.includes("client is offline") || msg.includes("unavailable") || msg.includes("Failed to get document")) {
+    return "Database not accessible: Cloud Firestore database has not been created yet in your Firebase Console. Please click 'Create database' at console.firebase.google.com.";
+  }
+  if (msg.includes("permission-denied") || msg.includes("Missing or insufficient permissions")) {
+    return "Permission denied: You do not have permission to perform this action. Check your Firestore Security Rules.";
+  }
+  return msg || "An unexpected database error occurred.";
+};
+
