@@ -33,8 +33,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   const isRtl = locale === "ar";
 
   return (
-    <html lang={locale} dir={isRtl ? "rtl" : "ltr"}>
-      <body className={`min-h-screen bg-white text-slate-900 antialiased font-sans`}>
+    <html lang={locale} dir={isRtl ? "rtl" : "ltr"} suppressHydrationWarning>
+      <body className={`min-h-screen bg-white text-slate-900 antialiased font-sans`} suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <AuthProvider>
             <div className="flex min-h-screen flex-col">
