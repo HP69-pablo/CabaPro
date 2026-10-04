@@ -6,6 +6,7 @@ import { getStorage } from 'firebase/storage';
 const firebaseConfig = {
   apiKey: "AIzaSyBvdRO5QBHP0BJ59F5LPDsbKH5kauT-L_0",
   authDomain: "ai-studio-applet-webapp-17af3.firebaseapp.com",
+  databaseURL: "https://ai-studio-applet-webapp-17af3-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "ai-studio-applet-webapp-17af3",
   storageBucket: "ai-studio-applet-webapp-17af3.firebasestorage.app",
   messagingSenderId: "1029961024458",
