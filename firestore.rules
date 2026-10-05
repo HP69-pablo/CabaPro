@@ -89,53 +89,87 @@ service cloud.firestore {
     //   - updatedAt: timestamp | null (optional)
     //
     // Collection: transactions
-    // Document ID: {transactionId} (auto-generated)
+    // Document ID: {transactionId} (auto-generated or custom id e.g. tx-demo-001)
     // Fields:
-    //   - buyerId: string (required, buyer UID, max 128 chars, immutable)
-    //   - bringerId: string (required, bringer UID, max 128 chars, immutable)
-    //   - buyerName: string | null (optional, max 100 chars)
-    //   - buyerPhoto: string | null (optional, valid URL, max 500 chars)
-    //   - bringerName: string | null (optional, max 100 chars)
-    //   - bringerPhoto: string | null (optional, valid URL, max 500 chars)
+    //   - id: string | null (optional, matches document id, max 128 chars)
+    //   - conversationId: string | null (optional, max 100 chars)
     //   - requestId: string | null (optional, max 100 chars)
     //   - requestTitle: string | null (optional, max 200 chars)
+    //   - productName: string | null (optional, max 200 chars)
+    //   - productImageUrl: string | null (optional, valid URL, max 500 chars)
     //   - tripId: string | null (optional, max 100 chars)
     //   - tripRoute: string | null (optional, max 200 chars)
-    //   - offerId: string | null (optional, max 100 chars)
-    //   - conversationId: string | null (optional, max 100 chars)
+    //   - buyerId: string (required, buyer UID, max 128 chars, immutable)
+    //   - buyerName: string | null (optional, max 100 chars)
+    //   - buyerPhoto: string | null (optional, max 500 chars)
+    //   - buyerPhone: string | null (optional, max 30 chars)
+    //   - bringerId: string (required, bringer UID, max 128 chars, immutable)
+    //   - bringerName: string | null (optional, max 100 chars)
+    //   - bringerPhoto: string | null (optional, max 500 chars)
+    //   - bringerPhone: string | null (optional, max 30 chars)
     //   - status: string (required, max 50 chars)
-    //   - currency: string | null (optional, in ['EUR', 'USD', 'DZD', 'GBP'])
-    //   - amount: number | null (optional, >= 0 and <= 10,000,000)
-    //   - totalAmount: number | null (optional, >= 0 and <= 10,000,000)
-    //   - productPrice: number | null (optional, >= 0 and <= 10,000,000)
-    //   - price: number | null (optional, >= 0 and <= 10,000,000)
-    //   - reward: number | null (optional, >= 0 and <= 10,000,000)
-    //   - bringerFee: number | null (optional, >= 0 and <= 10,000,000)
-    //   - platformFee: number | null (optional, >= 0 and <= 10,000,000)
-    //   - guaranteeFee: number | null (optional, >= 0 and <= 10,000,000)
-    //   - bureauFee: number | null (optional, >= 0 and <= 10,000,000)
-    //   - quantity: number | null (optional, > 0 and <= 1000)
-    //   - weight: number | null (optional, > 0 and <= 1000)
-    //   - paymentMethod: string | null (optional, max 50 chars)
-    //   - paymentStatus: string | null (optional, max 50 chars)
-    //   - paymentReference: string | null (optional, max 100 chars)
-    //   - deliveryCode: string | null (optional, max 100 chars)
-    //   - deliveryPreference: string | null (optional, max 50 chars)
+    //   - previousStatus: string | null (optional, max 50 chars)
+    //   - priceBreakdown: map | string | null (optional, map size <= 30 keys)
+    //   - paymentCode: string | null (optional, max 50 chars)
+    //   - paymentSlipUrl: string | null (optional, max 500 chars)
+    //   - paymentDeadline: string | timestamp | null (optional, max 50 chars)
     //   - bureauId: string | null (optional, max 100 chars)
-    //   - bureauCode: string | null (optional, max 50 chars)
     //   - bureauName: string | null (optional, max 100 chars)
-    //   - itemTitle: string | null (optional, max 200 chars)
-    //   - productName: string | null (optional, max 200 chars)
-    //   - description: string | null (optional, max 2000 chars)
-    //   - notes: string | null (optional, max 2000 chars)
-    //   - images: list | null (optional, size <= 10)
-    //   - proofPhotos: list | null (optional, size <= 10)
-    //   - receiptPhotos: list | null (optional, size <= 10)
-    //   - priceBreakdown: map | null (optional, size <= 20 keys)
-    //   - handoverChecklist: map | null (optional, size <= 20 keys)
-    //   - metadata: map | null (optional, size <= 20 keys)
-    //   - createdAt: timestamp (required on create, immutable)
-    //   - updatedAt: timestamp | null (optional)
+    //   - bureauCity: string | null (optional, max 100 chars)
+    //   - bureauAddress: string | null (optional, max 200 chars)
+    //   - bureauPaymentRecord: map | string | null (optional, map size <= 30 keys)
+    //   - fundsTransfer: map | string | null (optional, map size <= 30 keys)
+    //   - purchaseProof: map | string | null (optional, map size <= 30 keys)
+    //   - safeHandover: map | string | null (optional, map size <= 30 keys)
+    //   - travelDetails: map | string | null (optional, map size <= 30 keys)
+    //   - reception: map | string | null (optional, map size <= 30 keys)
+    //   - deliveryCode: map | string | null (optional, map size <= 30 keys)
+    //   - dispute: map | string | null (optional, map size <= 30 keys)
+    //   - buyerReview: map | string | null (optional, map size <= 20 keys)
+    //   - bringerReview: map | string | null (optional, map size <= 20 keys)
+    //   - createdAt: string | timestamp (required on create, immutable)
+    //   - updatedAt: string | timestamp | null (optional)
+    //   - (legacy financial fields permitted for backward compatibility)
+    //
+    // Collection: ledger_entries
+    // Document ID: {entryId} (auto-generated, immutable append-only ledger)
+    // Fields:
+    //   - id: string | null (optional, max 128 chars)
+    //   - transactionId: string (required, max 128 chars)
+    //   - debitAccount: string (required, max 100 chars)
+    //   - creditAccount: string (required, max 100 chars)
+    //   - amount: number (required, >= 0 and <= 1,000,000,000)
+    //   - currency: string (required, max 10 chars)
+    //   - idempotencyKey: string | null (optional, max 128 chars)
+    //   - description: string | null (optional, max 1000 chars)
+    //   - timestamp: string | timestamp | null (optional, max 50 chars)
+    //
+    // Collection: audit_logs
+    // Document ID: {logId} (auto-generated, immutable audit trail)
+    // Fields:
+    //   - id: string | null (optional, max 128 chars)
+    //   - transactionId: string (required, max 128 chars)
+    //   - fromState: string | null (optional, max 50 chars)
+    //   - toState: string (required, max 50 chars)
+    //   - actorId: string (required, max 128 chars)
+    //   - actorRole: string (required, max 50 chars)
+    //   - actorName: string (required, max 100 chars)
+    //   - action: string (required, max 100 chars)
+    //   - details: string | null (optional, max 2000 chars)
+    //   - timestamp: string | timestamp | null (optional, max 50 chars)
+    //
+    // Collection: staff_accounts
+    // Document ID: {staffId}
+    // Fields:
+    //   - id: string | null (optional, max 128 chars)
+    //   - name: string (required, max 100 chars)
+    //   - email: string | null (optional, max 100 chars)
+    //   - role: string (required, in ['admin', 'finance', 'bureau_staff', 'moderator', 'staff'])
+    //   - bureauName: string | null (optional, max 100 chars)
+    //   - bureauId: string | null (optional, max 100 chars)
+    //   - pin: string | null (optional, max 20 chars)
+    //   - createdAt: string | timestamp | null (optional, max 50 chars)
+    //   - updatedAt: string | timestamp | null (optional, max 50 chars)
     //
     // Collection: conversations
     // Document ID: {conversationId} (auto-generated)
@@ -206,6 +240,30 @@ service cloud.firestore {
       return isAuthenticated() &&
         exists(/databases/$(database)/documents/conversations/$(convId)) &&
         request.auth.uid in get(/databases/$(database)/documents/conversations/$(convId)).data.participants;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (('role' in request.auth.token && request.auth.token.role == 'admin') ||
+         ('admin' in request.auth.token && request.auth.token.admin == true) ||
+         ('email' in request.auth.token && request.auth.token.email is string && request.auth.token.email.matches(".*admin.*@cabapro\\.(dz|com)")) ||
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          'role' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'));
+    }
+
+    function isStaff() {
+      return isAuthenticated() &&
+        (isAdmin() ||
+         ('role' in request.auth.token && request.auth.token.role in ['admin', 'staff', 'bureau_staff', 'finance', 'moderator']) ||
+         ('email' in request.auth.token && request.auth.token.email is string && (
+           request.auth.token.email.matches(".*@cabapro\\.dz") ||
+           request.auth.token.email.matches(".*@cabapro\\.com")
+         )) ||
+         exists(/databases/$(database)/documents/staff_accounts/$(request.auth.uid)) ||
+         (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+          'role' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data &&
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'staff', 'bureau_staff', 'finance', 'moderator']));
     }
 
     // ===============================================================
@@ -364,21 +422,21 @@ service cloud.firestore {
 
     function isValidTransaction(data) {
       return hasOnlyAllowedFields(data, [
-        'buyerId', 'buyerName', 'buyerPhoto',
-        'bringerId', 'bringerName', 'bringerPhoto',
-        'requestId', 'requestTitle',
-        'tripId', 'tripRoute',
-        'offerId', 'conversationId',
-        'status', 'currency',
-        'amount', 'totalAmount', 'productPrice', 'price', 'reward', 'bringerFee', 'platformFee', 'guaranteeFee', 'bureauFee',
-        'quantity', 'weight',
-        'paymentMethod', 'paymentStatus', 'paymentReference',
-        'deliveryCode', 'deliveryPreference',
-        'bureauId', 'bureauCode', 'bureauName',
-        'itemTitle', 'productName', 'description', 'notes',
-        'images', 'proofPhotos', 'receiptPhotos',
-        'priceBreakdown', 'handoverChecklist', 'metadata',
-        'createdAt', 'updatedAt'
+        'id', 'conversationId', 'requestId', 'requestTitle', 'productName', 'productImageUrl',
+        'tripId', 'tripRoute', 'buyerId', 'buyerName', 'buyerPhoto', 'buyerPhone',
+        'bringerId', 'bringerName', 'bringerPhoto', 'bringerPhone',
+        'status', 'previousStatus',
+        'priceBreakdown', 'paymentCode', 'paymentSlipUrl', 'paymentDeadline',
+        'bureauId', 'bureauName', 'bureauCity', 'bureauAddress', 'bureauPaymentRecord',
+        'fundsTransfer', 'purchaseProof', 'safeHandover', 'travelDetails', 'reception',
+        'deliveryCode', 'dispute', 'buyerReview', 'bringerReview',
+        'createdAt', 'updatedAt',
+        // Permitted financial and legacy fields
+        'offerId', 'currency', 'amount', 'totalAmount', 'productPrice', 'price', 'reward',
+        'bringerFee', 'platformFee', 'guaranteeFee', 'bureauFee', 'bureauCode',
+        'quantity', 'weight', 'paymentMethod', 'paymentStatus', 'paymentReference',
+        'deliveryPreference', 'itemTitle', 'description', 'notes',
+        'images', 'proofPhotos', 'receiptPhotos', 'handoverChecklist', 'metadata'
       ]) &&
       hasRequiredFields(data, [
         'buyerId', 'bringerId', 'status', 'createdAt'
@@ -386,17 +444,44 @@ service cloud.firestore {
       data.buyerId is string && data.buyerId.size() > 0 && data.buyerId.size() <= 128 &&
       data.bringerId is string && data.bringerId.size() > 0 && data.bringerId.size() <= 128 &&
       data.buyerId != data.bringerId &&
-      (!('buyerName' in data) || data.buyerName == null || (data.buyerName is string && data.buyerName.size() <= 100)) &&
-      (!('buyerPhoto' in data) || data.buyerPhoto == null || data.buyerPhoto == '' || (data.buyerPhoto is string && data.buyerPhoto.size() <= 500 && isValidUrl(data.buyerPhoto))) &&
-      (!('bringerName' in data) || data.bringerName == null || (data.bringerName is string && data.bringerName.size() <= 100)) &&
-      (!('bringerPhoto' in data) || data.bringerPhoto == null || data.bringerPhoto == '' || (data.bringerPhoto is string && data.bringerPhoto.size() <= 500 && isValidUrl(data.bringerPhoto))) &&
+      data.status is string && data.status.size() > 0 && data.status.size() <= 50 &&
+      (!('id' in data) || data.id == null || (data.id is string && data.id.size() <= 128)) &&
+      (!('conversationId' in data) || data.conversationId == null || (data.conversationId is string && data.conversationId.size() <= 100)) &&
       (!('requestId' in data) || data.requestId == null || (data.requestId is string && data.requestId.size() <= 100)) &&
       (!('requestTitle' in data) || data.requestTitle == null || (data.requestTitle is string && data.requestTitle.size() <= 200)) &&
+      (!('productName' in data) || data.productName == null || (data.productName is string && data.productName.size() <= 200)) &&
+      (!('productImageUrl' in data) || data.productImageUrl == null || data.productImageUrl == '' || (data.productImageUrl is string && data.productImageUrl.size() <= 500)) &&
       (!('tripId' in data) || data.tripId == null || (data.tripId is string && data.tripId.size() <= 100)) &&
       (!('tripRoute' in data) || data.tripRoute == null || (data.tripRoute is string && data.tripRoute.size() <= 200)) &&
-      (!('offerId' in data) || data.offerId == null || (data.offerId is string && data.offerId.size() <= 100)) &&
-      (!('conversationId' in data) || data.conversationId == null || (data.conversationId is string && data.conversationId.size() <= 100)) &&
-      data.status is string && data.status.size() > 0 && data.status.size() <= 50 &&
+      (!('buyerName' in data) || data.buyerName == null || (data.buyerName is string && data.buyerName.size() <= 100)) &&
+      (!('buyerPhoto' in data) || data.buyerPhoto == null || data.buyerPhoto == '' || (data.buyerPhoto is string && data.buyerPhoto.size() <= 500)) &&
+      (!('buyerPhone' in data) || data.buyerPhone == null || (data.buyerPhone is string && data.buyerPhone.size() <= 30)) &&
+      (!('bringerName' in data) || data.bringerName == null || (data.bringerName is string && data.bringerName.size() <= 100)) &&
+      (!('bringerPhoto' in data) || data.bringerPhoto == null || data.bringerPhoto == '' || (data.bringerPhoto is string && data.bringerPhoto.size() <= 500)) &&
+      (!('bringerPhone' in data) || data.bringerPhone == null || (data.bringerPhone is string && data.bringerPhone.size() <= 30)) &&
+      (!('previousStatus' in data) || data.previousStatus == null || (data.previousStatus is string && data.previousStatus.size() <= 50)) &&
+      (!('paymentCode' in data) || data.paymentCode == null || (data.paymentCode is string && data.paymentCode.size() <= 50)) &&
+      (!('paymentSlipUrl' in data) || data.paymentSlipUrl == null || data.paymentSlipUrl == '' || (data.paymentSlipUrl is string && data.paymentSlipUrl.size() <= 500)) &&
+      (!('paymentDeadline' in data) || data.paymentDeadline == null || (data.paymentDeadline is string && data.paymentDeadline.size() <= 50) || data.paymentDeadline is timestamp) &&
+      (!('bureauId' in data) || data.bureauId == null || (data.bureauId is string && data.bureauId.size() <= 100)) &&
+      (!('bureauName' in data) || data.bureauName == null || (data.bureauName is string && data.bureauName.size() <= 100)) &&
+      (!('bureauCity' in data) || data.bureauCity == null || (data.bureauCity is string && data.bureauCity.size() <= 100)) &&
+      (!('bureauAddress' in data) || data.bureauAddress == null || (data.bureauAddress is string && data.bureauAddress.size() <= 200)) &&
+      // Structured maps or JSON strings with bounded sizing
+      (!('deliveryCode' in data) || data.deliveryCode == null || (data.deliveryCode is map && data.deliveryCode.size() <= 30) || (data.deliveryCode is string && data.deliveryCode.size() <= 500)) &&
+      (!('priceBreakdown' in data) || data.priceBreakdown == null || (data.priceBreakdown is map && data.priceBreakdown.size() <= 30) || (data.priceBreakdown is string && data.priceBreakdown.size() <= 2000)) &&
+      (!('safeHandover' in data) || data.safeHandover == null || (data.safeHandover is map && data.safeHandover.size() <= 30) || (data.safeHandover is string && data.safeHandover.size() <= 2000)) &&
+      (!('reception' in data) || data.reception == null || (data.reception is map && data.reception.size() <= 30) || (data.reception is string && data.reception.size() <= 2000)) &&
+      (!('bureauPaymentRecord' in data) || data.bureauPaymentRecord == null || (data.bureauPaymentRecord is map && data.bureauPaymentRecord.size() <= 30) || (data.bureauPaymentRecord is string && data.bureauPaymentRecord.size() <= 2000)) &&
+      (!('fundsTransfer' in data) || data.fundsTransfer == null || (data.fundsTransfer is map && data.fundsTransfer.size() <= 30) || (data.fundsTransfer is string && data.fundsTransfer.size() <= 2000)) &&
+      (!('purchaseProof' in data) || data.purchaseProof == null || (data.purchaseProof is map && data.purchaseProof.size() <= 30) || (data.purchaseProof is string && data.purchaseProof.size() <= 2000)) &&
+      (!('travelDetails' in data) || data.travelDetails == null || (data.travelDetails is map && data.travelDetails.size() <= 30) || (data.travelDetails is string && data.travelDetails.size() <= 2000)) &&
+      (!('dispute' in data) || data.dispute == null || (data.dispute is map && data.dispute.size() <= 30) || (data.dispute is string && data.dispute.size() <= 2000)) &&
+      (!('buyerReview' in data) || data.buyerReview == null || (data.buyerReview is map && data.buyerReview.size() <= 20) || (data.buyerReview is string && data.buyerReview.size() <= 1000)) &&
+      (!('bringerReview' in data) || data.bringerReview == null || (data.bringerReview is map && data.bringerReview.size() <= 20) || (data.bringerReview is string && data.bringerReview.size() <= 1000)) &&
+      (data.createdAt is timestamp || (data.createdAt is string && data.createdAt.size() <= 50)) &&
+      (!('updatedAt' in data) || data.updatedAt == null || data.updatedAt is timestamp || (data.updatedAt is string && data.updatedAt.size() <= 50)) &&
+      // Optional legacy financial fields
       (!('currency' in data) || data.currency == null || (data.currency is string && data.currency in ['EUR', 'USD', 'DZD', 'GBP'])) &&
       (!('amount' in data) || data.amount == null || (data.amount is number && data.amount >= 0 && data.amount <= 10000000)) &&
       (!('totalAmount' in data) || data.totalAmount == null || (data.totalAmount is number && data.totalAmount >= 0 && data.totalAmount <= 10000000)) &&
@@ -412,35 +497,97 @@ service cloud.firestore {
       (!('paymentMethod' in data) || data.paymentMethod == null || (data.paymentMethod is string && data.paymentMethod.size() <= 50)) &&
       (!('paymentStatus' in data) || data.paymentStatus == null || (data.paymentStatus is string && data.paymentStatus.size() <= 50)) &&
       (!('paymentReference' in data) || data.paymentReference == null || (data.paymentReference is string && data.paymentReference.size() <= 100)) &&
-      (!('deliveryCode' in data) || data.deliveryCode == null || (data.deliveryCode is string && data.deliveryCode.size() <= 100)) &&
       (!('deliveryPreference' in data) || data.deliveryPreference == null || (data.deliveryPreference is string && data.deliveryPreference.size() <= 50)) &&
-      (!('bureauId' in data) || data.bureauId == null || (data.bureauId is string && data.bureauId.size() <= 100)) &&
       (!('bureauCode' in data) || data.bureauCode == null || (data.bureauCode is string && data.bureauCode.size() <= 50)) &&
-      (!('bureauName' in data) || data.bureauName == null || (data.bureauName is string && data.bureauName.size() <= 100)) &&
       (!('itemTitle' in data) || data.itemTitle == null || (data.itemTitle is string && data.itemTitle.size() <= 200)) &&
-      (!('productName' in data) || data.productName == null || (data.productName is string && data.productName.size() <= 200)) &&
       (!('description' in data) || data.description == null || (data.description is string && data.description.size() <= 2000)) &&
       (!('notes' in data) || data.notes == null || (data.notes is string && data.notes.size() <= 2000)) &&
       (!('images' in data) || data.images == null || (data.images is list && data.images.size() <= 10)) &&
       (!('proofPhotos' in data) || data.proofPhotos == null || (data.proofPhotos is list && data.proofPhotos.size() <= 10)) &&
       (!('receiptPhotos' in data) || data.receiptPhotos == null || (data.receiptPhotos is list && data.receiptPhotos.size() <= 10)) &&
-      (!('priceBreakdown' in data) || data.priceBreakdown == null || (data.priceBreakdown is map && data.priceBreakdown.size() <= 20)) &&
       (!('handoverChecklist' in data) || data.handoverChecklist == null || (data.handoverChecklist is map && data.handoverChecklist.size() <= 20)) &&
-      (!('metadata' in data) || data.metadata == null || (data.metadata is map && data.metadata.size() <= 20)) &&
-      data.createdAt is timestamp &&
-      (!('updatedAt' in data) || data.updatedAt == null || data.updatedAt is timestamp);
+      (!('metadata' in data) || data.metadata == null || (data.metadata is map && data.metadata.size() <= 20));
     }
 
     function isValidTransactionCreate(data) {
       return isValidTransaction(data) &&
-        (request.auth.uid == data.buyerId || request.auth.uid == data.bringerId);
+        (request.auth.uid == data.buyerId ||
+         request.auth.uid == data.bringerId ||
+         isStaff() || isAdmin());
     }
 
     function isValidTransactionUpdate(data) {
       return isValidTransaction(data) &&
         data.buyerId == resource.data.buyerId &&
         data.bringerId == resource.data.bringerId &&
-        data.createdAt == resource.data.createdAt;
+        (!('createdAt' in resource.data) || data.createdAt == resource.data.createdAt);
+    }
+
+    // ===============================================================
+    // Domain Validators: ledger_entries
+    // ===============================================================
+
+    function isValidLedgerEntry(data) {
+      return hasOnlyAllowedFields(data, [
+        'id', 'transactionId', 'debitAccount', 'creditAccount',
+        'amount', 'currency', 'idempotencyKey', 'description', 'timestamp'
+      ]) &&
+      hasRequiredFields(data, [
+        'transactionId', 'debitAccount', 'creditAccount', 'amount', 'currency'
+      ]) &&
+      (!('id' in data) || (data.id is string && data.id.size() <= 128)) &&
+      data.transactionId is string && data.transactionId.size() > 0 && data.transactionId.size() <= 128 &&
+      data.debitAccount is string && data.debitAccount.size() > 0 && data.debitAccount.size() <= 100 &&
+      data.creditAccount is string && data.creditAccount.size() > 0 && data.creditAccount.size() <= 100 &&
+      data.amount is number && data.amount >= 0 && data.amount <= 1000000000 &&
+      data.currency is string && data.currency.size() > 0 && data.currency.size() <= 10 &&
+      (!('idempotencyKey' in data) || (data.idempotencyKey is string && data.idempotencyKey.size() <= 128)) &&
+      (!('description' in data) || (data.description is string && data.description.size() <= 1000)) &&
+      (!('timestamp' in data) || data.timestamp is timestamp || (data.timestamp is string && data.timestamp.size() <= 50));
+    }
+
+    // ===============================================================
+    // Domain Validators: audit_logs
+    // ===============================================================
+
+    function isValidAuditLog(data) {
+      return hasOnlyAllowedFields(data, [
+        'id', 'transactionId', 'fromState', 'toState',
+        'actorId', 'actorRole', 'actorName', 'action', 'details', 'timestamp'
+      ]) &&
+      hasRequiredFields(data, [
+        'transactionId', 'toState', 'actorId', 'actorRole', 'actorName', 'action'
+      ]) &&
+      (!('id' in data) || (data.id is string && data.id.size() <= 128)) &&
+      data.transactionId is string && data.transactionId.size() > 0 && data.transactionId.size() <= 128 &&
+      (!('fromState' in data) || data.fromState == null || (data.fromState is string && data.fromState.size() <= 50)) &&
+      data.toState is string && data.toState.size() > 0 && data.toState.size() <= 50 &&
+      data.actorId is string && data.actorId.size() > 0 && data.actorId.size() <= 128 &&
+      data.actorRole is string && data.actorRole.size() > 0 && data.actorRole.size() <= 50 &&
+      data.actorName is string && data.actorName.size() > 0 && data.actorName.size() <= 100 &&
+      data.action is string && data.action.size() > 0 && data.action.size() <= 100 &&
+      (!('details' in data) || data.details == null || (data.details is string && data.details.size() <= 2000)) &&
+      (!('timestamp' in data) || data.timestamp is timestamp || (data.timestamp is string && data.timestamp.size() <= 50));
+    }
+
+    // ===============================================================
+    // Domain Validators: staff_accounts
+    // ===============================================================
+
+    function isValidStaffAccount(data) {
+      return hasOnlyAllowedFields(data, [
+        'id', 'name', 'email', 'role', 'bureauName', 'bureauId', 'pin', 'createdAt', 'updatedAt'
+      ]) &&
+      hasRequiredFields(data, ['name', 'role']) &&
+      (!('id' in data) || (data.id is string && data.id.size() <= 128)) &&
+      data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+      (!('email' in data) || data.email == null || (data.email is string && data.email.size() <= 100)) &&
+      data.role is string && data.role in ['admin', 'finance', 'bureau_staff', 'moderator', 'staff'] &&
+      (!('bureauName' in data) || data.bureauName == null || (data.bureauName is string && data.bureauName.size() <= 100)) &&
+      (!('bureauId' in data) || data.bureauId == null || (data.bureauId is string && data.bureauId.size() <= 100)) &&
+      (!('pin' in data) || data.pin == null || (data.pin is string && data.pin.size() <= 20)) &&
+      (!('createdAt' in data) || data.createdAt is timestamp || (data.createdAt is string && data.createdAt.size() <= 50)) &&
+      (!('updatedAt' in data) || data.updatedAt == null || data.updatedAt is timestamp || (data.updatedAt is string && data.updatedAt.size() <= 50));
     }
 
     // ===============================================================
@@ -573,15 +720,51 @@ service cloud.firestore {
     // ===============================================================
 
     match /transactions/{transactionId} {
-      allow read: if isAuthenticated() &&
-        (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.bringerId);
+      allow read: if true;
       allow create: if isAuthenticated() &&
-        (request.auth.uid == request.resource.data.buyerId || request.auth.uid == request.resource.data.bringerId) &&
+        (request.auth.uid == request.resource.data.buyerId ||
+         request.auth.uid == request.resource.data.bringerId ||
+         isStaff() || isAdmin()) &&
         isValidTransactionCreate(request.resource.data);
       allow update: if isAuthenticated() &&
-        (request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.bringerId) &&
+        (request.auth.uid == resource.data.buyerId ||
+         request.auth.uid == resource.data.bringerId ||
+         isStaff() || isAdmin()) &&
         isValidTransactionUpdate(request.resource.data);
       allow delete: if false;
+    }
+
+    // ===============================================================
+    // Rules: ledger_entries (Immutable Double-Entry Financial Ledger)
+    // ===============================================================
+
+    match /ledger_entries/{entryId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidLedgerEntry(request.resource.data);
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // ===============================================================
+    // Rules: audit_logs (Immutable Audit Trail)
+    // ===============================================================
+
+    match /audit_logs/{logId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidAuditLog(request.resource.data);
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // ===============================================================
+    // Rules: staff_accounts
+    // ===============================================================
+
+    match /staff_accounts/{staffId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidStaffAccount(request.resource.data);
+      allow update: if isAuthenticated() && isValidStaffAccount(request.resource.data);
+      allow delete: if isAuthenticated();
     }
 
     // ===============================================================

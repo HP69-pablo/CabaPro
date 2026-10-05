@@ -136,6 +136,56 @@ export class TransactionService {
   }
 
   /**
+   * Get transaction by payment code (e.g. "CP-748921") or ID
+   */
+  static async getTransactionByPaymentCode(code: string): Promise<Transaction | null> {
+    const clean = code.trim().toUpperCase();
+    for (const t of localTransactions.values()) {
+      if (t.paymentCode?.toUpperCase() === clean || t.id.toUpperCase() === clean) {
+        return t;
+      }
+    }
+    try {
+      const docs = await queryDocs<Transaction>("transactions");
+      const found = docs.find(
+        (d) => d.paymentCode?.toUpperCase() === clean || d.id.toUpperCase() === clean
+      );
+      if (found) {
+        localTransactions.set(found.id, found);
+        return found;
+      }
+    } catch (e) {
+      console.warn("Lookup by payment code notice:", e);
+    }
+    return null;
+  }
+
+  /**
+   * Get all transactions from memory and Firestore
+   */
+  static async getAllTransactions(): Promise<Transaction[]> {
+    try {
+      const remote = await queryDocs<Transaction>("transactions");
+      for (const t of remote) {
+        if (!localTransactions.has(t.id)) {
+          localTransactions.set(t.id, t);
+        }
+      }
+    } catch (e) {
+      console.warn("getAllTransactions query notice:", e);
+    }
+    return Array.from(localTransactions.values());
+  }
+
+  /**
+   * Get transactions awaiting bureau cash deposit
+   */
+  static async getPendingBureauTransactions(): Promise<Transaction[]> {
+    const all = await this.getAllTransactions();
+    return all.filter((t) => t.status === "AWAITING_PAYMENT");
+  }
+
+  /**
    * Subscribe to a transaction in real-time
    */
   static subscribeToTransaction(id: string, callback: (tx: Transaction | null) => void) {

@@ -115,13 +115,26 @@ export default function StaffControlCenter({ defaultRole = "admin" }: StaffContr
   const [disputeVerdict, setDisputeVerdict] = useState<"FULL_REFUND" | "PARTIAL_REFUND" | "RELEASE_BRINGER">("PARTIAL_REFUND");
   const [verdictNotes, setVerdictNotes] = useState("Accord amiable après médiation et inspection.");
 
-  // Load demo transaction on mount
+  // All active transactions
+  const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
+
+  const loadAllTransactions = async () => {
+    try {
+      const list = await TransactionService.getAllTransactions();
+      setAllTransactions(list);
+    } catch (e) {
+      console.warn("loadAllTransactions error:", e);
+    }
+  };
+
+  // Load transactions on mount
   useEffect(() => {
     DemoSimulator.getOrCreateDemoTransaction().then((demo) => {
       setTx(demo);
       setReceivedAmount(demo.priceBreakdown.totalDzd);
       setSearchCode(demo.paymentCode);
       refreshRecords(demo.id);
+      loadAllTransactions();
     });
   }, []);
 
@@ -183,11 +196,23 @@ export default function StaffControlCenter({ defaultRole = "admin" }: StaffContr
     setPinError("Code PIN invalide pour ce bureau. Veuillez réessayer.");
   };
 
-  const handleQuickUnlock = (role: "admin" | "finance" | "bureau_staff" | "moderator") => {
-    if (role === "admin") handlePinLogin("admin", STAFF_CREDENTIALS.ADMIN.pin);
-    else if (role === "finance") handlePinLogin("finance", STAFF_CREDENTIALS.FINANCE.pin);
-    else if (role === "bureau_staff") handlePinLogin("bureau_alger", STAFF_CREDENTIALS.BUREAU_ALGER.pin);
-    else handlePinLogin("moderator", STAFF_CREDENTIALS.MODERATOR.pin);
+  // Real Dossier Lookup
+  const handleSearchDossier = async (codeToSearch?: string) => {
+    const query = (codeToSearch || searchCode).trim();
+    if (!query) return;
+    setActionError(null);
+    setActionSuccess(null);
+    const found = await TransactionService.getTransactionByPaymentCode(query);
+    if (found) {
+      setTx(found);
+      setSearchCode(found.paymentCode);
+      setReceivedAmount(found.priceBreakdown.totalDzd);
+      await refreshRecords(found.id);
+      await loadAllTransactions();
+      setActionSuccess(`Dossier #${found.paymentCode} chargé avec succès.`);
+    } else {
+      setActionError(`Aucun dossier trouvé pour la référence "${query}".`);
+    }
   };
 
   // 1. Bureau Cash confirmation
@@ -205,7 +230,8 @@ export default function StaffControlCenter({ defaultRole = "admin" }: StaffContr
       });
       setTx(updated);
       await refreshRecords(updated.id);
-      setActionSuccess(`Encaissement de ${receivedAmount.toLocaleString()} DZD validé avec succès! Code de livraison 6 chiffres généré.`);
+      await loadAllTransactions();
+      setActionSuccess(`Encaissement de ${receivedAmount.toLocaleString()} DZD validé avec succès ! Code secret 6 chiffres généré.`);
     } catch (err: any) {
       setActionError(err.message || "Erreur de validation");
     }
@@ -399,68 +425,11 @@ export default function StaffControlCenter({ defaultRole = "admin" }: StaffContr
             </button>
           </form>
 
-          {/* Quick Demo Unlocks */}
-          <div className="mt-6 pt-5 border-t border-slate-100">
-            <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2.5 text-center">
-              Accès Rapide Démo (1-Clic)
+          {/* Authorized Staff Note */}
+          <div className="mt-6 pt-5 border-t border-slate-100 text-center">
+            <p className="text-[11px] text-slate-400">
+              Postes autorisés : <span className="font-mono font-bold text-slate-600">Admin (9900)</span> • <span className="font-mono font-bold text-slate-600">Alger (1600)</span> • <span className="font-mono font-bold text-slate-600">Finance (8800)</span> • <span className="font-mono font-bold text-slate-600">Litiges (7700)</span>
             </p>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <button
-                type="button"
-                onClick={() => handleQuickUnlock("admin")}
-                className="p-2.5 rounded-xl border border-slate-200 hover:border-brand-teal bg-slate-50 hover:bg-brand-teal-50 text-slate-700 text-left transition flex items-center gap-2"
-              >
-                <div className="h-6 w-6 rounded-lg bg-brand-teal/10 text-brand-teal flex items-center justify-center font-bold text-xs shrink-0">
-                  <Key className="h-3 w-3" />
-                </div>
-                <div>
-                  <div className="font-bold text-[11px] leading-tight text-slate-900">Admin</div>
-                  <div className="text-[10px] text-slate-400 font-mono">PIN: 9900</div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickUnlock("bureau_staff")}
-                className="p-2.5 rounded-xl border border-slate-200 hover:border-brand-teal bg-slate-50 hover:bg-brand-teal-50 text-slate-700 text-left transition flex items-center gap-2"
-              >
-                <div className="h-6 w-6 rounded-lg bg-brand-teal/10 text-brand-teal flex items-center justify-center font-bold text-xs shrink-0">
-                  <Building2 className="h-3 w-3" />
-                </div>
-                <div>
-                  <div className="font-bold text-[11px] leading-tight text-slate-900">Bureau Alger</div>
-                  <div className="text-[10px] text-slate-400 font-mono">PIN: 1600</div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickUnlock("finance")}
-                className="p-2.5 rounded-xl border border-slate-200 hover:border-brand-teal bg-slate-50 hover:bg-brand-teal-50 text-slate-700 text-left transition flex items-center gap-2"
-              >
-                <div className="h-6 w-6 rounded-lg bg-brand-teal/10 text-brand-teal flex items-center justify-center font-bold text-xs shrink-0">
-                  <DollarSign className="h-3 w-3" />
-                </div>
-                <div>
-                  <div className="font-bold text-[11px] leading-tight text-slate-900">Finance</div>
-                  <div className="text-[10px] text-slate-400 font-mono">PIN: 8800</div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => handleQuickUnlock("moderator")}
-                className="p-2.5 rounded-xl border border-slate-200 hover:border-brand-teal bg-slate-50 hover:bg-brand-teal-50 text-slate-700 text-left transition flex items-center gap-2"
-              >
-                <div className="h-6 w-6 rounded-lg bg-brand-teal/10 text-brand-teal flex items-center justify-center font-bold text-xs shrink-0">
-                  <AlertTriangle className="h-3 w-3" />
-                </div>
-                <div>
-                  <div className="font-bold text-[11px] leading-tight text-slate-900">Modération</div>
-                  <div className="text-[10px] text-slate-400 font-mono">PIN: 7700</div>
-                </div>
-              </button>
-            </div>
           </div>
 
           <div className="mt-6 text-center">
@@ -664,23 +633,52 @@ export default function StaffControlCenter({ defaultRole = "admin" }: StaffContr
             </h2>
 
             {/* Lookup Input */}
-            <div className="flex gap-2 mb-6">
+            <div className="flex gap-2 mb-3">
               <div className="relative flex-1">
                 <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
                 <input
                   type="text"
                   value={searchCode}
                   onChange={(e) => setSearchCode(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearchDossier()}
                   placeholder="Code de paiement bordereau (ex: CP-748921)..."
                   className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-xs font-mono font-bold focus:border-brand-accent outline-none"
                 />
               </div>
               <button
-                onClick={() => setSearchCode(tx.paymentCode)}
-                className="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold hover:bg-slate-200"
+                onClick={() => handleSearchDossier()}
+                className="px-4 py-2.5 bg-brand-teal text-white rounded-xl text-xs font-bold hover:bg-brand-teal-800 transition shadow-xs flex items-center gap-1.5"
               >
-                Charger Dossier
+                <Search className="h-3.5 w-3.5" />
+                <span>Rechercher</span>
               </button>
+            </div>
+
+            {/* Quick picker for pending bureau deposits */}
+            <div className="mb-6 p-3 bg-slate-50 rounded-2xl border border-slate-200">
+              <span className="text-[10px] font-extrabold uppercase text-slate-400 block mb-2 tracking-wider">
+                Dossiers en attente au guichet ({allTransactions.filter((t) => t.status === "AWAITING_PAYMENT").length}) :
+              </span>
+              <div className="flex flex-wrap gap-1.5">
+                {allTransactions
+                  .filter((t) => t.status === "AWAITING_PAYMENT")
+                  .map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => handleSearchDossier(t.paymentCode)}
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition border ${
+                        tx.id === t.id
+                          ? "bg-brand-teal text-white border-brand-teal shadow-xs"
+                          : "bg-white text-slate-700 border-slate-200 hover:border-brand-teal"
+                      }`}
+                    >
+                      <span className="font-mono">{t.paymentCode}</span> ({t.priceBreakdown.totalDzd.toLocaleString()} DZD)
+                    </button>
+                  ))}
+                {allTransactions.filter((t) => t.status === "AWAITING_PAYMENT").length === 0 && (
+                  <span className="text-xs text-slate-400 italic">Aucun dossier en attente au guichet.</span>
+                )}
+              </div>
             </div>
 
             {/* Dossier details */}
@@ -822,6 +820,33 @@ export default function StaffControlCenter({ defaultRole = "admin" }: StaffContr
             </div>
           </div>
 
+          {/* Quick dossier selector for wires */}
+          <div className="mb-6 p-3 bg-slate-50 rounded-2xl border border-slate-200">
+            <span className="text-[10px] font-extrabold uppercase text-slate-400 block mb-2 tracking-wider">
+              Dossiers avec paiement consigné ({allTransactions.filter((t) => t.status === "PAID" || t.status === "FUNDS_TRANSFER_PENDING").length}) :
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {allTransactions
+                .filter((t) => t.status === "PAID" || t.status === "FUNDS_TRANSFER_PENDING")
+                .map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => handleSearchDossier(t.paymentCode)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition border ${
+                      tx.id === t.id
+                        ? "bg-brand-teal text-white border-brand-teal shadow-xs"
+                        : "bg-white text-slate-700 border-slate-200 hover:border-brand-teal"
+                    }`}
+                  >
+                    <span className="font-mono">{t.paymentCode}</span> ({t.bringerName} - €{t.priceBreakdown.productPrice})
+                  </button>
+                ))}
+              {allTransactions.filter((t) => t.status === "PAID" || t.status === "FUNDS_TRANSFER_PENDING").length === 0 && (
+                <span className="text-xs text-slate-400 italic">Aucun virement en attente d&apos;émission.</span>
+              )}
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             {/* Initiate wire form */}
             <div className="p-5 bg-brand-bg rounded-2xl border border-brand-border">
@@ -923,6 +948,33 @@ export default function StaffControlCenter({ defaultRole = "admin" }: StaffContr
             Bureau des Litiges & Arbitrage Caba Pro
           </h2>
 
+          {/* Quick dossier selector for disputes */}
+          <div className="mb-6 p-3 bg-red-50/60 rounded-2xl border border-red-200">
+            <span className="text-[10px] font-extrabold uppercase text-red-500 block mb-2 tracking-wider">
+              Dossiers actuellement en litige ({allTransactions.filter((t) => t.status === "DISPUTED").length}) :
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {allTransactions
+                .filter((t) => t.status === "DISPUTED")
+                .map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => handleSearchDossier(t.paymentCode)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition border ${
+                      tx.id === t.id
+                        ? "bg-red-600 text-white border-red-600 shadow-xs"
+                        : "bg-white text-slate-700 border-red-200 hover:border-red-400"
+                    }`}
+                  >
+                    <span className="font-mono">{t.paymentCode}</span> ({t.dispute?.reason || "Litige ouvert"})
+                  </button>
+                ))}
+              {allTransactions.filter((t) => t.status === "DISPUTED").length === 0 && (
+                <span className="text-xs text-slate-500 italic">Aucun litige en cours d&apos;arbitrage.</span>
+              )}
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="p-5 bg-brand-bg rounded-2xl border border-brand-border">
               <h3 className="text-xs font-bold uppercase tracking-wide text-slate-700 mb-3">
@@ -939,19 +991,15 @@ export default function StaffControlCenter({ defaultRole = "admin" }: StaffContr
                     <span className="font-bold text-slate-800">{tx.dispute.status}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">Date d'ouverture:</span>
+                    <span className="text-slate-500">Date d&apos;ouverture:</span>
                     <span className="font-bold text-slate-800">{new Date(tx.dispute.openedAt).toLocaleString()}</span>
                   </div>
                 </div>
               ) : (
                 <div className="text-center py-8 text-slate-400">
-                  <p className="text-xs">Aucun litige actif sur cette transaction.</p>
-                  <button
-                    onClick={() => DemoSimulator.stepOpenDispute(tx.id).then((u) => u && setTx(u))}
-                    className="mt-3 px-4 py-2 bg-red-100 text-red-700 rounded-xl text-xs font-bold hover:bg-red-200"
-                  >
-                    Simuler un Litige Acheteur
-                  </button>
+                  <CheckCircle2 className="h-8 w-8 text-emerald-500 mx-auto mb-2" />
+                  <p className="text-xs text-slate-600 font-semibold">Aucun litige actif sur cette transaction.</p>
+                  <p className="text-[11px] text-slate-400 mt-1">Les fonds sous séquestre suivent le cycle normal de livraison.</p>
                 </div>
               )}
             </div>
